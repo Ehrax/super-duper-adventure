@@ -1,4 +1,4 @@
-# Mobile Application Lab: Quartett App
+# Mobile Application Lab: Tinder App
 
 ## Git Workflow
 
