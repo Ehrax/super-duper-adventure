@@ -1,11 +1,14 @@
 # Mobile Application Lab: Tinder App
 
+## NinjaMock Mockups
+`https://ninjamock.com/s/2692Z` hier findet ihr die MockUps
+
 ## Git Workflow
 
 Es wird [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 mit Reviews verwendet. Beispielhafter Ablauf für die Erstellung eines Features:
 
-1. Issue für Feature erstellen
+1. Issue für Feature erstellen!
 2. Branch für Feature erstellen
 3. Feature auf eigenem Branch entwickeln
 4. Issue des Features schließen
