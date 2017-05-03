@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.events;
 
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 
@@ -30,6 +31,7 @@ public interface EventsContract {
         void setOnPageChangeListener(ViewPager viewPager, EventsPageAdapter
                 adapter);
 
-        void fabAddEventClickListener(FloatingActionButton fab);
+        void bottomNavSetOnNavigationItemSelected(BottomNavigationView view);
     };
+
 }

@@ -2,11 +2,14 @@ package de.in.uulm.map.tinder.events;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.view.View;
+import android.util.Log;
+import android.view.MenuItem;
 
+import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.events.joined.JoinedFragment;
 import de.in.uulm.map.tinder.events.myevents.MyEventsFragment;
 import de.in.uulm.map.tinder.events.naerby.NearbyFragment;
@@ -41,8 +44,9 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
     /**
      * this is needed because onResume is not called if a tab has changed,
      * onPageSelected calls the corresponding fragment which is now visible
+     *
      * @param viewPager see ViewPager
-     * @param adapter see EventsPageAdapter
+     * @param adapter   see EventsPageAdapter
      */
     @Override
     public void setOnPageChangeListener(ViewPager viewPager,
@@ -93,16 +97,40 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
     }
 
     /**
-     * this method is starting the event add activity
-     * @param fab see FloatingActionButton
+     * This method is setting a listener for the bottom navigation bar
+     *
+     * @param view see BottomNavigationView
      */
     @Override
-    public void fabAddEventClickListener(FloatingActionButton fab) {
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO start new activity here
-            }
-        });
+    public void bottomNavSetOnNavigationItemSelected(BottomNavigationView view) {
+
+        view.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(
+                            @NonNull MenuItem item) {
+
+                        switch (item.getItemId()) {
+                            case R.id.bottom_nav_events: {
+                                // TODO start events activity
+                                Log.d("events",
+                                        "onNavigationItemSelected: ");
+                                break;
+                            }
+                            case R.id.bottom_nav_add: {
+                                // TODO start here add activity
+                                Log.d("add", "onNavigationItemSelected: ");
+                                break;
+                            }
+                            case R.id.bottom_nav_chat: {
+                                // TODO start chat activity here
+                                Log.d("chat", "onNavigationItemSelected: ");
+                                break;
+                            }
+                        }
+                        return true;
+                    }
+                }
+        );
     }
 }

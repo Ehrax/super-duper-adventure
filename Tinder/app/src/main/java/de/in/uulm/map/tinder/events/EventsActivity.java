@@ -1,6 +1,6 @@
 package de.in.uulm.map.tinder.events;
 
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -38,28 +38,34 @@ public class EventsActivity extends AppCompatActivity implements
         setPresenter(presenter);
 
         // adding Toolbar to events activity
-        Toolbar toolbar = (Toolbar) findViewById(R.id.eventsToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.events_toolbar);
         setSupportActionBar(toolbar);
 
         // Setting ViewPager for each Tab
-        ViewPager viewPager = (ViewPager) findViewById(R.id.eventsViewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.events_view_pager);
         setupViewPager(viewPager);
 
         // Set Tab inside Toolbar
-        TabLayout tabs = (TabLayout) findViewById(R.id.eventTabs);
+        TabLayout tabs = (TabLayout) findViewById(R.id.event_tabs);
         tabs.setupWithViewPager(viewPager);
 
-        FloatingActionButton fab = (FloatingActionButton)
-                findViewById(R.id.eventsFab);
-        mPresenter.fabAddEventClickListener(fab);
+        // adding bottom menu navigation handler
+        BottomNavigationView bottomNav = (BottomNavigationView) findViewById
+                (R.id.bottom_navigation_menu);
+        mPresenter.bottomNavSetOnNavigationItemSelected(bottomNav);
     }
 
     /**
      * This method is setting up the ViewPager with his adapter and their
      * tab fragments.
-     * @param viewPager
      */
     private void setupViewPager(ViewPager viewPager) {
+
+        // creating NearbyFragment and NearbyPresenter
+        NearbyFragment nearbyFragment = NearbyFragment.newInstance();
+        NearbyPresenter nearbyPresenter = new NearbyPresenter(nearbyFragment,
+                getApplicationContext());
+        nearbyFragment.setPresenter(nearbyPresenter);
 
         // creating JoinedFragment and JoinedPresenter
         JoinedFragment joinedFragment = JoinedFragment.newInstance();
@@ -73,19 +79,13 @@ public class EventsActivity extends AppCompatActivity implements
                 (myEventsFragment, getApplicationContext());
         myEventsFragment.setPresenter(myEventsPresenter);
 
-        // creating NearbyFragment and NearbyPresenter
-        NearbyFragment nearbyFragment = NearbyFragment.newInstance();
-        NearbyPresenter nearbyPresenter = new NearbyPresenter(nearbyFragment,
-                getApplicationContext());
-        nearbyFragment.setPresenter(nearbyPresenter);
-
         EventsPageAdapter eventsPageAdapter = new EventsPageAdapter
                 (getSupportFragmentManager());
 
         // adding Fragments to the EventPageAdapter
+        eventsPageAdapter.addFragment(nearbyFragment);
         eventsPageAdapter.addFragment(joinedFragment);
         eventsPageAdapter.addFragment(myEventsFragment);
-        eventsPageAdapter.addFragment(nearbyFragment);
         viewPager.setAdapter(eventsPageAdapter);
 
         // adding onPageChangeListener to viewPager
