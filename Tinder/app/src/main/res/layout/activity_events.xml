@@ -18,7 +18,7 @@
                 android:elevation="4dp"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:title="Events" />
+                app:title="@string/events" />
 
         <android.support.design.widget.TabLayout
                 android:id="@+id/event_tabs"
