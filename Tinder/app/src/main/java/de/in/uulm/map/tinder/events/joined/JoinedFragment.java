@@ -3,6 +3,7 @@ package de.in.uulm.map.tinder.events.joined;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,11 @@ public class JoinedFragment extends Fragment implements JoinedContract.JoinedVie
         JoinedFragment fragment = new JoinedFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void fragmentBecomesVisible() {
+
     }
 
     @Override

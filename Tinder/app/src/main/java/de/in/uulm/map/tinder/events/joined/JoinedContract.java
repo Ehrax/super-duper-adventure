@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.events.joined;
 
+import de.in.uulm.map.tinder.events.EventsContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
@@ -9,7 +10,7 @@ import de.in.uulm.map.tinder.util.BaseView;
 
 public interface JoinedContract {
 
-    interface JoinedView extends BaseView<JoinedPresenter>{};
+    interface JoinedView extends EventsContract.TabView<JoinedPresenter> {};
 
     interface JoinedPresenter extends BasePresenter{};
 }

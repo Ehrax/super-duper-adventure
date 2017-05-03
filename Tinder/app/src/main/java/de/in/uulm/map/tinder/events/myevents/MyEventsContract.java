@@ -1,7 +1,7 @@
 package de.in.uulm.map.tinder.events.myevents;
 
+import de.in.uulm.map.tinder.events.EventsContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
-import de.in.uulm.map.tinder.util.BaseView;
 
 /**
  * Created by alexanderrasputin on 02.05.17.
@@ -9,7 +9,7 @@ import de.in.uulm.map.tinder.util.BaseView;
 
 public interface MyEventsContract {
 
-    interface MyEventsView extends BaseView<MyEventsPresenter> {};
+    interface MyEventsView extends EventsContract.TabView<MyEventsPresenter> {};
 
     interface MyEventsPresenter extends BasePresenter{};
 }

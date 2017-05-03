@@ -3,6 +3,7 @@ package de.in.uulm.map.tinder.events.myevents;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,11 @@ public class MyEventsFragment extends Fragment implements MyEventsContract.MyEve
         MyEventsFragment fragment = new MyEventsFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void fragmentBecomesVisible() {
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.events;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +16,26 @@ import de.in.uulm.map.tinder.events.naerby.NearbyFragment;
 import de.in.uulm.map.tinder.events.naerby.NearbyPresenter;
 
 
-public class EventsActivity extends AppCompatActivity {
+public class EventsActivity extends AppCompatActivity implements
+        EventsContract.EventsView {
 
     public static final String TAB_TITLE = "tab-title";
+
+    /**
+     * reference to the presenter
+     */
+    private EventsContract.EventsPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
+
+        // setting up presenter
+        EventsPresenter presenter = new EventsPresenter(this,
+                getApplicationContext());
+        setPresenter(presenter);
 
         // adding Toolbar to events activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.eventsToolbar);
@@ -37,10 +49,14 @@ public class EventsActivity extends AppCompatActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.eventTabs);
         tabs.setupWithViewPager(viewPager);
 
+        FloatingActionButton fab = (FloatingActionButton)
+                findViewById(R.id.eventsFab);
+        mPresenter.fabAddEventClickListener(fab);
     }
 
     /**
-     *
+     * This method is setting up the ViewPager with his adapter and their
+     * tab fragments.
      * @param viewPager
      */
     private void setupViewPager(ViewPager viewPager) {
@@ -71,5 +87,14 @@ public class EventsActivity extends AppCompatActivity {
         eventsPageAdapter.addFragment(myEventsFragment);
         eventsPageAdapter.addFragment(nearbyFragment);
         viewPager.setAdapter(eventsPageAdapter);
+
+        // adding onPageChangeListener to viewPager
+        mPresenter.setOnPageChangeListener(viewPager, eventsPageAdapter);
+    }
+
+    @Override
+    public void setPresenter(EventsContract.EventsPresenter presenter) {
+
+        this.mPresenter = presenter;
     }
 }

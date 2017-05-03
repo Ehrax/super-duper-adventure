@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.events.naerby;
 
+import de.in.uulm.map.tinder.events.EventsContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
@@ -8,7 +9,7 @@ import de.in.uulm.map.tinder.util.BaseView;
  */
 
 public interface NearbyContract {
-    interface NearbyView extends BaseView<NearbyPresenter> {};
+    interface NearbyView extends EventsContract.TabView<NearbyPresenter> {};
 
     interface NearbyPresenter extends BasePresenter{};
 }
