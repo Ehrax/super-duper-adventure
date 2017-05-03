@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.events.joined.JoinedFragment;
@@ -58,11 +59,10 @@ public class EventsActivity extends AppCompatActivity implements
 
     /**
      * This method is creating the toolbar menu icon
-     * @param menu
-     * @return
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.top_navigatino_bar, menu);
         return true;
     }
@@ -108,5 +108,14 @@ public class EventsActivity extends AppCompatActivity implements
     public void setPresenter(EventsContract.EventsPresenter presenter) {
 
         this.mPresenter = presenter;
+    }
+
+    /**
+     * this method is calling the presenter for the menu items
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPresenter.topNavOnOptionSelected(item);
+        return true;
     }
 }
