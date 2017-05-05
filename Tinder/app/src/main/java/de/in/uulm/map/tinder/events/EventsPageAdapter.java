@@ -25,6 +25,10 @@ public class EventsPageAdapter extends FragmentPagerAdapter {
         this.mFragments = new ArrayList<>();
     }
 
+    /**
+     * Use this method to add a Fragment to the adapter.
+     * @param fragment the fragment to be added
+     */
     public void addFragment(Fragment fragment) {
 
         mFragments.add(fragment);

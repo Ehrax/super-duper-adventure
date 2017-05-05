@@ -13,7 +13,7 @@ import de.in.uulm.map.tinder.util.BaseView;
 
 public interface EventsContract {
 
-    interface TabView<T>  {
+    interface EventsView extends BaseView<EventsPresenter> {
 
         /**
          * this is needed because onResume is not called if a tab has changed,
@@ -22,16 +22,14 @@ public interface EventsContract {
          */
         void fragmentBecomesVisible();
 
-        void setPresenter(T presenter);
+        void setPresenter(EventsPresenter presenter);
     }
 
-    interface EventsView extends BaseView<EventsPresenter>{};
+    interface EventsPresenter extends BasePresenter {
 
-    interface EventsPresenter extends BasePresenter{
         void setOnPageChangeListener(ViewPager viewPager, EventsPageAdapter
                 adapter);
 
         void bottomNavSetOnNavigationItemSelected(BottomNavigationView view);
-    };
-
+    }
 }
