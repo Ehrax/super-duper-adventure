@@ -3,6 +3,9 @@ package de.in.uulm.map.tinder.events;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
@@ -31,5 +34,7 @@ public interface EventsContract {
                 adapter);
 
         void bottomNavSetOnNavigationItemSelected(BottomNavigationView view);
-    }
+
+        void topNavOnOptionSelected(MenuItem item);
+    };
 }

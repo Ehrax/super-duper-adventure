@@ -4,7 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
@@ -121,5 +123,23 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                     }
                 }
         );
+    }
+
+    @Override
+    public void topNavOnOptionSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.top_nav_account: {
+                // TODO handle here account activity
+                break;
+            }
+            case R.id.top_nav_filter: {
+                // TODO handle here filter activity
+                break;
+            }
+            case R.id.top_nav_settings: {
+                // TODO handle here settings activity
+                break;
+            }
+        }
     }
 }

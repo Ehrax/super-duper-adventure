@@ -6,6 +6,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
@@ -44,6 +46,16 @@ public class EventsActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = (BottomNavigationView) findViewById
                 (R.id.bottom_navigation_menu);
         mPresenter.bottomNavSetOnNavigationItemSelected(bottomNav);
+    }
+
+    /**
+     * This method is creating the toolbar menu icon
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.top_navigatino_bar, menu);
+        return true;
     }
 
     /**
@@ -95,5 +107,14 @@ public class EventsActivity extends AppCompatActivity {
 
         // adding onPageChangeListener to viewPager
         mPresenter.setOnPageChangeListener(viewPager, eventsPageAdapter);
+    }
+
+    /**
+     * this method is calling the presenter for the menu items
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPresenter.topNavOnOptionSelected(item);
+        return true;
     }
 }
