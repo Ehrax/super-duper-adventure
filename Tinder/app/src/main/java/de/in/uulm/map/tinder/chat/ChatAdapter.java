@@ -4,9 +4,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Message;
 
 import io.realm.RealmChangeListener;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -15,19 +17,24 @@ import io.realm.RealmResults;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
-    private final RealmResults<Message> mMessages;
+    private final RealmList<Message> mMessages;
 
     private final ChatContract.Presenter mPresenter;
 
-    public ChatAdapter(RealmResults<Message> messages,
+    public ChatAdapter(Event event,
                        ChatContract.Presenter presenter) {
 
-        mMessages = messages;
+        if(event == null) {
+            mMessages = new RealmList<>();
+        } else {
+            mMessages = event.messages;
+        }
+
         mPresenter = presenter;
 
-        messages.addChangeListener(new RealmChangeListener<RealmResults<Message>>() {
+        mMessages.addChangeListener(new RealmChangeListener<RealmList<Message>>() {
             @Override
-            public void onChange(RealmResults<Message> element) {
+            public void onChange(RealmList<Message> element) {
 
                 notifyDataSetChanged();
             }
