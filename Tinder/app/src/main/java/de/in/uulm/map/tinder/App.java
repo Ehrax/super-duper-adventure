@@ -64,6 +64,8 @@ public class App extends Application {
 
         a.events.add(event);
 
+        realm.copyToRealm(a);
+
         realm.commitTransaction();
     }
 }
