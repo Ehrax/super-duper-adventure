@@ -9,6 +9,8 @@ import io.realm.RealmObject;
 
 public class Event extends RealmObject {
 
+    public String title;
+
     public String description;
 
     public long end_date;

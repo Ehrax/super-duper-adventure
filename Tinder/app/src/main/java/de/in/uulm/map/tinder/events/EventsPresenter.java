@@ -1,10 +1,8 @@
 package de.in.uulm.map.tinder.events;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,9 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.events.joined.JoinedFragment;
-import de.in.uulm.map.tinder.events.myevents.MyEventsFragment;
-import de.in.uulm.map.tinder.events.naerby.NearbyFragment;
 
 /**
  * Created by alexanderrasputin on 03.05.17.
@@ -23,19 +18,34 @@ import de.in.uulm.map.tinder.events.naerby.NearbyFragment;
 public class EventsPresenter implements EventsContract.EventsPresenter {
 
     /**
-     * reference to the view
+     * reference to the joined view
      */
-    EventsContract.EventsView mView;
+    private final EventsContract.EventsView mJoinedView;
+
+    /**
+     * reference to the my events view
+     */
+    private final EventsContract.EventsView mMyEventsView;
+
+    /**
+     * reference to the nearby view
+     */
+    private final EventsContract.EventsView mNearbyView;
 
     /**
      * context needed for intent construction
      */
     Context mContext;
 
-    public EventsPresenter(EventsContract.EventsView mView, Context mContext) {
+    public EventsPresenter(EventsContract.EventsView joinedFragment,
+                           EventsContract.EventsView myEventsView,
+                           EventsContract.EventsView nearbyView,
+                           Context context) {
 
-        this.mView = mView;
-        this.mContext = mContext;
+        this.mJoinedView = joinedFragment;
+        this.mMyEventsView = myEventsView;
+        this.mNearbyView = nearbyView;
+        this.mContext = context;
     }
 
     @Override
@@ -66,29 +76,9 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
             @Override
             public void onPageSelected(int position) {
 
-                Fragment fragment = adapter.getItem(position);
-                Bundle args = fragment.getArguments();
-
-                String title = args.getString(EventsActivity.TAB_TITLE);
-
-                switch (title) {
-                    case JoinedFragment.TAB_JOINED: {
-                        JoinedFragment joinedFragment = (JoinedFragment) fragment;
-                        joinedFragment.fragmentBecomesVisible();
-                        break;
-                    }
-                    case MyEventsFragment.TAB_MY_EVENTS: {
-                        MyEventsFragment myEventsFragment =
-                                (MyEventsFragment) fragment;
-                        myEventsFragment.fragmentBecomesVisible();
-                        break;
-                    }
-                    case NearbyFragment.TAB_NEARBY: {
-                        NearbyFragment nearbyFragment = (NearbyFragment) fragment;
-                        nearbyFragment.fragmentBecomesVisible();
-                        break;
-                    }
-                }
+                EventsFragment fragment =
+                        (EventsFragment) adapter.getItem(position);
+                fragment.fragmentBecomesVisible();
             }
 
             @Override
@@ -115,8 +105,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         switch (item.getItemId()) {
                             case R.id.bottom_nav_events: {
                                 // TODO start events activity
-                                Log.d("events",
-                                        "onNavigationItemSelected: ");
+                                Log.d("events", "onNavigationItemSelected: ");
                                 break;
                             }
                             case R.id.bottom_nav_add: {
