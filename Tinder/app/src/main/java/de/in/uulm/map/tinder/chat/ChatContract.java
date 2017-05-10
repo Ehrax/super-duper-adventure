@@ -11,6 +11,7 @@ public interface ChatContract {
 
     interface Presenter extends BasePresenter{
 
+        void onSendButton(String inputText);
     }
 
     interface View extends BaseView<Presenter> {

@@ -1,9 +1,12 @@
 package de.in.uulm.map.tinder.chat;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import de.in.uulm.map.tinder.R;
@@ -30,6 +33,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     public ChatAdapter(Event event, ChatContract.Presenter presenter) {
 
         mMessages = event.messages;
+        mMessages.sort("timestamp");
+
         mPresenter = presenter;
 
         mMessages.addChangeListener(new RealmChangeListener<RealmList<Message>>() {
@@ -59,6 +64,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         holder.mUserName.setText(message.creator.name);
         holder.mText.setText(message.text);
         holder.mTime.setText(format.format(new Date(message.timestamp)));
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
+                holder.mLayout.getLayoutParams();
+
+        if(message.creator.id == 1) {
+            params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+            holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_own);
+        } else {
+            params.removeRule(RelativeLayout.ALIGN_PARENT_END);
+            holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_other);
+        }
+
+        holder.mLayout.setLayoutParams(params);
     }
 
     @Override
@@ -72,11 +90,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         TextView mUserName;
         TextView mText;
         TextView mTime;
+        LinearLayout mLayout;
 
         ViewHolder(View view) {
 
             super(view);
 
+            mLayout = (LinearLayout) view.findViewById(R.id.chat_message_layout);
             mUserName = (TextView) view.findViewById(R.id.chat_message_user);
             mText = (TextView) view.findViewById(R.id.chat_message_text);
             mTime = (TextView) view.findViewById(R.id.chat_message_timestamp);

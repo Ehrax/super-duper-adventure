@@ -33,15 +33,15 @@ public class ChatActivity extends AppCompatActivity {
                     fragment, R.id.content_frame);
         }
 
-        ChatPresenter presenter = new ChatPresenter(fragment);
-
         int event_id = getIntent().getIntExtra(EVENT_ID, 1);
 
         Realm realm = Realm.getDefaultInstance();
         Event event = realm.where(Event.class).equalTo("id", event_id).findFirst();
 
-        ChatAdapter adapter = new ChatAdapter(event, presenter);
+        ChatPresenter presenter = new ChatPresenter(fragment, event);
+        fragment.setPresenter(presenter);
 
+        ChatAdapter adapter = new ChatAdapter(event, presenter);
         fragment.setAdapter(adapter);
     }
 }
