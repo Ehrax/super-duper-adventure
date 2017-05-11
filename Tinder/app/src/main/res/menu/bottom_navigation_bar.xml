@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/bottom_nav_events"
+            android:icon="@drawable/calendar_clock"
+            android:title="@string/events"
+            app:showAsAction="ifRoom" />
+    <item
+            android:id="@+id/bottom_nav_add"
+            android:icon="@drawable/plus"
+            android:title="@string/add"
+            app:showAsAction="ifRoom"/>
+    <item
+            android:id="@+id/bottom_nav_chat"
+            android:icon="@drawable/wechat"
+            android:title="@string/chat"
+            app:showAsAction="ifRoom"/>
+</menu>
