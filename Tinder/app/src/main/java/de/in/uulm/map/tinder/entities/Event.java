@@ -10,8 +10,11 @@ import io.realm.annotations.PrimaryKey;
 
 public class Event extends RealmObject {
 
+    public String title;
+
     @PrimaryKey
     public long id;
+
 
     public String description;
 
