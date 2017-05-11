@@ -13,6 +13,4 @@ public class Message extends RealmObject {
     public long timestamp;
 
     public User creator;
-
-    public Event event;
 }
