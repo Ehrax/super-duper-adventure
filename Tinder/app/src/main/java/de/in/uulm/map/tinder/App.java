@@ -10,7 +10,10 @@ import de.in.uulm.map.tinder.entities.User;
 import java.util.Date;
 
 import io.realm.Realm;
+
 import io.realm.RealmList;
+import io.realm.RealmResults;
+
 
 /**
  * Created by Jona on 01.05.2017.
@@ -28,10 +31,13 @@ public class App extends Application {
         super.onCreate();
         Realm.init(this);
 
+        // this bit creates a test database
+
         Realm realm = Realm.getDefaultInstance();
 
         realm.beginTransaction();
         realm.deleteAll();
+
 
         User b = new User();
         b.image = new Image();
@@ -65,6 +71,7 @@ public class App extends Application {
         a.events.add(event);
 
         realm.copyToRealm(a);
+
 
         realm.commitTransaction();
     }
