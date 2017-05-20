@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_primary">#F5F5F5</color>
-    <color name="color_primary_dark">#BDBDBD</color>
-    <color name="color_accent">#03A9F4</color>
+    <color name="color_primary_dark">#bdbdbd</color>
+    <color name="color_accent">#03a9f4</color>
     <color name="color_accent_dark">#01579B</color>
     <color name="text_color">#212121</color>
     <color name="bottom_nav_text_color">#757575</color>
     <color name="color_chat_bubble_other">#dedede</color>
     <color name="color_chat_bubble_own">#b3e5fc</color>
+    <color name="login_text_color">#ffffff</color>
 </resources>
