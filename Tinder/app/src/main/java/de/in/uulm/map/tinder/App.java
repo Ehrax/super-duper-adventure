@@ -47,6 +47,7 @@ public class App extends Application {
 
         Event event = new Event();
         event.id = 1;
+        event.title = "Test Event";
         event.description = "Test Event";
         event.max_user_count = 4;
         event.category = "Test";
