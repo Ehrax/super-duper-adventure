@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.events;
+package de.in.uulm.map.tinder.main.events;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 /**
  * Created by Jona on 05.05.17.
@@ -28,17 +29,12 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     public static EventsFragment newInstance(String title) {
 
         Bundle args = new Bundle();
-        args.putString(EventsActivity.TAB_TITLE, title);
+        args.putString(MainPageAdapter.TAB_TITLE, title);
 
         EventsFragment fragment = new EventsFragment();
         fragment.setArguments(args);
 
         return fragment;
-    }
-
-    @Override
-    public void fragmentBecomesVisible() {
-
     }
 
     public void setAdapter(EventsAdapter adapter) {
@@ -67,5 +63,10 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
         recyclerView.setAdapter(mAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onFragmentBecomesVisible() {
+
     }
 }

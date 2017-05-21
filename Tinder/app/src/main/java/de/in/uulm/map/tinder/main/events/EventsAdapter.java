@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.events;
+package de.in.uulm.map.tinder.main.events;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
