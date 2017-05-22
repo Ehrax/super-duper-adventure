@@ -18,7 +18,7 @@ import de.in.uulm.map.tinder.main.MainPageAdapter;
  * Created by Jona on 05.05.17.
  */
 
-public class EventsFragment extends Fragment implements EventsContract.EventsView {
+public class EventsFragment extends Fragment implements EventsContract.EventsView{
 
     public static final String TAB_NEARBY = "Nearby";
     public static final String TAB_JOINED = "Joined";

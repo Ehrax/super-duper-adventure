@@ -27,7 +27,7 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
-    MainPresenter mPresenter;
+    private MainPresenter mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
 
         AddEventFragment addEventFragment = AddEventFragment.newInstance();
         AddEventPresenter addEventPresenter =
-                new AddEventPresenter(addEventFragment);
+                new AddEventPresenter(addEventFragment, addEventFragment);
+        addEventFragment.setPresenter(addEventPresenter);
 
         pageAdapter.addFragment(addEventFragment, R.id.bottom_nav_add);
 

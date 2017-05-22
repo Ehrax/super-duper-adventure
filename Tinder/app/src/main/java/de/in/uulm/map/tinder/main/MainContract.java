@@ -1,7 +1,5 @@
 package de.in.uulm.map.tinder.main;
 
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.util.BasePresenter;
