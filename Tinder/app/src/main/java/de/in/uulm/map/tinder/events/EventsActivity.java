@@ -6,18 +6,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.events.joined.JoinedFragment;
-import de.in.uulm.map.tinder.events.joined.JoinedPresenter;
-import de.in.uulm.map.tinder.events.myevents.MyEventsFragment;
-import de.in.uulm.map.tinder.events.myevents.MyEventsPresenter;
-import de.in.uulm.map.tinder.events.naerby.NearbyFragment;
-import de.in.uulm.map.tinder.events.naerby.NearbyPresenter;
+import de.in.uulm.map.tinder.entities.Event;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 
-public class EventsActivity extends AppCompatActivity implements
-        EventsContract.EventsView {
+public class EventsActivity extends AppCompatActivity {
 
     public static final String TAB_TITLE = "tab-title";
 
@@ -31,11 +29,6 @@ public class EventsActivity extends AppCompatActivity implements
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
-
-        // setting up presenter
-        EventsPresenter presenter = new EventsPresenter(this,
-                getApplicationContext());
-        setPresenter(presenter);
 
         // adding Toolbar to events activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.events_toolbar);
@@ -56,31 +49,55 @@ public class EventsActivity extends AppCompatActivity implements
     }
 
     /**
+     * This method is creating the toolbar menu icon
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.top_navigation_bar, menu);
+        return true;
+    }
+
+    /**
      * This method is setting up the ViewPager with his adapter and their
      * tab fragments.
      */
     private void setupViewPager(ViewPager viewPager) {
 
-        // creating NearbyFragment and NearbyPresenter
-        NearbyFragment nearbyFragment = NearbyFragment.newInstance();
-        NearbyPresenter nearbyPresenter = new NearbyPresenter(nearbyFragment,
-                getApplicationContext());
-        nearbyFragment.setPresenter(nearbyPresenter);
+        Realm realm = Realm.getDefaultInstance();
 
         // creating JoinedFragment and JoinedPresenter
-        JoinedFragment joinedFragment = JoinedFragment.newInstance();
-        JoinedPresenter joinedPresenter = new JoinedPresenter(joinedFragment,
-                getApplicationContext());
-        joinedFragment.setPresenter(joinedPresenter);
+        EventsFragment joinedFragment =
+                EventsFragment.newInstance(EventsFragment.TAB_JOINED);
+        RealmResults<Event> joinedEvents = realm.where(Event.class)
+                .equalTo("participants.id", 1)
+                .findAll();
+        joinedFragment.setAdapter(new EventsAdapter(joinedEvents, mPresenter));
+
+        // creating NearbyFragment and NearbyPresenter
+        EventsFragment nearbyFragment =
+                EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
+        RealmResults<Event> nearbyEvents = realm.where(Event.class)
+                .findAll();
+        nearbyFragment.setAdapter(new EventsAdapter(nearbyEvents, mPresenter));
 
         // creating MyEventsFragment and MyEventsPresenter
-        MyEventsFragment myEventsFragment = MyEventsFragment.newInstance();
-        MyEventsPresenter myEventsPresenter = new MyEventsPresenter
-                (myEventsFragment, getApplicationContext());
-        myEventsFragment.setPresenter(myEventsPresenter);
+        EventsFragment myEventsFragment =
+                EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
+        RealmResults<Event> myEvents = realm.where(Event.class)
+                .equalTo("creator.id", 1)
+                .findAll();
+        myEventsFragment.setAdapter(new EventsAdapter(myEvents, mPresenter));
 
-        EventsPageAdapter eventsPageAdapter = new EventsPageAdapter
-                (getSupportFragmentManager());
+        mPresenter = new EventsPresenter(joinedFragment, myEventsFragment,
+                nearbyFragment, getApplicationContext());
+
+        joinedFragment.setPresenter(mPresenter);
+        myEventsFragment.setPresenter(mPresenter);
+        nearbyFragment.setPresenter(mPresenter);
+
+        EventsPageAdapter eventsPageAdapter =
+                new EventsPageAdapter(getSupportFragmentManager());
 
         // adding Fragments to the EventPageAdapter
         eventsPageAdapter.addFragment(nearbyFragment);
@@ -92,9 +109,12 @@ public class EventsActivity extends AppCompatActivity implements
         mPresenter.setOnPageChangeListener(viewPager, eventsPageAdapter);
     }
 
+    /**
+     * this method is calling the presenter for the menu items
+     */
     @Override
-    public void setPresenter(EventsContract.EventsPresenter presenter) {
-
-        this.mPresenter = presenter;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPresenter.topNavOnOptionSelected(item);
+        return true;
     }
 }

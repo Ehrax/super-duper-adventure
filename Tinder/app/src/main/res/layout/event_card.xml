@@ -130,6 +130,7 @@
                 android:text="Map" />
 
         </RelativeLayout>
+>>>>>>> da4d7b7cd058a703e9984200e33ea485ef97d455
 
     </android.support.v7.widget.CardView>
 

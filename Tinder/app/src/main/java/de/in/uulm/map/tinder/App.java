@@ -10,14 +10,9 @@ import de.in.uulm.map.tinder.entities.User;
 import java.util.Date;
 
 import io.realm.Realm;
-<<<<<<< HEAD
-import io.realm.RealmList;
-=======
 
 import io.realm.RealmList;
 import io.realm.RealmResults;
-
->>>>>>> 1df27898e04edd594d3268e9153c0f27f3710be2
 
 /**
  * Created by Jona on 01.05.2017.
@@ -35,20 +30,11 @@ public class App extends Application {
         super.onCreate();
         Realm.init(this);
 
-<<<<<<< HEAD
-=======
-        // this bit creates a test database
-
->>>>>>> 1df27898e04edd594d3268e9153c0f27f3710be2
         Realm realm = Realm.getDefaultInstance();
 
         realm.beginTransaction();
         realm.deleteAll();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1df27898e04edd594d3268e9153c0f27f3710be2
         User b = new User();
         b.image = new Image();
         b.id = 2;
@@ -61,6 +47,7 @@ public class App extends Application {
 
         Event event = new Event();
         event.id = 1;
+        event.title = "Test Event";
         event.description = "Test Event";
         event.max_user_count = 4;
         event.category = "Test";
@@ -81,10 +68,6 @@ public class App extends Application {
         a.events.add(event);
 
         realm.copyToRealm(a);
-<<<<<<< HEAD
-=======
-
->>>>>>> 1df27898e04edd594d3268e9153c0f27f3710be2
 
         realm.commitTransaction();
     }

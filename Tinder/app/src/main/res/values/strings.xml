@@ -9,4 +9,9 @@
     <string name="sign_in">Sign in</string>
     <string name="create_account">No account yet? Create one</string>
     <string name="password">Password</string>
+
+    <!-- top bar -->
+    <string name="filter">Filter</string>
+    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
 </resources>
