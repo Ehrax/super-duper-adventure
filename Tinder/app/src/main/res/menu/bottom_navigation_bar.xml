@@ -2,18 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/bottom_nav_events"
+            android:id="@+id/bottom_nav_nearby"
             android:icon="@drawable/calendar_clock"
-            android:title="@string/events"
-            app:showAsAction="ifRoom" />
+            android:title="@string/events_nearby"
+            app:showAsAction="always" />
+    <item
+            android:id="@+id/bottom_nav_joined"
+            android:icon="@drawable/calendar_check"
+            android:title="@string/events_joined"
+            app:showAsAction="always" />
+    <item
+            android:id="@+id/bottom_nav_created"
+            android:icon="@drawable/pencil"
+            android:title="@string/events_created"
+            app:showAsAction="always" />
     <item
             android:id="@+id/bottom_nav_add"
             android:icon="@drawable/plus"
             android:title="@string/add"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="always"/>
     <item
             android:id="@+id/bottom_nav_chat"
             android:icon="@drawable/wechat"
             android:title="@string/chat"
-            app:showAsAction="ifRoom"/>
+            app:showAsAction="always"/>
 </menu>

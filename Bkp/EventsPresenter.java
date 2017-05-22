@@ -127,8 +127,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
 
     @Override
     public void topNavOnOptionSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
+        switch (item.getItemId()){
             case R.id.top_nav_account: {
                 // TODO handle here account activity
                 break;

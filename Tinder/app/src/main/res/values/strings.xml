@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Tinder</string>
-    <string name="events">Events</string>
+    <string name="events_nearby">Events</string>
+    <string name="events_joined">Joined</string>
+    <string name="events_created">Created</string>
     <string name="chat">Chat</string>
     <string name="add">Add</string>
 
