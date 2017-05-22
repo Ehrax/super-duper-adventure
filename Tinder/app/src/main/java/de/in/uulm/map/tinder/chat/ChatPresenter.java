@@ -3,13 +3,6 @@ package de.in.uulm.map.tinder.chat;
 import android.util.Log;
 
 import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.Message;
-import de.in.uulm.map.tinder.entities.User;
-
-import java.util.Date;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 
 /**
  * Created by Jona on 08.05.17.
@@ -42,20 +35,6 @@ public class ChatPresenter implements ChatContract.Presenter {
 
         Log.d("Send", inputText);
 
-        Realm realm = Realm.getDefaultInstance();
-        User user = realm.where(User.class).findFirst();
-
-        realm.beginTransaction();
-
-        Message message = new Message();
-        message.creator = user;
-        message.timestamp = new Date().getTime();
-        message.text = inputText;
-
-        mEvent.messages.add(message);
-
-        realm.copyToRealm(mEvent);
-
-        realm.commitTransaction();
+        // TODO: add send functionality here
     }
 }
