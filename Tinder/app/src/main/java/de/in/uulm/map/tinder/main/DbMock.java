@@ -64,7 +64,7 @@ public class DbMock {
         hiking.description = "We are waiting at the bottom of the mountains!" +
                 "Going for a long trip ...";
         hiking.image = hiking_img;
-        hiking.end_date = new Date().getTime() + 3600000;
+        hiking.end_date = new Date().getTime() + 3600000 * 3;
         hiking.max_user_count = 4;
         hiking.category = "Sport";
         hiking.creator = alice;
