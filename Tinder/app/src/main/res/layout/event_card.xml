@@ -119,13 +119,25 @@
                     android:text="Leave Event" />
 
             <Button
+                    android:id="@+id/event_card_delete"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:visibility="visible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Delete" />
+
+            <Button
                     android:id="@+id/event_card_map"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/event_card_description"
-                    android:layout_alignParentRight="false"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"

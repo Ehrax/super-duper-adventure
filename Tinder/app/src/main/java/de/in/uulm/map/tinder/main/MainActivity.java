@@ -83,21 +83,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        DbMock db = DbMock.getInstance();
-
         EventsPresenter eventsPresenter = new EventsPresenter(this);
 
         EventsFragment nearbyFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
-        nearbyFragment.setAdapter(new EventsAdapter(this, db.getNearbyEvents(), eventsPresenter));
+        nearbyFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         EventsFragment joinedFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_JOINED);
-        joinedFragment.setAdapter(new EventsAdapter(this, db.getJoinedEvents(), eventsPresenter));
+        joinedFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         EventsFragment createdFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
-        createdFragment.setAdapter(new EventsAdapter(this, db.getCreatedEvents(), eventsPresenter));
+        createdFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         eventsPresenter.setNearbyView(nearbyFragment);
         eventsPresenter.setJoinedView(nearbyFragment);

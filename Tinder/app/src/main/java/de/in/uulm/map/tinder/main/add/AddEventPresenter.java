@@ -155,6 +155,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         image.path = mImageUri == null ? null : mImageUri.toString();
 
         Event event = new Event();
+        event.creator = DbMock.getInstance().getCurrentUser();
+        event.participants.add(DbMock.getInstance().getCurrentUser());
         event.title = mView.getTitle();
         event.description = mView.getDescription();
         event.end_date = new Date().getTime() + mDuration;

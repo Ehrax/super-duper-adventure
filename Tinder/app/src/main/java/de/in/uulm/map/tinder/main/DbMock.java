@@ -70,6 +70,8 @@ public class DbMock {
         hiking.creator = alice;
         hiking.participants.add(alice);
         hiking.participants.add(bob);
+        hiking.latitude = 27.988077;
+        hiking.longitude = 86.925048;
 
         Image party_img = new Image();
         party_img.path = "file:///android_asset/party.jpeg";
@@ -83,8 +85,9 @@ public class DbMock {
         party.category = "Ausgehen";
         party.max_user_count = 32;
         party.creator = eve;
-        party.participants.add(alice);
         party.participants.add(eve);
+        party.latitude = 48.405669;
+        party.longitude = 10.001979;
 
         Image theater_img = new Image();
         theater_img.path = "file:///android_asset/theater.jpeg";
@@ -98,6 +101,8 @@ public class DbMock {
         theater.max_user_count = 10;
         theater.creator = bob;
         theater.participants.add(bob);
+        theater.latitude = 40.773405;
+        theater.longitude = -73.984035;
 
         Image demo_img = new Image();
         demo_img.path = "file:///android_asset/demo.jpeg";
@@ -114,6 +119,8 @@ public class DbMock {
         demo.participants.add(bob);
         demo.participants.add(alice);
         demo.participants.add(eve);
+        demo.latitude = 48.775504;
+        demo.longitude = 9.168967;
 
         users.add(alice);
         users.add(bob);
@@ -138,7 +145,15 @@ public class DbMock {
 
     public ArrayList<Event> getNearbyEvents() {
 
-        return events;
+        ArrayList<Event> l = new ArrayList<>();
+
+        for(Event e : events) {
+            if(!e.participants.contains(getCurrentUser())) {
+                l.add(e);
+            }
+        }
+
+        return l;
     }
 
     public ArrayList<Event> getCreatedEvents() {
@@ -159,7 +174,8 @@ public class DbMock {
         ArrayList<Event> l = new ArrayList<>();
 
         for(Event e : events) {
-            if(e.participants.contains(getCurrentUser())) {
+            if(e.participants.contains(getCurrentUser()) &&
+                    e.creator != getCurrentUser()) {
                 l.add(e);
             }
         }
@@ -170,5 +186,10 @@ public class DbMock {
     public void addEvent(Event event) {
 
         events.add(event);
+    }
+
+    public void deleteEvent(Event event) {
+
+        events.remove(event);
     }
 }
