@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Image;
+import de.in.uulm.map.tinder.main.DbMock;
 
 import java.util.Date;
 
@@ -129,5 +130,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         event.max_user_count = mMaxUser;
         event.latitude = mLocation.getLatLng().latitude;
         event.longitude = mLocation.getLatLng().longitude;
+
+        DbMock.getInstance().addEvent(event);
     }
 }

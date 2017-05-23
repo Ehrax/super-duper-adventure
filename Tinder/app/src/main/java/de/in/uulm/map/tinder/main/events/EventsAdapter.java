@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main.events;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,13 +23,16 @@ import java.util.Date;
  */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
 
+    private final Context mContext;
+
     final public ArrayList<Event> mEvents;
 
     final private EventsContract.EventsPresenter mPresenter;
 
-    public EventsAdapter(EventsContract.EventsPresenter presenter) {
+    public EventsAdapter(Context context, ArrayList<Event> events, EventsContract.EventsPresenter presenter) {
 
-        mEvents = new ArrayList<>();
+        mContext = context;
+        mEvents = events;
         mPresenter = presenter;
     }
 
@@ -74,8 +80,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        holder.mTime.setText(format.format(new Date(e.end_date)) + " left");
+        if(e.image != null && e.image.path != null) {
+            new AsyncImageLoader(e.image.path,
+                    new WeakReference<>(holder.mImage),
+                    mContext).execute();
+        }
+
+        long left = e.end_date - new Date().getTime();
+        long hours = left / 3600000;
+        long minutes = (left % 3600000) / 60000;
+
+        holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
     }
 
     @Override

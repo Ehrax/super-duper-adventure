@@ -75,6 +75,7 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     @Override
     public void onFragmentBecomesVisible() {
 
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
