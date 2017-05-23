@@ -13,15 +13,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
@@ -85,7 +91,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         View view = inflater.inflate(
                 R.layout.fragment_add_event, container, false);
 
-
         mImage = (ImageView) view.findViewById(R.id.add_image);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,13 +99,35 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             }
         });
 
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                mPresenter.checkEnableCreateButton();
+            }
+        };
+
         mTitle = (EditText) view.findViewById(R.id.add_title);
+        mTitle.addTextChangedListener(watcher);
+
         mDescription = (EditText) view.findViewById(R.id.add_description);
+        mDescription.addTextChangedListener(watcher);
 
         mDuration = (EditText)  view.findViewById(R.id.add_time);
         mDuration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDuration.setEnabled(false);
                 mPresenter.onDurationClicked();
             }
         });
@@ -109,6 +136,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mLocation.setEnabled(false);
                 mPresenter.onLocationClicked();
             }
         });
@@ -118,6 +146,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void onClick(View v) {
 
+                mMaxUser.setEnabled(false);
                 mPresenter.onMaxUserClicked();
             }
         });
@@ -126,6 +155,8 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mCategory.setEnabled(false);
                 mPresenter.onCategoryClicked();
             }
         });
@@ -162,19 +193,45 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             mLastImagePath = null;
         }
 
-        if(requestCode == LOCATION_REQ_CODE && resultCode == Activity.RESULT_OK) {
+        if(requestCode == LOCATION_REQ_CODE) {
+            mLocation.setEnabled(true);
 
-            Place place = PlacePicker.getPlace(getContext(), data);
-            mPresenter.onLocationSelected(place);
+            if(resultCode == Activity.RESULT_OK) {
+
+                Place place = PlacePicker.getPlace(getContext(), data);
+                mPresenter.onLocationSelected(place);
+            }
         }
+    }
+
+    @Override
+    public void showTitle(String title) {
+
+        mTitle.setText(title);
+    }
+
+    @Override
+    public void showDescription(String description) {
+
+        mDescription.setText(description);
+    }
+
+    @Override
+    public void setEnableCreateButton(boolean enabled) {
+
+        mCreate.setEnabled(enabled);
     }
 
     @Override
     public void showImage(Uri fileUri) {
 
-        new AsyncImageLoader(fileUri.toString(),
-                new WeakReference<>(mImage),
-                getContext()).execute();
+        if(fileUri == null) {
+            mImage.setImageResource(R.drawable.image_placeholder);
+        } else {
+            new AsyncImageLoader(fileUri.toString(),
+                    new WeakReference<>(mImage),
+                    getContext()).execute();
+        }
     }
 
     @Override
@@ -202,6 +259,17 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     public void showMaxUser(int maxUser) {
 
         mMaxUser.setText("" + maxUser + " people");
+    }
+
+    @Override
+    public void showMessage(String message) {
+
+        Snackbar snackbar = Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT);
+        TextView view = (TextView) snackbar.getView().findViewById(
+                android.support.design.R.id.snackbar_text);
+        view.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 
     @Override
@@ -296,11 +364,20 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
                 long time = hour_picker.getValue() * 3600000 +
                         minute_picker.getValue() * 60000;
 
+                mDuration.setEnabled(true);
                 mPresenter.onDurationSelected(time);
             }
         });
 
         builder.setNegativeButton("Cancel", null);
+
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+                mDuration.setEnabled(true);
+            }
+        });
 
         builder.show();
     }
@@ -335,6 +412,8 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
+        builder.setTitle("Set Max Participants");
+
         final NumberPicker picker = new NumberPicker(getContext());
         picker.setMinValue(2);
         picker.setMaxValue(32);
@@ -345,11 +424,20 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                mMaxUser.setEnabled(true);
                 mPresenter.onMaxUserSelected(picker.getValue());
             }
         });
 
         builder.setNegativeButton("Cancel", null);
+
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+                mMaxUser.setEnabled(true);
+            }
+        });
 
         builder.show();
     }
@@ -374,13 +462,21 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                mCategory.setEnabled(true);
                 mPresenter.onCategorySelected(categories[picker.getValue()]);
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton("Cancel",  null);
+
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+                mCategory.setEnabled(true);
+            }
+        });
 
         builder.show();
     }
-
 }
