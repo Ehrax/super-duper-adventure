@@ -166,7 +166,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         mView.showMessage("Event created!");
 
         mImageUri = null;
-        mMaxUser = 5;
+        mMaxUser = 4;
         mCategory = "Ausgehen";
         mDuration = 3600000 * 2;
         mLocation = null;
