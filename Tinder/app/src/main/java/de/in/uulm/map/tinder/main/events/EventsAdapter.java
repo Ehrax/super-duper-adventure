@@ -12,31 +12,22 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 
 /**
  * Created by Jona on 04.05.17.
  */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
 
-    final public RealmResults<Event> mEvents;
+    final public ArrayList<Event> mEvents;
 
     final private EventsContract.EventsPresenter mPresenter;
 
-    public EventsAdapter(RealmResults<Event> events, EventsContract.EventsPresenter presenter) {
+    public EventsAdapter(EventsContract.EventsPresenter presenter) {
 
-        mEvents = events;
+        mEvents = new ArrayList<>();
         mPresenter = presenter;
-
-        mEvents.addChangeListener(new RealmChangeListener<RealmResults<Event>>() {
-            @Override
-            public void onChange(RealmResults<Event> element) {
-                notifyDataSetChanged();
-            }
-        });
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
