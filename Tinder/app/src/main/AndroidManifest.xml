@@ -18,12 +18,19 @@
                 android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".groupchat.GroupChatActivity" />
         <activity android:name=".login.LoginActivity"></activity>
+
+        <activity
+                android:name=".settings.SettingsActivity"
+                android:label="@string/settings"
+                android:parentActivityName=".main.MainActivity">
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

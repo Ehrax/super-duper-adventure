@@ -30,7 +30,6 @@ public class LoginFragment extends Fragment implements LoginContract.View {
         txtViewLogo.setTypeface(Typeface.createFromAsset(getContext()
                 .getAssets(),"Youth_and_Beauty.ttf"));
         return view;
-
     }
 
 
