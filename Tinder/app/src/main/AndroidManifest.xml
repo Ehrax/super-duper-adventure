@@ -18,6 +18,12 @@
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".groupchat.GroupChatActivity" />
         <activity android:name=".login.LoginActivity"></activity>
+
+        <activity
+                android:name=".settings.SettingsActivity"
+                android:label="@string/settings"
+                android:parentActivityName=".main.MainActivity">
+        </activity>
     </application>
 
 </manifest>

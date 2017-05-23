@@ -1,6 +1,11 @@
 package de.in.uulm.map.tinder.main;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.MenuItem;
+
+import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.settings.SettingsActivity;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -8,8 +13,11 @@ import android.view.MenuItem;
 
 public class MainPresenter implements MainContract.MainPresenter {
 
-    public MainPresenter() {
+    Context mContext;
 
+    public MainPresenter(Context context) {
+
+        mContext = context;
     }
 
     @Override
@@ -25,6 +33,15 @@ public class MainPresenter implements MainContract.MainPresenter {
      */
     @Override
     public boolean topNavOnOptionSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.top_nav_settings: {
+                Intent intent = new Intent(mContext, SettingsActivity.class);
+                mContext.startActivity(intent);
+
+                return true;
+            }
+        }
 
         return false;
     }
