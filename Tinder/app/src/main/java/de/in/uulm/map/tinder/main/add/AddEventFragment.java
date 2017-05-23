@@ -173,7 +173,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     public void showImage(Uri fileUri) {
 
         new AsyncImageLoader(fileUri.toString(),
-                new WeakReference<ImageView>(mImage),
+                new WeakReference<>(mImage),
                 getContext()).execute();
     }
 

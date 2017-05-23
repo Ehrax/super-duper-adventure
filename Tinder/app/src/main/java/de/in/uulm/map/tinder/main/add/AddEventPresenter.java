@@ -3,6 +3,7 @@ package de.in.uulm.map.tinder.main.add;
 import com.google.android.gms.location.places.Place;
 
 import android.net.Uri;
+import android.os.Bundle;
 
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Image;
@@ -38,10 +39,13 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void start() {
 
-        mView.showImage(mImageUri);
+        if(mImageUri != null) {
+            mView.showImage(mImageUri);
+        }
         mView.showDuration(mDuration);
         mView.showCategory(mCategory);
         mView.showMaxUser(mMaxUser);
+        mView.showLocation("");
     }
 
     @Override
@@ -122,8 +126,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         event.end_date = new Date().getTime() + mDuration;
         event.category = mCategory;
         event.image = image;
+        event.max_user_count = mMaxUser;
         event.latitude = mLocation.getLatLng().latitude;
         event.longitude = mLocation.getLatLng().longitude;
-
     }
 }

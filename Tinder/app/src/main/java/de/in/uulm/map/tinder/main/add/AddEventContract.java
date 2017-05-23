@@ -3,6 +3,7 @@ package de.in.uulm.map.tinder.main.add;
 import com.google.android.gms.location.places.Place;
 
 import android.net.Uri;
+import android.os.Bundle;
 
 import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
