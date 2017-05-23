@@ -16,6 +16,7 @@ public class ChatPresenter implements ChatContract.Presenter {
 
     public ChatPresenter(ChatContract.View view, Event event) {
 
+
         mView = view;
         mEvent = event;
     }
