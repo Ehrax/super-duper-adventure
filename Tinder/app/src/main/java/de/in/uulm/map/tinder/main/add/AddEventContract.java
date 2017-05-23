@@ -21,6 +21,10 @@ public interface AddEventContract {
         void showCategory(String category);
         void showLocation(String locationName);
         void showMaxUser(int maxUser);
+        void showTitle(String title);
+        void showDescription(String description);
+        void setEnableCreateButton(boolean enabled);
+        void showMessage(String message);
 
         String getTitle();
         String getDescription();
@@ -28,6 +32,7 @@ public interface AddEventContract {
 
     interface Presenter extends BasePresenter {
 
+        void checkEnableCreateButton();
         void onImageClicked();
         void onDurationClicked();
         void onLocationClicked();

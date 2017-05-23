@@ -2,8 +2,10 @@ package de.in.uulm.map.tinder.main.add;
 
 import com.google.android.gms.location.places.Place;
 
+import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Image;
@@ -40,13 +42,26 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void start() {
 
-        if(mImageUri != null) {
-            mView.showImage(mImageUri);
-        }
+        mView.showTitle("");
+        mView.showDescription("");
+        mView.showImage(mImageUri);
         mView.showDuration(mDuration);
         mView.showCategory(mCategory);
         mView.showMaxUser(mMaxUser);
         mView.showLocation("");
+    }
+
+    public void checkEnableCreateButton() {
+
+        boolean enabled = true;
+        enabled &= mCategory != null;
+        enabled &= mDuration != -1;
+        enabled &= mLocation != null;
+        enabled &= mMaxUser != -1;
+        enabled &= !mView.getDescription().isEmpty();
+        enabled &= !mView.getTitle().isEmpty();
+
+        mView.setEnableCreateButton(enabled);
     }
 
     @Override
@@ -58,7 +73,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onDurationClicked() {
 
-       mBackend.selectDuration();
+        mBackend.selectDuration();
     }
 
     @Override
@@ -84,6 +99,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         mImageUri = imageUri;
         mView.showImage(mImageUri);
+        checkEnableCreateButton();
     }
 
     @Override
@@ -91,14 +107,29 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         mDuration = time;
         mView.showDuration(mDuration);
+        checkEnableCreateButton();
     }
 
     @Override
     public void onLocationSelected(Place location) {
 
         mLocation = location;
-        mView.showLocation(mLocation.getName().toString() + ", "
-                + mLocation.getAddress().toString());
+
+        String name = mLocation.getName() == null ? "" :
+                mLocation.getName().toString();
+        String address = mLocation.getAddress() == null ? "" :
+                ", " + mLocation.getAddress().toString();
+
+        String string = name + address;
+
+        if(string.isEmpty()) {
+            string = "" + location.getLatLng().latitude + ", " +
+                    location.getLatLng().longitude;
+        }
+
+        mView.showLocation(string);
+
+        checkEnableCreateButton();
     }
 
     @Override
@@ -106,6 +137,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         mMaxUser = maxUser;
         mView.showMaxUser(mMaxUser);
+        checkEnableCreateButton();
     }
 
     @Override
@@ -113,13 +145,14 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         mCategory = category;
         mView.showCategory(mCategory);
+        checkEnableCreateButton();
     }
 
     @Override
     public void onCreateClicked() {
 
         Image image = new Image();
-        image.path = mImageUri.toString();
+        image.path = mImageUri == null ? null : mImageUri.toString();
 
         Event event = new Event();
         event.title = mView.getTitle();
@@ -132,5 +165,21 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         event.longitude = mLocation.getLatLng().longitude;
 
         DbMock.getInstance().addEvent(event);
+
+        mView.showMessage("Event created!");
+
+        mImageUri = null;
+        mMaxUser = 4;
+        mCategory = "Ausgehen";
+        mDuration = 3600000 * 2;
+        mLocation = null;
+
+        mView.showTitle("");
+        mView.showDescription("");
+        mView.showImage(mImageUri);
+        mView.showDuration(mDuration);
+        mView.showCategory(mCategory);
+        mView.showMaxUser(mMaxUser);
+        mView.showLocation("");
     }
 }
