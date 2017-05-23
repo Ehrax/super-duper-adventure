@@ -1,5 +1,11 @@
 package de.in.uulm.map.tinder.main.add;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,9 +25,11 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
@@ -39,21 +47,27 @@ import java.util.List;
 
 public class AddEventFragment extends Fragment implements AddEventContract.View, AddEventContract.Backend {
 
-    public static final int IMAGE_REQ_CODE = 1;
+    private static final int IMAGE_REQ_CODE = 1;
 
-    public AddEventContract.Presenter mPresenter;
+    private static final int LOCATION_REQ_CODE = 2;
 
-    public ImageView mImage;
+    private AddEventContract.Presenter mPresenter;
 
-    public EditText mTitle;
+    private ImageView mImage;
 
-    public EditText mDescription;
+    private EditText mTitle;
 
-    public EditText mDuration;
+    private EditText mDescription;
 
-    public EditText mLocation;
+    private EditText mDuration;
 
-    public EditText mCategory;
+    private EditText mLocation;
+
+    private EditText mMaxUser;
+
+    private EditText mCategory;
+
+    private Button mCreate;
 
     private String mLastImagePath;
 
@@ -71,6 +85,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         View view = inflater.inflate(
                 R.layout.fragment_add_event, container, false);
 
+
         mImage = (ImageView) view.findViewById(R.id.add_image);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +93,9 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
                 mPresenter.onImageClicked();
             }
         });
+
+        mTitle = (EditText) view.findViewById(R.id.add_title);
+        mDescription = (EditText) view.findViewById(R.id.add_description);
 
         mDuration = (EditText)  view.findViewById(R.id.add_time);
         mDuration.setOnClickListener(new View.OnClickListener() {
@@ -91,9 +109,36 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mPresenter.onLocationClicked();
             }
         });
+
+        mMaxUser = (EditText)  view.findViewById(R.id.add_max_users);
+        mMaxUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mPresenter.onMaxUserClicked();
+            }
+        });
+
+        mCategory = (EditText) view.findViewById(R.id.add_category);
+        mCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onCategoryClicked();
+            }
+        });
+
+        mCreate = (Button) view.findViewById(R.id.add_btn_create);
+        mCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.onCreateClicked();
+            }
+        });
+
+        mPresenter.start();
 
         return view;
     }
@@ -116,6 +161,12 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             mPresenter.onImageSelected(data.getData());
             mLastImagePath = null;
         }
+
+        if(requestCode == LOCATION_REQ_CODE && resultCode == Activity.RESULT_OK) {
+
+            Place place = PlacePicker.getPlace(getContext(), data);
+            mPresenter.onLocationSelected(place);
+        }
     }
 
     @Override
@@ -133,6 +184,36 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         long minutes = (duration % 3600000) / 60000;
 
         mDuration.setText(String.format("%02d:%02d", hours, minutes));
+    }
+
+    @Override
+    public void showCategory(String category) {
+
+        mCategory.setText(category);
+    }
+
+    @Override
+    public void showLocation(String locationName) {
+
+        mLocation.setText(locationName);
+    }
+
+    @Override
+    public void showMaxUser(int maxUser) {
+
+        mMaxUser.setText("" + maxUser + " people");
+    }
+
+    @Override
+    public String getTitle() {
+
+        return mTitle.getText().toString();
+    }
+
+    @Override
+    public String getDescription() {
+
+        return mDescription.getText().toString();
     }
 
     @Override
@@ -188,6 +269,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         startActivityForResult(chooser_intent, IMAGE_REQ_CODE);
     }
 
+    @Override
     public void selectDuration() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -201,9 +283,9 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         final NumberPicker minute_picker =
                 (NumberPicker) view.findViewById(R.id.minute_picker);
 
-        hour_picker.setMaxValue(24);
+        hour_picker.setMaxValue(23);
         hour_picker.setMinValue(0);
-        minute_picker.setMaxValue(60);
+        minute_picker.setMaxValue(59);
         minute_picker.setMinValue(0);
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
@@ -218,14 +300,85 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-        {
+        builder.setNegativeButton("Cancel", null);
+
+        builder.show();
+    }
+
+    @Override
+    public void selectLocation() {
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            return;
+        }
+
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            Intent intent = builder.build(getActivity());
+            startActivityForResult(intent, LOCATION_REQ_CODE);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            GooglePlayServicesUtil
+                    .getErrorDialog(e.getConnectionStatusCode(), getActivity(), 0);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Toast.makeText(getContext(), "Google Services not available!",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void selectMaxUser() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        final NumberPicker picker = new NumberPicker(getContext());
+        picker.setMinValue(2);
+        picker.setMaxValue(32);
+
+        builder.setView(picker);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                return;
+            public void onClick(DialogInterface dialog, int which) {
+
+                mPresenter.onMaxUserSelected(picker.getValue());
             }
         });
+
+        builder.setNegativeButton("Cancel", null);
+
+        builder.show();
+    }
+
+    @Override
+    public void selectCategory() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        final String categories[] = new String[] {
+                "Sport", "Erholung", "Ausgehen", "Kultur", "Sonstiges"};
+
+        final NumberPicker picker = new NumberPicker(getContext());
+        picker.setMinValue(0);
+        picker.setMaxValue(categories.length - 1);
+        picker.setDisplayedValues(categories);
+
+        builder.setView(picker);
+        builder.setTitle("Set Category");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mPresenter.onCategorySelected(categories[picker.getValue()]);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
 
         builder.show();
     }
