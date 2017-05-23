@@ -18,9 +18,6 @@ import de.in.uulm.map.tinder.main.events.EventsAdapter;
 import de.in.uulm.map.tinder.main.events.EventsFragment;
 import de.in.uulm.map.tinder.main.events.EventsPresenter;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-
 /**
  * Created by Jona on 21.05.2017.
  */
@@ -81,29 +78,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        Realm realm = Realm.getDefaultInstance();
-
         EventsPresenter eventsPresenter = new EventsPresenter(this);
 
         EventsFragment nearbyFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
-        RealmResults<Event> nearbyEvents = realm.where(Event.class)
-                .findAll();
-        nearbyFragment.setAdapter(new EventsAdapter(nearbyEvents, eventsPresenter));
+        nearbyFragment.setAdapter(new EventsAdapter(eventsPresenter));
 
         EventsFragment joinedFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_JOINED);
-        RealmResults<Event> joinedEvents = realm.where(Event.class)
-                .equalTo("participants.id", 1)
-                .findAll();
-        joinedFragment.setAdapter(new EventsAdapter(joinedEvents, eventsPresenter));
+        joinedFragment.setAdapter(new EventsAdapter(eventsPresenter));
 
         EventsFragment createdFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
-        RealmResults<Event> createdEvents = realm.where(Event.class)
-                .equalTo("creator.id", 1)
-                .findAll();
-        createdFragment.setAdapter(new EventsAdapter(createdEvents, eventsPresenter));
+        createdFragment.setAdapter(new EventsAdapter(eventsPresenter));
 
         eventsPresenter.setNearbyView(nearbyFragment);
         eventsPresenter.setJoinedView(nearbyFragment);

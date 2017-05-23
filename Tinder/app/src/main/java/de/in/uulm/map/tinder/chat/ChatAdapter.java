@@ -14,11 +14,9 @@ import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Message;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
-import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmResults;
+import java.util.List;
 
 /**
  * Created by Jona on 08.05.17.
@@ -26,24 +24,18 @@ import io.realm.RealmResults;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
-    private final RealmList<Message> mMessages;
+    private final List<Message> mMessages;
 
     private final ChatContract.Presenter mPresenter;
 
     public ChatAdapter(Event event, ChatContract.Presenter presenter) {
 
         mMessages = event.messages;
-        mMessages.sort("timestamp");
+
+        // TODO: make sorting work again
+        // mMessages.sort("timestamp");
 
         mPresenter = presenter;
-
-        mMessages.addChangeListener(new RealmChangeListener<RealmList<Message>>() {
-            @Override
-            public void onChange(RealmList<Message> element) {
-
-                notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
