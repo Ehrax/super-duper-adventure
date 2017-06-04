@@ -279,6 +279,21 @@ namespace TinderServer2.Controllers
             return Ok(eventModel);
         }
 
+        [Route("api/event/autodelete")]
+        [HttpDelete]
+        [ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> AutoDeleteEvent()
+        {
+            var EventsToDelete = db.Events.Where(e => e.EndDate.CompareTo(DateTime.Now) <= 0).ToList();
+            foreach (var currentEvent in EventsToDelete)
+            {
+                db.Events.Remove(currentEvent);
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
