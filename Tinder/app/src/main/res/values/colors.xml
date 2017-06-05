@@ -9,4 +9,5 @@
     <color name="color_chat_bubble_other">#dedede</color>
     <color name="color_chat_bubble_own">#b3e5fc</color>
     <color name="login_text_color">#ffffff</color>
+    <color name="color_warnings">#D32F2F</color>
 </resources>
