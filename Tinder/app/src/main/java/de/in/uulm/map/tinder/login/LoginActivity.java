@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.main.MainActivity;
+import de.in.uulm.map.tinder.register.RegisterPresenter;
 import de.in.uulm.map.tinder.util.ActivityUtils;
 import de.in.uulm.map.tinder.util.DateHelper;
 
@@ -20,6 +21,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Ba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_frame_layout);
 
+        //Check if we already have a valid token
         SharedPreferences sharedPref = getSharedPreferences(getString(R
                 .string.store_account),MODE_PRIVATE);
 
@@ -34,6 +36,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Ba
             }
         }
 
+
         LoginFragment fragment = (LoginFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_frame);
 
@@ -46,6 +49,15 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Ba
         LoginPresenter presenter = new LoginPresenter(fragment,
                 getApplicationContext(),this,this);
         fragment.setPresenter(presenter);
+
+        //Check if we come from the register page to login directly
+        Intent intent = getIntent();
+        if(intent.getStringExtra(RegisterPresenter.INTENT_EXTRA_USERNAME) !=
+                null && intent.getStringExtra(RegisterPresenter
+                .INTENT_EXTRA_PASSWORD) != null){
+            presenter.signIn(intent.getStringExtra(RegisterPresenter
+                    .INTENT_EXTRA_USERNAME),intent.getStringExtra(RegisterPresenter.INTENT_EXTRA_PASSWORD));
+        }
 
     }
 

@@ -12,7 +12,7 @@ import de.in.uulm.map.tinder.util.BaseView;
 public interface RegisterContract {
 
     interface View extends BaseView<Presenter>{
-
+        void showJSONRegisterError();
     }
 
     interface Presenter extends BasePresenter{

@@ -24,6 +24,7 @@
     <string name="password_warning">Your password has to contain at least
     6 characters.</string>
 
+
     <!-- top bar -->
     <string name="filter">Filter</string>
     <string name="settings">Settings</string>
@@ -33,6 +34,7 @@
     <!-- API URLS -->
     <string name="API_base">https://urban-action.max-karthan.de/TinderAPI</string>
     <string name="API_getToken">/token</string>
+    <string name="API_register">/api/account/register</string>
 
     <!-- Network -->
     <string name="no_connection">It seems like you´re not connected to

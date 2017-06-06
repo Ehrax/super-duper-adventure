@@ -239,10 +239,11 @@ public class RegisterFragment extends Fragment implements RegisterContract.View 
                     txtViewWarningPassword.setVisibility(View.VISIBLE);
                 }
                 if (EmailValidator.validate(editTxtEmail.getText().toString()
-                ) && editTxtConfirmPassword.toString().equals(editTxtPassword
-                        .getText().toString()) && !editTxtUsername.getText()
-                        .toString().isEmpty()) {
-                    
+                ) && editTxtConfirmPassword.getText().toString().equals
+                        (editTxtPassword
+                        .getText().toString()) && editTxtUsername.getText()
+                        .toString().length()>=3) {
+
                     mPresenter.signUp(editTxtEmail.getText().toString(), editTxtUsername
                                     .getText().toString(), editTxtPassword.getText().toString(),
                             editTxtConfirmPassword.getText().toString());
@@ -262,6 +263,10 @@ public class RegisterFragment extends Fragment implements RegisterContract.View 
 
     }
 
+    @Override
+    public void showJSONRegisterError(){
+
+    }
 
     @Override
     public void setPresenter(RegisterContract.Presenter presenter) {
