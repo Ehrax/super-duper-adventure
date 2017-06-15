@@ -7,6 +7,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import com.android.volley.toolbox.ImageLoader;
+
+import de.in.uulm.map.tinder.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -47,14 +51,11 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
         }
 
         if(mUri.contains("http://")) {
-
-            // TODO: uncomment this when volley is added to the project
-            /*
             Network.getInstance(mContext)
                     .getImageLoader()
-                    .get(mUri, ImageLoader.getImageListener(
-                            mView.get(), R.drawable.empty, R.drawable.empty));
-                           */
+                    .get(mUri, ImageLoader.getImageListener(mView.get(),
+                            R.drawable.image_placeholder,
+                            R.drawable.image_placeholder));
         }
 
         view.get().setTag(uri);
@@ -145,7 +146,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
     private InputStream getInputStream(String mUri) throws IOException {
 
         if (mUri.contains("android_asset")) {
-            return mContext.getAssets().open(mUri.substring(20));
+            return mContext.getAssets().open(mUri.substring(22));
         }
 
         if(mUri.contains("content://")) {

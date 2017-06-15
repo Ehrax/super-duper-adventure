@@ -12,11 +12,16 @@ import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.Image;
+import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.main.add.AddEventFragment;
 import de.in.uulm.map.tinder.main.add.AddEventPresenter;
 import de.in.uulm.map.tinder.main.events.EventsAdapter;
 import de.in.uulm.map.tinder.main.events.EventsFragment;
 import de.in.uulm.map.tinder.main.events.EventsPresenter;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        mPresenter = new MainPresenter(this,this);
+        mPresenter = new MainPresenter(this, this);
 
         final MainPageAdapter pageAdapter =
                 new MainPageAdapter(getSupportFragmentManager());
@@ -82,15 +87,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
         EventsFragment nearbyFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
-        nearbyFragment.setAdapter(new EventsAdapter(eventsPresenter));
+        nearbyFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         EventsFragment joinedFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_JOINED);
-        joinedFragment.setAdapter(new EventsAdapter(eventsPresenter));
+        joinedFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         EventsFragment createdFragment =
                 EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
-        createdFragment.setAdapter(new EventsAdapter(eventsPresenter));
+        createdFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         eventsPresenter.setNearbyView(nearbyFragment);
         eventsPresenter.setJoinedView(nearbyFragment);

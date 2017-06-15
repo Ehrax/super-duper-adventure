@@ -2,10 +2,12 @@ package de.in.uulm.map.tinder.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.MenuItem;
+
+import de.in.uulm.map.tinder.settings.SettingsActivity;
 import android.content.SharedPreferences;
 import android.view.MenuItem;
 
-import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.login.LoginActivity;
 
 /**
@@ -35,6 +37,13 @@ public class MainPresenter implements MainContract.MainPresenter {
      */
     @Override
     public boolean topNavOnOptionSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.top_nav_settings) {
+            Intent intent = new Intent(mContext, SettingsActivity.class);
+            mContext.startActivity(intent);
+            return true;
+        }
+
         if (item.getItemId() == R.id.top_nav_sign_out){
             SharedPreferences sharedPrefs = mContext.getSharedPreferences
                     (mContext.getString(R.string.store_account),Context
@@ -43,6 +52,7 @@ public class MainPresenter implements MainContract.MainPresenter {
             mBackend.startActivity(new Intent(mContext, LoginActivity.class));
             return true;
         }
+
         return false;
     }
 

@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Image;
+import de.in.uulm.map.tinder.main.DbMock;
 
 import java.util.Date;
 
@@ -154,6 +155,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         image.path = mImageUri == null ? null : mImageUri.toString();
 
         Event event = new Event();
+        event.creator = DbMock.getInstance().getCurrentUser();
+        event.participants.add(DbMock.getInstance().getCurrentUser());
         event.title = mView.getTitle();
         event.description = mView.getDescription();
         event.end_date = new Date().getTime() + mDuration;
@@ -162,6 +165,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
         event.max_user_count = mMaxUser;
         event.latitude = mLocation.getLatLng().latitude;
         event.longitude = mLocation.getLatLng().longitude;
+
+        DbMock.getInstance().addEvent(event);
 
         mView.showMessage("Event created!");
 
