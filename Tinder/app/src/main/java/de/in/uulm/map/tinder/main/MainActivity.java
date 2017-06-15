@@ -27,7 +27,7 @@ import java.util.Date;
  * Created by Jona on 21.05.2017.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainContract.Backend{
 
     private MainPresenter mPresenter;
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        mPresenter = new MainPresenter(this);
+        mPresenter = new MainPresenter(this, this);
 
         final MainPageAdapter pageAdapter =
                 new MainPageAdapter(getSupportFragmentManager());

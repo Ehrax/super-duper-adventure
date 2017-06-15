@@ -1,5 +1,7 @@
 package de.in.uulm.map.tinder.login;
 
+import android.content.Intent;
+
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
@@ -15,5 +17,12 @@ public interface LoginContract {
 
     interface Presenter extends BasePresenter {
 
+        void signIn(String password,String username);
+
+        void startRegisterActivity();
+    }
+
+    interface Backend{
+        void startActivity(Intent intent);
     }
 }

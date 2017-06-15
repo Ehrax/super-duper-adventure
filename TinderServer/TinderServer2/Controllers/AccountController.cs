@@ -26,7 +26,10 @@ namespace TinderServer2.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext db
+        {
+            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
+        }
 
         public AccountController()
         {
@@ -330,6 +333,10 @@ namespace TinderServer2.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (UserManager.FindByName(model.Name) != null)
+            {
+                return BadRequest("UsernameAlreadyInUse");
+            }
             var user = new ApplicationUser() {UserName = model.Name, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);

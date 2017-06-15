@@ -19,15 +19,19 @@ namespace TinderServer2.Models
         public long timeSpan { get; set; }
 
         [Required]
+        [Range (2,100)]
         public int MaxUsers { get; set; }
 
         [Required]
+        [Range(-90,90)]
         public double Latitude { get; set; }
 
         [Required]
+        [Range(-180,180)]
         public double Longitude { get; set; }
 
         [Required]
+        [Range (0,4)]
         public int Category { get; set; }
 
         public string ImageBase64 { get; set; }

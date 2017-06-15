@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main;
 
+import android.content.Intent;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.util.BasePresenter;
@@ -26,5 +27,9 @@ public interface MainContract {
         boolean topNavOnOptionSelected(MenuItem item);
 
         void onPageSelected();
-    };
+    }
+
+    interface Backend{
+        void startActivity(Intent intent);
+    }
 }
