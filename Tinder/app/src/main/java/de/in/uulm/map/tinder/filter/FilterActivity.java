@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.settings;
+package de.in.uulm.map.tinder.filter;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ import de.in.uulm.map.tinder.util.ActivityUtils;
  * Created by alexanderrasputin on 23.05.17.
  */
 
-public class SettingsActivity extends AppCompatActivity {
+public class FilterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -20,17 +20,17 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_frame_layout);
 
-        SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager()
+        FilterFragment fragment = (FilterFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_frame);
 
         if (fragment == null) {
-            fragment = new SettingsFragment();
+            fragment = new FilterFragment();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
                     fragment, R.id.content_frame);
 
         }
 
-        SettingsPresenter presenter = new SettingsPresenter(fragment);
+        FilterPresenter presenter = new FilterPresenter(this, fragment);
         fragment.setPresenter(presenter);
     }
 }

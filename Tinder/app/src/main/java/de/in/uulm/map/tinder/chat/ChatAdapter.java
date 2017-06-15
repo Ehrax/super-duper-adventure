@@ -1,7 +1,6 @@
 package de.in.uulm.map.tinder.chat;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
     public ChatAdapter(Event event, ChatContract.Presenter presenter) {
 
-        mMessages = event.messages;
+        mMessages = new ArrayList<>();
 
         // TODO: make sorting work again
         // mMessages.sort("timestamp");
@@ -60,7 +59,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 holder.mLayout.getLayoutParams();
 
-        if(message.creator.id == 1) {
+        // TODO: compare creator id to current locally stored id
+
+        if(message.creator.id == "") {
             params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
             holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_own);
         } else {

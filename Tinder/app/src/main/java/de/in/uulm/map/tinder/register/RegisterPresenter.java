@@ -1,6 +1,5 @@
 package de.in.uulm.map.tinder.register;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -16,14 +15,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.login.LoginActivity;
-import de.in.uulm.map.tinder.login.LoginPresenter;
-import de.in.uulm.map.tinder.util.Network;
+import de.in.uulm.map.tinder.network.Network;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**

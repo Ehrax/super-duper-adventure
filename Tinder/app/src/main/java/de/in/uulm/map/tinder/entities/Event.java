@@ -1,5 +1,7 @@
 package de.in.uulm.map.tinder.entities;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,27 +11,36 @@ import java.util.List;
 
 public class Event {
 
-    public long id;
+    @SerializedName("Id")
+    public String id;
 
+    @SerializedName("Title")
     public String title;
 
+    @SerializedName("Description")
     public String description;
 
-    public long end_date;
+    @SerializedName("EndDate")
+    public String end_date;
 
+    @SerializedName("MaxUsers")
     public int max_user_count;
 
+    @SerializedName("Longitude")
     public double longitude;
 
+    @SerializedName("Latitude")
     public double latitude;
 
+    @SerializedName("Category")
     public String category;
 
-    public Image image;
+    @SerializedName("EventImage")
+    public String image;
 
+    @SerializedName("Creator")
     public User creator;
 
+    @SerializedName("Members")
     public List<User> participants = new ArrayList<>();
-
-    public List<Message> messages = new ArrayList<>();
 }

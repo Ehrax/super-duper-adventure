@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.android.volley.toolbox.ImageLoader;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.network.Network;
 
 import java.io.IOException;
 import java.io.InputStream;

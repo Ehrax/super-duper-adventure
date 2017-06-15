@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.DbMock;
-import de.in.uulm.map.tinder.main.MainActivity;
 import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 /**
@@ -79,16 +77,7 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     @Override
     public void onFragmentBecomesVisible() {
 
-        String tag = this.getArguments().getString(MainPageAdapter.TAB_TITLE);
-        DbMock db = DbMock.getInstance();
-
-        if(tag.equals(TAB_NEARBY)) {
-            mAdapter.setEvents(db.getNearbyEvents());
-        } else if (tag.equals(TAB_JOINED)) {
-            mAdapter.setEvents(db.getJoinedEvents());
-        } else if (tag.endsWith(TAB_MY_EVENTS)) {
-            mAdapter.setEvents(db.getCreatedEvents());
-        }
+        mPresenter.loadEvents(this, mAdapter);
     }
 
     @Override

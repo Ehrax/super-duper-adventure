@@ -2,8 +2,10 @@ package de.in.uulm.map.tinder.main.events;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +16,8 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
-import de.in.uulm.map.tinder.main.DbMock;
-import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
-import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
@@ -92,20 +89,23 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        if(e.image != null && e.image.path != null) {
-            new AsyncImageLoader(e.image.path,
-                    new WeakReference<>(holder.mImage),
-                    mContext).execute();
+        if(e.image != null) {
+            byte[] bytes = Base64.decode(e.image, Base64.DEFAULT);
+            holder.mImage.setImageBitmap(
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
         }
 
-        long left = e.end_date - new Date().getTime();
+        // TODO: find out the time actually left
+
+        long left = 0; // e.end_date - new Date().getTime();
         long hours = left / 3600000;
         long minutes = (left % 3600000) / 60000;
 
         holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
 
-        final DbMock db = DbMock.getInstance();
-        final User user = db.getCurrentUser();
+        // TODO: Get real user ...
+
+        final User user = new User();
 
         holder.mJoinButton.setVisibility(
                 e.participants.contains(user) ? View.GONE : View.VISIBLE);
@@ -121,8 +121,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                db.deleteEvent(e);
-                setEvents(db.getCreatedEvents());
+                // TODO: Issue real delete request ...
             }
         });
 
@@ -130,8 +129,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                e.participants.add(user);
-                setEvents(db.getNearbyEvents());
+                // TODO: Issue real join request ...
             }
         });
 
@@ -139,8 +137,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                e.participants.remove(user);
-                setEvents(db.getJoinedEvents());
+                // TODO: Issue real leave request ...
             }
         });
 

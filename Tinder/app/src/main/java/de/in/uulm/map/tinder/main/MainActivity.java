@@ -11,17 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.Image;
-import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.main.add.AddEventFragment;
 import de.in.uulm.map.tinder.main.add.AddEventPresenter;
 import de.in.uulm.map.tinder.main.events.EventsAdapter;
 import de.in.uulm.map.tinder.main.events.EventsFragment;
 import de.in.uulm.map.tinder.main.events.EventsPresenter;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -119,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         /**
          * Here you may add more fragments!
          */
+
 
         viewPager.setAdapter(pageAdapter);
 

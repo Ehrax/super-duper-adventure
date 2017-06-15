@@ -2,14 +2,10 @@ package de.in.uulm.map.tinder.main.add;
 
 import com.google.android.gms.location.places.Place;
 
-import android.net.Network;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 
 import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.Image;
-import de.in.uulm.map.tinder.main.DbMock;
+import de.in.uulm.map.tinder.entities.User;
 
 import java.util.Date;
 
@@ -151,22 +147,28 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onCreateClicked() {
 
-        Image image = new Image();
-        image.path = mImageUri == null ? null : mImageUri.toString();
-
         Event event = new Event();
-        event.creator = DbMock.getInstance().getCurrentUser();
-        event.participants.add(DbMock.getInstance().getCurrentUser());
+
+        // TODO: get real user here ...
+
+        event.creator = new User();
+        event.participants.add(event.creator);
         event.title = mView.getTitle();
         event.description = mView.getDescription();
-        event.end_date = new Date().getTime() + mDuration;
+
+        // TODO: real time serialization ...
+
+        event.end_date = "" + new Date().getTime() + mDuration;
         event.category = mCategory;
-        event.image = image;
+
+        // TODO: decode real image here ...
+
+        event.image = "";
         event.max_user_count = mMaxUser;
         event.latitude = mLocation.getLatLng().latitude;
         event.longitude = mLocation.getLatLng().longitude;
 
-        DbMock.getInstance().addEvent(event);
+        // TODO: Send to server ...
 
         mView.showMessage("Event created!");
 

@@ -12,16 +12,13 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.main.MainActivity;
 import de.in.uulm.map.tinder.register.RegisterActivity;
-import de.in.uulm.map.tinder.util.Network;
-import de.in.uulm.map.tinder.util.NetworkHelper;
-
-import org.json.JSONObject;
+import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.network.NetworkHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,10 +96,12 @@ public class LoginPresenter implements LoginContract.Presenter {
                 @Override
                 public void onErrorResponse(VolleyError error) {
 
-                    //ToDO: propper error handling for wrong
-                    // username/password combination and server errors.
-                    Toast.makeText(mContext, error.getMessage(), Toast
-                            .LENGTH_LONG).show();
+                    JsonObject body = new JsonParser().parse(new String(
+                            error.networkResponse.data)).getAsJsonObject();
+
+                    String errorMsg = body.get("error_description").getAsString();
+
+                    Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }) {
                 @Override
