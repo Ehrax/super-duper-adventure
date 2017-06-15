@@ -79,5 +79,4 @@
             android:focusable="false"
             android:cursorVisible="false"/>
 
-
 </LinearLayout>
