@@ -1,0 +1,10 @@
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\bin\Debug\AutoDeleteEvents.exe.config
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\bin\Debug\AutoDeleteEvents.exe
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\bin\Debug\AutoDeleteEvents.pdb
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\obj\Debug\AutoDeleteEvents.csprojResolveAssemblyReference.cache
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\obj\Debug\AutoDeleteEvents.exe
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\obj\Debug\AutoDeleteEvents.pdb
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\bin\Debug\AutoDeleteEvents.exe.manifest
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\bin\Debug\AutoDeleteEvents.application
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\obj\Debug\AutoDeleteEvents.exe.manifest
+C:\Users\maxka\Documents\Visual Studio 2017\Projects\AutoDeleteEvents\AutoDeleteEvents\obj\Debug\AutoDeleteEvents.application
