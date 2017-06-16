@@ -16,6 +16,9 @@ import de.in.uulm.map.tinder.main.add.AddEventPresenter;
 import de.in.uulm.map.tinder.main.events.EventsAdapter;
 import de.in.uulm.map.tinder.main.events.EventsFragment;
 import de.in.uulm.map.tinder.main.events.EventsPresenter;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatAdapter;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatFragment;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatPresenter;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -113,7 +116,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         /**
          * Here you may add more fragments!
          */
+        GroupChatFragment groupChatFragment = GroupChatFragment.newInstance
+                (EventsFragment.TAB_GROUP_CHAT);
+        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(groupChatFragment);
+        groupChatFragment.setPresenter(groupChatPresenter);
+        GroupChatAdapter groupChatListAdapter = new GroupChatAdapter(groupChatPresenter);
+        groupChatFragment.setAdapter(groupChatListAdapter);
 
+        pageAdapter.addFragment(groupChatFragment, R.id.bottom_nav_chat);
 
         viewPager.setAdapter(pageAdapter);
 

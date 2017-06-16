@@ -23,6 +23,7 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     public static final String TAB_NEARBY = "Nearby";
     public static final String TAB_JOINED = "Joined";
     public static final String TAB_MY_EVENTS = "My Events";
+    public static final String TAB_GROUP_CHAT = "Group Chat";
 
     private EventsContract.EventsPresenter mPresenter;
 

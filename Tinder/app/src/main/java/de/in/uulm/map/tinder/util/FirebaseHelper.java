@@ -28,7 +28,7 @@ public class FirebaseHelper {
      *
      * @param event see @Event.class
      */
-    private void createGroup(Event event) {
+    private void createGroup(Event event, long timestamp) {
 
         DatabaseReference root = mDatabase.getRoot();
 
@@ -44,7 +44,8 @@ public class FirebaseHelper {
      * @param message the message the user wants to send
      * @param eventId the event id the user is writing to
      */
-    private void writeMessageToGroup(User user, String message, long eventId) {
+    private void writeMessageToGroup(User user, String message, long eventId,
+                                     long timestamp) {
 
         DatabaseReference chat = mDatabase.child("room-id-" + eventId);
 

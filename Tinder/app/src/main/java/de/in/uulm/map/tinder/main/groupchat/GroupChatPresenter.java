@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.groupchat;
+package de.in.uulm.map.tinder.main.groupchat;
 
 /**
  * Created by alexanderrasputin on 11.05.17.

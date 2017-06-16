@@ -48,8 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Jona on 21.05.2017.
- */
+ * Created by Jona on 21.05.2017. */
 
 public class AddEventFragment extends Fragment implements AddEventContract.View, AddEventContract.Backend {
 

@@ -1,5 +1,6 @@
-package de.in.uulm.map.tinder.groupchat;
+package de.in.uulm.map.tinder.main.groupchat;
 
+import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
@@ -11,6 +12,6 @@ public class GroupChatContract {
 
     interface  Presenter extends BasePresenter{}
 
-    interface View extends BaseView<Presenter> { }
+    interface View extends MainContract.MainView<Presenter> { }
 
 }
