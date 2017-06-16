@@ -44,12 +44,12 @@ namespace TinderServer2.Controllers
         /// <param name="latitude"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public IQueryable<EventModel> GetEvents(string category="all",double longitude=-181,double latitude=-91,int distance = 5000)
+        public List<EventModel> GetEvents(string category="all",double longitude=-181,double latitude=-91,int distance = 5000)
         {
-            IQueryable<EventModel> eventList = db.Events;
+            var eventList = db.Events.ToList();
             if (longitude >= -180 && latitude >= -90 && longitude<=180 && latitude<=90)
             {
-                eventList = db.Events.Where(e =>
+                eventList = db.Events.ToList().Where(e =>
                         GreatCircleDistance.CalculateDistance(new Location
                         {
                             Longitude = e.Longitude,
@@ -59,21 +59,21 @@ namespace TinderServer2.Controllers
                             Longitude = longitude,
                             Latitude = latitude
                         }) <= distance
-                    );
+                    ).ToList();
             }
             
             switch (category.ToLower())
             {
                 case "all": return eventList;
-                case "sport": return eventList.Where(e => e.Category == Categories.Category.Sport);
-                case "erholung": return eventList.Where(e => e.Category == Categories.Category.Erholung);
-                case "kultur": return eventList.Where(e => e.Category == Categories.Category.Kultur);
-                case "ausgehen": return eventList.Where(e => e.Category == Categories.Category.Ausgehen);
-                case "sonstiges": return eventList.Where(e => e.Category == Categories.Category.Sonstiges);
+                case "sport": return eventList.Where(e => e.Category == Categories.Category.Sport).ToList();
+                case "erholung": return eventList.Where(e => e.Category == Categories.Category.Erholung).ToList();
+                case "kultur": return eventList.Where(e => e.Category == Categories.Category.Kultur).ToList();
+                case "ausgehen": return eventList.Where(e => e.Category == Categories.Category.Ausgehen).ToList();
+                case "sonstiges": return eventList.Where(e => e.Category == Categories.Category.Sonstiges).ToList();
+                default: return eventList;
 
             }
             
-            return db.Events;
         }
 
         /// <summary>
