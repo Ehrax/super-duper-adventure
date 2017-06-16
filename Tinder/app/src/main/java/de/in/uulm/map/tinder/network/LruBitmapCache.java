@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.util;
+package de.in.uulm.map.tinder.network;
 
 /**
  * Created by Jona on 22.01.2017.

@@ -1,7 +1,6 @@
 package de.in.uulm.map.tinder.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Jona on 01.05.2017.
@@ -9,11 +8,12 @@ import java.util.List;
 
 public class User {
 
-    public long id;
+    @SerializedName("Id")
+    public String id;
 
+    @SerializedName("UserName")
     public String name;
 
-    public Image image;
-
-    public List<Event> events = new ArrayList<>();
+    @SerializedName("UserImage")
+    public String image;
 }

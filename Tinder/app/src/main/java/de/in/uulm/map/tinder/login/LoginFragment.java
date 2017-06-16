@@ -61,7 +61,6 @@ public class LoginFragment extends Fragment implements LoginContract.View {
         });
 
         return view;
-
     }
 
 

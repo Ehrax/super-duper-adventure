@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.util;
+package de.in.uulm.map.tinder.network;
 
 import android.content.Context;
 

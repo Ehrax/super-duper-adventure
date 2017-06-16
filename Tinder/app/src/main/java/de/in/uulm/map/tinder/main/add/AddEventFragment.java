@@ -22,7 +22,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -39,6 +38,7 @@ import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
+import de.in.uulm.map.tinder.util.PickerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -95,6 +95,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mPresenter.onImageClicked();
             }
         });
@@ -123,10 +124,11 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mDescription = (EditText) view.findViewById(R.id.add_description);
         mDescription.addTextChangedListener(watcher);
 
-        mDuration = (EditText)  view.findViewById(R.id.add_time);
+        mDuration = (EditText) view.findViewById(R.id.add_time);
         mDuration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mDuration.setEnabled(false);
                 mPresenter.onDurationClicked();
             }
@@ -136,12 +138,13 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mLocation.setEnabled(false);
                 mPresenter.onLocationClicked();
             }
         });
 
-        mMaxUser = (EditText)  view.findViewById(R.id.add_max_users);
+        mMaxUser = (EditText) view.findViewById(R.id.add_max_users);
         mMaxUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +168,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mPresenter.onCreateClicked();
             }
         });
@@ -188,15 +192,15 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(requestCode == IMAGE_REQ_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == IMAGE_REQ_CODE && resultCode == Activity.RESULT_OK) {
             mPresenter.onImageSelected(data.getData());
             mLastImagePath = null;
         }
 
-        if(requestCode == LOCATION_REQ_CODE) {
+        if (requestCode == LOCATION_REQ_CODE) {
             mLocation.setEnabled(true);
 
-            if(resultCode == Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
 
                 Place place = PlacePicker.getPlace(getContext(), data);
                 mPresenter.onLocationSelected(place);
@@ -225,7 +229,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     @Override
     public void showImage(Uri fileUri) {
 
-        if(fileUri == null) {
+        if (fileUri == null) {
             mImage.setImageResource(R.drawable.image_placeholder);
         } else {
             new AsyncImageLoader(fileUri.toString(),
@@ -356,11 +360,10 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         minute_picker.setMaxValue(59);
         minute_picker.setMinValue(0);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-        {
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
+            public void onClick(DialogInterface dialog, int which) {
+
                 long time = hour_picker.getValue() * 3600000 +
                         minute_picker.getValue() * 60000;
 
@@ -445,38 +448,22 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     @Override
     public void selectCategory() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        PickerFactory.categoryPicker(getContext(),
+                new PickerFactory.OnConfirmListener<String>() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, String value) {
 
-        final String categories[] = new String[] {
-                "Sport", "Erholung", "Ausgehen", "Kultur", "Sonstiges"};
+                        mCategory.setEnabled(true);
+                        mPresenter.onCategorySelected(value);
+                    }
+                },
+                null,
+                new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
 
-        final NumberPicker picker = new NumberPicker(getContext());
-        picker.setMinValue(0);
-        picker.setMaxValue(categories.length - 1);
-        picker.setDisplayedValues(categories);
-
-        builder.setView(picker);
-        builder.setTitle("Set Category");
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                mCategory.setEnabled(true);
-                mPresenter.onCategorySelected(categories[picker.getValue()]);
-            }
-        });
-
-        builder.setNegativeButton("Cancel",  null);
-
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-
-                mCategory.setEnabled(true);
-            }
-        });
-
-        builder.show();
+                        mCategory.setEnabled(true);
+                    }
+                });
     }
 }
