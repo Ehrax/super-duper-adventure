@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.login;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -101,7 +102,12 @@ public class LoginPresenter implements LoginContract.Presenter {
 
                     //ToDO: propper error handling for wrong
                     // username/password combination and server errors.
-                    Toast.makeText(mContext, error.getMessage(), Toast
+                    JsonObject body = new Gson().fromJson(new String(error
+                                    .networkResponse
+                                    .data),
+                            JsonObject.class);
+                    Toast.makeText(mContext, body.toString().replace("{", "")
+                            .replace("}", ""), Toast
                             .LENGTH_LONG).show();
                 }
             }) {
