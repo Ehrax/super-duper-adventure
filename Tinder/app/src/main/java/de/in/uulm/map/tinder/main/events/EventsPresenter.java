@@ -8,12 +8,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -75,12 +72,39 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
 
         int radius = prefs.getInt(FilterPresenter.EVENT_RADIUS, 1);
 
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_DENIED) {
+
+            ActivityCompat.requestPermissions((Activity) mContext,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            return;
+        }
+
+        LocationManager locationManager = (LocationManager)
+                mContext.getSystemService(Context.LOCATION_SERVICE);
+
+        // TODO: trigger real location updates here and
+        // replace null test and default coordinates
+
+        Location location = locationManager.
+                getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        double latitude = 48.4222129;
+        double longitude = 9.9575566;
+
+        if(location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_getEvent);
         url += "?category=" + category;
         url += "&distance=" + radius;
+        url += "&latitude=" + latitude;
+        url += "&longitude=" + longitude;
 
-        JwtRequest req = new JwtRequest(
+        final JwtRequest req = new JwtRequest(
                 Request.Method.GET,
                 url,
                 token,
@@ -103,45 +127,6 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         JwtRequest.showErrorToast(mContext, error);
                     }
                 });
-
-        LocationManager locationManager = (LocationManager)
-                mContext.getSystemService(Context.LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_DENIED) {
-
-            ActivityCompat.requestPermissions((Activity) mContext,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-            return;
-        }
-
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                Log.d("Test", "Test");
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                Log.d("Test", "Test");
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-                Log.d("Test", "Test");
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-                Log.d("Test", "Test");
-            }
-        });
-
-        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         Network.getInstance(mContext).getRequestQueue().add(req);
     }
