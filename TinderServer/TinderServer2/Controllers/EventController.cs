@@ -282,6 +282,7 @@ namespace TinderServer2.Controllers
         [Route("api/event/autodelete")]
         [HttpDelete]
         [ResponseType(typeof(void))]
+        [AllowAnonymous]
         public async Task<IHttpActionResult> AutoDeleteEvent()
         {
             var EventsToDelete = db.Events.Where(e => e.EndDate.CompareTo(DateTime.Now) <= 0).ToList();
@@ -289,6 +290,8 @@ namespace TinderServer2.Controllers
             {
                 db.Events.Remove(currentEvent);
             }
+
+            await db.SaveChangesAsync();
 
             return StatusCode(HttpStatusCode.NoContent);
 

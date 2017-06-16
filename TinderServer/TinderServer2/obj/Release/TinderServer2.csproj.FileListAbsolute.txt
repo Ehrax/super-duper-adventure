@@ -339,3 +339,5 @@ C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.csproj.GenerateResource.Cache
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.dll
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.pdb
+C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.fluentAPI.resources
+C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.manytomanyfix.resources
