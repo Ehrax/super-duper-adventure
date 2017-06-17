@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
         AddEventFragment addEventFragment = AddEventFragment.newInstance();
         AddEventPresenter addEventPresenter =
-                new AddEventPresenter(addEventFragment, addEventFragment);
+                new AddEventPresenter(this, addEventFragment, addEventFragment);
         addEventFragment.setPresenter(addEventPresenter);
 
         pageAdapter.addFragment(addEventFragment, R.id.bottom_nav_add);

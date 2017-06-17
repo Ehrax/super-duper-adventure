@@ -17,7 +17,10 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
@@ -89,15 +92,23 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
+        // TODO: do decoding in another thread
+
         if(e.image != null) {
             byte[] bytes = Base64.decode(e.image, Base64.DEFAULT);
             holder.mImage.setImageBitmap(
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
         }
 
-        // TODO: find out the time actually left
+        long end_date = new Date().getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        try {
+            end_date = format.parse(e.end_date).getTime();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
 
-        long left = 0; // e.end_date - new Date().getTime();
+        long left = end_date - new Date().getTime();
         long hours = left / 3600000;
         long minutes = (left % 3600000) / 60000;
 

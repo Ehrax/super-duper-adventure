@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.NumberPicker;
 
+import de.in.uulm.map.tinder.R;
+
 /**
  * Created by Jona on 15.06.2017.
  */
@@ -23,8 +25,8 @@ public class PickerFactory {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        final String categories[] = new String[]{
-                "Sport", "Erholung", "Ausgehen", "Kultur", "Sonstiges", "Keine"};
+        final String[] categories =
+                context.getResources().getStringArray(R.array.categories);
 
         final NumberPicker picker = new NumberPicker(context);
         picker.setMinValue(0);

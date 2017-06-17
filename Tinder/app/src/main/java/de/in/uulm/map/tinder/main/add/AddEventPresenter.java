@@ -2,12 +2,36 @@ package de.in.uulm.map.tinder.main.add;
 
 import com.google.android.gms.location.places.Place;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
+import de.in.uulm.map.tinder.network.JwtRequest;
+import de.in.uulm.map.tinder.network.Network;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -19,6 +43,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
     private final AddEventContract.Backend mBackend;
 
+    private final Context mContext;
+
     private Uri mImageUri = null;
 
     private long mDuration = 3600000 * 2;
@@ -29,8 +55,11 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
     private int mMaxUser = 5;
 
-    public AddEventPresenter(AddEventContract.View view, AddEventContract.Backend backend) {
+    public AddEventPresenter(Context context,
+                             AddEventContract.View view,
+                             AddEventContract.Backend backend) {
 
+        mContext = context;
         mView = view;
         mBackend = backend;
     }
@@ -118,7 +147,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         String string = name + address;
 
-        if(string.isEmpty()) {
+        if (string.isEmpty()) {
             string = "" + location.getLatLng().latitude + ", " +
                     location.getLatLng().longitude;
         }
@@ -147,28 +176,65 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onCreateClicked() {
 
-        Event event = new Event();
+        Map<String, String> params = new HashMap<>();
+        params.put("title", mView.getTitle());
+        params.put("description", mView.getDescription());
+        params.put("timespan", "" + mDuration);
+        params.put("maxUsers", "" + mMaxUser);
 
-        // TODO: get real user here ...
+        final List<String> categories = Arrays.asList(
+                mContext.getResources().getStringArray(R.array.categories));
 
-        event.creator = new User();
-        event.participants.add(event.creator);
-        event.title = mView.getTitle();
-        event.description = mView.getDescription();
+        params.put("category", "" + categories.indexOf(mCategory));
+        params.put("latitude", "" + mLocation.getLatLng().latitude);
+        params.put("longitude", "" + mLocation.getLatLng().longitude);
 
-        // TODO: real time serialization ...
+        // TODO: put this in extra thread, terrible slow! sad!
 
-        event.end_date = "" + new Date().getTime() + mDuration;
-        event.category = mCategory;
+        try {
+            Bitmap bitmap = BitmapFactory.decodeStream(
+                    mContext.getContentResolver().openInputStream(mImageUri));
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            byte[] array = out.toByteArray();
+            String encoded = Base64.encodeToString(array, Base64.DEFAULT);
+            params.put("imagebase64", encoded);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        // TODO: decode real image here ...
+        SharedPreferences accountPrefs = mContext.getSharedPreferences(
+        mContext.getString(R.string.store_account),
+        Context.MODE_PRIVATE);
 
-        event.image = "";
-        event.max_user_count = mMaxUser;
-        event.latitude = mLocation.getLatLng().latitude;
-        event.longitude = mLocation.getLatLng().longitude;
+        final String token = accountPrefs.getString(
+                mContext.getString(R.string.store_token), "");
 
-        // TODO: Send to server ...
+        String url = mContext.getString(R.string.API_base) +
+                mContext.getString(R.string.API_event);
+
+        JwtRequest req = new JwtRequest(
+                Request.Method.POST,
+                url,
+                token,
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+
+                        Log.d("Test", "Test");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        JwtRequest.showErrorToast(mContext, error);
+                    }
+                });
+
+        Network.getInstance(mContext).getRequestQueue().add(req);
+
+        // reset everything ...
 
         mView.showMessage("Event created!");
 

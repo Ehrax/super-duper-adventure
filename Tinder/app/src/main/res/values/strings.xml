@@ -38,7 +38,7 @@
     <string name="API_base">https://urban-action.max-karthan.de/TinderAPI</string>
     <string name="API_getToken">/token</string>
     <string name="API_register">/api/account/register</string>
-    <string name="API_getEvent">/api/Event</string>
+    <string name="API_event">/api/Event</string>
 
     <!-- Network -->
     <string name="no_connection">It seems like you´re not connected to
@@ -50,4 +50,14 @@
     <!-- SharedPreferences Keys -->
     <string name="store_token">TOKEN</string>
     <string name="store_token_expire">TOKEN_EXPIRE</string>
+
+    <!-- Categories -->
+    <string-array name="categories">
+        <item>Sport</item>
+        <item>Ausgehen</item>
+        <item>Erholung</item>
+        <item>Kultur</item>
+        <item>Sonstiges</item>
+        <item>Keine</item>
+    </string-array>
 </resources>

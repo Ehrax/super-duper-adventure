@@ -89,8 +89,13 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         Location location = locationManager.
                 getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+        /* FORE coordinates
         double latitude = 48.4222129;
         double longitude = 9.9575566;
+        */
+
+        double latitude = 75.25;
+        double longitude = 175.48;
 
         if(location != null) {
             latitude = location.getLatitude();
@@ -98,11 +103,11 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         }
 
         String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_getEvent);
+        url += mContext.getString(R.string.API_event);
         url += "?category=" + category;
         url += "&distance=" + radius;
-        url += "&latitude=" + latitude;
-        url += "&longitude=" + longitude;
+        // url += "&latitude=" + latitude;
+        // url += "&longitude=" + longitude;
 
         final JwtRequest req = new JwtRequest(
                 Request.Method.GET,

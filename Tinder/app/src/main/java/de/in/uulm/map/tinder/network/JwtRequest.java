@@ -21,6 +21,7 @@ public class JwtRequest extends Request<byte[]> {
     private final String mToken;
 
     private final Response.Listener<byte[]> mListener;
+    private Map<String, String> mParams;
 
     public JwtRequest(int method,
                       String url,
@@ -32,6 +33,18 @@ public class JwtRequest extends Request<byte[]> {
 
         mToken = token;
         mListener = listener;
+        mParams = new HashMap<>();
+    }
+
+    public void setParams(Map<String, String> params) {
+
+        mParams = params;
+    }
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+
+        return mParams;
     }
 
     @Override
