@@ -17,7 +17,9 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
+import de.in.uulm.map.tinder.util.AsyncImageDecoder;
 
+import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,13 +95,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        // TODO: do decoding in another thread
-
-        if(e.image != null) {
-            byte[] bytes = Base64.decode(e.image, Base64.DEFAULT);
-            holder.mImage.setImageBitmap(
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-        }
+        new AsyncImageDecoder(e.image, new WeakReference<>(holder.mImage))
+                .execute();
 
         long end_date = new Date().getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
@@ -133,20 +130,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mJoinButton.setVisibility(
                 currentUserParticipates ? View.GONE : View.VISIBLE);
         holder.mLeaveButton.setVisibility(
-                currentUserParticipates ? View.VISIBLE: View.GONE);
-        /*
-        holder.mLeaveButton.setVisibility(
                 currentUserParticipates && !e.creator.name.equals(userName)
                         ? View.VISIBLE : View.GONE);
-        */
         holder.mMapButton.setVisibility(
                 currentUserParticipates ? View.VISIBLE : View.GONE);
-
-        holder.mDeleteButton.setVisibility(View.GONE);
-        /*
         holder.mDeleteButton.setVisibility(
                 e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
-        */
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,9 +164,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // TODO: place marker at exact location
+
                 Uri gmmIntentUri = Uri.parse("geo:"+e.latitude+","+e.longitude);
+
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
+
                 if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
                     mContext.startActivity(mapIntent);
                 }

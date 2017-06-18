@@ -33,17 +33,32 @@ import java.util.List;
 
 public class EventsPresenter implements EventsContract.EventsPresenter {
 
+    private final Context mContext;
+
     private EventsContract.EventsView mNearbyView;
 
     private EventsContract.EventsView mJoinedView;
 
     private EventsContract.EventsView mCreatedView;
 
-    private final Context mContext;
-
     public EventsPresenter(Context context) {
 
         mContext = context;
+    }
+
+    public void setNearbyView(EventsContract.EventsView view) {
+
+        mNearbyView = view;
+    }
+
+    public void setJoinedView(EventsContract.EventsView view) {
+
+        mJoinedView = view;
+    }
+
+    public void setCreatedView(EventsContract.EventsView view) {
+
+        mCreatedView = view;
     }
 
     @Override
@@ -71,6 +86,8 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         } else {
             category = category.toLowerCase();
         }
+
+        // TODO: asking for permissions this way sucks!
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
@@ -117,7 +134,10 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         Gson gson = new Gson();
 
                         List<Event> events = Arrays.asList(gson.fromJson(
-                                        new String(response),Event[].class));
+                                new String(response), Event[].class));
+
+                        // TODO: it feels like those allocation are somewhat slow
+                        // maybe avoid creating the lists here
 
                         ArrayList<Event> nearbyEvents = new ArrayList<>();
                         ArrayList<Event> joinedEvents = new ArrayList<>();
@@ -222,20 +242,5 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
         Network.getInstance(mContext).getRequestQueue().add(req);
-    }
-
-    public void setNearbyView(EventsContract.EventsView view) {
-
-        mNearbyView = view;
-    }
-
-    public void setJoinedView(EventsContract.EventsView view) {
-
-        mJoinedView = view;
-    }
-
-    public void setCreatedView(EventsContract.EventsView view) {
-
-        mCreatedView = view;
     }
 }

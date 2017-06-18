@@ -16,6 +16,7 @@ import com.android.volley.VolleyError;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.util.AsyncImageEncoder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -169,11 +170,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onCreateClicked() {
 
-        // TODO: put this in extra thread, terribly slow! sad!
-
         try {
-
-            JSONObject obj = new JSONObject();
+            final JSONObject obj = new JSONObject();
 
             obj.put("title", mView.getTitle());
             obj.put("description", mView.getDescription());
@@ -187,42 +185,39 @@ public class AddEventPresenter implements AddEventContract.Presenter {
             obj.put("latitude", mLocation.getLatLng().latitude);
             obj.put("longitude", mLocation.getLatLng().longitude);
 
-            // encode image
+            new AsyncImageEncoder(mImageUri, mContext, new AsyncImageEncoder.OnFinishedListener() {
+                @Override
+                public void onFinished(String encoded) {
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
+                    try {
+                        obj.put("imagebase64", encoded);
+                    } catch (JSONException e) {
+                        mView.showMessage("Event not created!");
+                        e.printStackTrace();
+                        return;
+                    }
 
-            InputStream in = mContext.getContentResolver().openInputStream(mImageUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
+                    String url = mContext.getString(R.string.API_base);
+                    url += mContext.getString(R.string.API_event);
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                    ServerRequest req = new ServerRequest(
+                            Request.Method.POST,
+                            url,
+                            obj.toString().getBytes(),
+                            mContext,
+                            new Response.Listener<byte[]>() {
+                                @Override
+                                public void onResponse(byte[] response) {
 
-            byte[] array = out.toByteArray();
-            String encoded = Base64.encodeToString(array, Base64.DEFAULT);
+                                    mView.showMessage("Event created!");
+                                }
+                            },
+                            ServerRequest.DEFAULT_ERROR_LISTENER);
 
-            obj.put("imagebase64", encoded);
-
-            String url = mContext.getString(R.string.API_base);
-            url += mContext.getString(R.string.API_event);
-
-            ServerRequest req = new ServerRequest(
-                    Request.Method.POST,
-                    url,
-                    obj.toString().getBytes(),
-                    mContext,
-                    new Response.Listener<byte[]>() {
-                        @Override
-                        public void onResponse(byte[] response) {
-
-                            mView.showMessage("Event created!");
-                        }
-                    },
-                    ServerRequest.DEFAULT_ERROR_LISTENER);
-
-            Network.getInstance(mContext).getRequestQueue().add(req);
-
-        } catch (FileNotFoundException | JSONException e) {
+                    Network.getInstance(mContext).getRequestQueue().add(req);
+                }
+            });
+        } catch (JSONException e) {
             mView.showMessage("Event not created!");
             e.printStackTrace();
         }
