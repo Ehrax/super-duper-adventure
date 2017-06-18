@@ -7,18 +7,14 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Base64;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.User;
-import de.in.uulm.map.tinder.network.JwtRequest;
+import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.network.Network;
 
 import org.json.JSONException;
@@ -27,12 +23,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -195,7 +187,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
             obj.put("latitude", mLocation.getLatLng().latitude);
             obj.put("longitude", mLocation.getLatLng().longitude);
 
-            // decode image
+            // encode image
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 8;
@@ -204,31 +196,21 @@ public class AddEventPresenter implements AddEventContract.Presenter {
             Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            boolean compressionSuccess =
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
 
             byte[] array = out.toByteArray();
             String encoded = Base64.encodeToString(array, Base64.DEFAULT);
 
             obj.put("imagebase64", encoded);
 
-            SharedPreferences accountPrefs = mContext.getSharedPreferences(
-                    mContext.getString(R.string.store_account),
-                    Context.MODE_PRIVATE);
+            String url = mContext.getString(R.string.API_base);
+            url += mContext.getString(R.string.API_event);
 
-            final String token = accountPrefs.getString(
-                    mContext.getString(R.string.store_token), "");
-
-            String url = mContext.getString(R.string.API_base) +
-                    mContext.getString(R.string.API_event);
-
-            String test = obj.toString();
-
-            JwtRequest req = new JwtRequest(
+            ServerRequest req = new ServerRequest(
                     Request.Method.POST,
                     url,
-                    token,
                     obj.toString().getBytes(),
+                    mContext,
                     new Response.Listener<byte[]>() {
                         @Override
                         public void onResponse(byte[] response) {
@@ -236,23 +218,14 @@ public class AddEventPresenter implements AddEventContract.Presenter {
                             mView.showMessage("Event created!");
                         }
                     },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                            JwtRequest.showErrorToast(mContext, error);
-                        }
-                    });
+                    ServerRequest.DEFAULT_ERROR_LISTENER);
 
             Network.getInstance(mContext).getRequestQueue().add(req);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (FileNotFoundException | JSONException e) {
+            mView.showMessage("Event not created!");
             e.printStackTrace();
         }
-
-        // reset everything ...
 
         mImageUri = null;
         mMaxUser = 4;

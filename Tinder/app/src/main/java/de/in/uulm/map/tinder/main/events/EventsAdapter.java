@@ -131,14 +131,22 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         }
 
         holder.mJoinButton.setVisibility(
-                 currentUserParticipates ? View.GONE : View.VISIBLE);
+                currentUserParticipates ? View.GONE : View.VISIBLE);
+        holder.mLeaveButton.setVisibility(
+                currentUserParticipates ? View.VISIBLE: View.GONE);
+        /*
         holder.mLeaveButton.setVisibility(
                 currentUserParticipates && !e.creator.name.equals(userName)
                         ? View.VISIBLE : View.GONE);
+        */
         holder.mMapButton.setVisibility(
                 currentUserParticipates ? View.VISIBLE : View.GONE);
+
+        holder.mDeleteButton.setVisibility(View.GONE);
+        /*
         holder.mDeleteButton.setVisibility(
                 e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
+        */
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -20,9 +20,8 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
-import de.in.uulm.map.tinder.network.JwtRequest;
+import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.network.Network;
-import de.in.uulm.map.tinder.util.BasePresenter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,22 +58,19 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 mContext.getString(R.string.store_account),
                 Context.MODE_PRIVATE);
 
-        final String token = accountPrefs.getString(
-                mContext.getString(R.string.store_token), "");
         final String userName = accountPrefs.getString(
                 mContext.getString(R.string.store_username), "");
 
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(mContext);
 
+        int radius = prefs.getInt(FilterPresenter.EVENT_RADIUS, 1);
         String category = prefs.getString(FilterPresenter.EVENT_CATEGORY, "all");
-        if (category.equals("Keine")) {
+        if (category.equals("Alle")) {
             category = "all";
         } else {
             category = category.toLowerCase();
         }
-
-        int radius = prefs.getInt(FilterPresenter.EVENT_RADIUS, 1);
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
@@ -109,21 +105,19 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         url += "&latitude=" + latitude;
         url += "&longitude=" + longitude;
 
-        final JwtRequest req = new JwtRequest(
+        final ServerRequest req = new ServerRequest(
                 Request.Method.GET,
                 url,
-                token,
                 null,
+                mContext,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        String s = new String(response);
-
                         Gson gson = new Gson();
 
                         List<Event> events = Arrays.asList(gson.fromJson(
-                                new String(response), Event[].class));
+                                        new String(response),Event[].class));
 
                         ArrayList<Event> nearbyEvents = new ArrayList<>();
                         ArrayList<Event> joinedEvents = new ArrayList<>();
@@ -153,13 +147,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         mCreatedView.getAdapter().setEvents(createdEvents);
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        JwtRequest.showErrorToast(mContext, error);
-                    }
-                });
+                ServerRequest.DEFAULT_ERROR_LISTENER);
 
         Network.getInstance(mContext).getRequestQueue().add(req);
     }
@@ -167,21 +155,15 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
     @Override
     public void onDeleteClicked(Event e) {
 
-        SharedPreferences accountPrefs = mContext.getSharedPreferences(
-                mContext.getString(R.string.store_account),
-                Context.MODE_PRIVATE);
-
-        final String token = accountPrefs.getString(
-                mContext.getString(R.string.store_token), "");
-
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_event);
         url += "/" + e.id;
 
-        JwtRequest req = new JwtRequest(Request.Method.DELETE,
+        ServerRequest req = new ServerRequest(
+                Request.Method.DELETE,
                 url,
-                token,
                 null,
+                mContext,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
@@ -189,13 +171,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         loadEvents();
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        JwtRequest.showErrorToast(mContext, error);
-                    }
-                });
+                ServerRequest.DEFAULT_ERROR_LISTENER);
 
         Network.getInstance(mContext).getRequestQueue().add(req);
     }
@@ -203,11 +179,49 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
     @Override
     public void onJoinClicked(Event e) {
 
+        String url = mContext.getString(R.string.API_base);
+        url += mContext.getString(R.string.API_event);
+        url += "/" + e.id + "/join";
+
+        ServerRequest req = new ServerRequest(
+                Request.Method.PUT,
+                url,
+                null,
+                mContext,
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+
+                        loadEvents();
+                    }
+                },
+                ServerRequest.DEFAULT_ERROR_LISTENER);
+
+        Network.getInstance(mContext).getRequestQueue().add(req);
     }
 
     @Override
     public void onLeaveClicked(Event e) {
 
+        String url = mContext.getString(R.string.API_base);
+        url += mContext.getString(R.string.API_event);
+        url += "/" + e.id + "/leave";
+
+        ServerRequest req = new ServerRequest(
+                Request.Method.PUT,
+                url,
+                null,
+                mContext,
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+
+                        loadEvents();
+                    }
+                },
+                ServerRequest.DEFAULT_ERROR_LISTENER);
+
+        Network.getInstance(mContext).getRequestQueue().add(req);
     }
 
     public void setNearbyView(EventsContract.EventsView view) {
@@ -224,5 +238,4 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
 
         mCreatedView = view;
     }
-
 }

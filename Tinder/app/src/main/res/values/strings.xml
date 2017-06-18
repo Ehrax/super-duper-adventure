@@ -59,6 +59,6 @@
         <item>Erholung</item>
         <item>Kultur</item>
         <item>Sonstiges</item>
-        <item>Keine</item>
+        <item>Alle</item>
     </string-array>
 </resources>
