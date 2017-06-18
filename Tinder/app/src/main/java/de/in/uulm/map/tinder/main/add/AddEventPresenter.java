@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
@@ -176,67 +177,82 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onCreateClicked() {
 
-        Map<String, String> params = new HashMap<>();
-        params.put("title", mView.getTitle());
-        params.put("description", mView.getDescription());
-        params.put("timespan", "" + mDuration);
-        params.put("maxUsers", "" + mMaxUser);
-
-        final List<String> categories = Arrays.asList(
-                mContext.getResources().getStringArray(R.array.categories));
-
-        params.put("category", "" + categories.indexOf(mCategory));
-        params.put("latitude", "" + mLocation.getLatLng().latitude);
-        params.put("longitude", "" + mLocation.getLatLng().longitude);
-
-        // TODO: put this in extra thread, terrible slow! sad!
+        // TODO: put this in extra thread, terribly slow! sad!
 
         try {
-            Bitmap bitmap = BitmapFactory.decodeStream(
-                    mContext.getContentResolver().openInputStream(mImageUri));
+
+            JSONObject obj = new JSONObject();
+
+            obj.put("title", mView.getTitle());
+            obj.put("description", mView.getDescription());
+            obj.put("timespan", mDuration);
+            obj.put("maxUsers", mMaxUser);
+
+            final List<String> categories = Arrays.asList(
+                    mContext.getResources().getStringArray(R.array.categories));
+
+            obj.put("category", categories.indexOf(mCategory));
+            obj.put("latitude", mLocation.getLatLng().latitude);
+            obj.put("longitude", mLocation.getLatLng().longitude);
+
+            // decode image
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 8;
+
+            InputStream in = mContext.getContentResolver().openInputStream(mImageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            boolean compressionSuccess =
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+
             byte[] array = out.toByteArray();
             String encoded = Base64.encodeToString(array, Base64.DEFAULT);
-            params.put("imagebase64", encoded);
+
+            obj.put("imagebase64", encoded);
+
+            SharedPreferences accountPrefs = mContext.getSharedPreferences(
+                    mContext.getString(R.string.store_account),
+                    Context.MODE_PRIVATE);
+
+            final String token = accountPrefs.getString(
+                    mContext.getString(R.string.store_token), "");
+
+            String url = mContext.getString(R.string.API_base) +
+                    mContext.getString(R.string.API_event);
+
+            String test = obj.toString();
+
+            JwtRequest req = new JwtRequest(
+                    Request.Method.POST,
+                    url,
+                    token,
+                    obj.toString().getBytes(),
+                    new Response.Listener<byte[]>() {
+                        @Override
+                        public void onResponse(byte[] response) {
+
+                            mView.showMessage("Event created!");
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                            JwtRequest.showErrorToast(mContext, error);
+                        }
+                    });
+
+            Network.getInstance(mContext).getRequestQueue().add(req);
+
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        SharedPreferences accountPrefs = mContext.getSharedPreferences(
-        mContext.getString(R.string.store_account),
-        Context.MODE_PRIVATE);
-
-        final String token = accountPrefs.getString(
-                mContext.getString(R.string.store_token), "");
-
-        String url = mContext.getString(R.string.API_base) +
-                mContext.getString(R.string.API_event);
-
-        JwtRequest req = new JwtRequest(
-                Request.Method.POST,
-                url,
-                token,
-                new Response.Listener<byte[]>() {
-                    @Override
-                    public void onResponse(byte[] response) {
-
-                        Log.d("Test", "Test");
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        JwtRequest.showErrorToast(mContext, error);
-                    }
-                });
-
-        Network.getInstance(mContext).getRequestQueue().add(req);
-
         // reset everything ...
-
-        mView.showMessage("Event created!");
 
         mImageUri = null;
         mMaxUser = 4;

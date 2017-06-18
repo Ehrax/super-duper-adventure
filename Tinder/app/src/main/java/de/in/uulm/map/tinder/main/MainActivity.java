@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         createdFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
 
         eventsPresenter.setNearbyView(nearbyFragment);
-        eventsPresenter.setJoinedView(nearbyFragment);
-        eventsPresenter.setCreatedView(nearbyFragment);
+        eventsPresenter.setJoinedView(joinedFragment);
+        eventsPresenter.setCreatedView(createdFragment);
 
         nearbyFragment.setPresenter(eventsPresenter);
         joinedFragment.setPresenter(eventsPresenter);

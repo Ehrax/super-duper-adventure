@@ -77,12 +77,18 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     @Override
     public void onFragmentBecomesVisible() {
 
-        mPresenter.loadEvents(this, mAdapter);
+        mPresenter.loadEvents();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.top_nav_bar_events, menu);
+    }
+
+    @Override
+    public EventsAdapter getAdapter() {
+
+        return mAdapter;
     }
 }

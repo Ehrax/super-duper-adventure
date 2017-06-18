@@ -48,6 +48,7 @@
     <string name="store_account">ACCOUNT_SHARED_PREFERENCES</string>
   
     <!-- SharedPreferences Keys -->
+    <string name="store_username">USERNAME</string>
     <string name="store_token">TOKEN</string>
     <string name="store_token_expire">TOKEN_EXPIRE</string>
 

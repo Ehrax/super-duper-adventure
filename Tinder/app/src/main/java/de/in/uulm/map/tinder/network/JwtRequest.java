@@ -21,11 +21,13 @@ public class JwtRequest extends Request<byte[]> {
     private final String mToken;
 
     private final Response.Listener<byte[]> mListener;
-    private Map<String, String> mParams;
+
+    private final byte[] mBody;
 
     public JwtRequest(int method,
                       String url,
                       String token,
+                      byte[] body,
                       Response.Listener<byte[]> listener,
                       Response.ErrorListener errorListener) {
 
@@ -33,18 +35,18 @@ public class JwtRequest extends Request<byte[]> {
 
         mToken = token;
         mListener = listener;
-        mParams = new HashMap<>();
-    }
-
-    public void setParams(Map<String, String> params) {
-
-        mParams = params;
+        mBody = body;
     }
 
     @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
+    public byte[] getBody() throws AuthFailureError {
 
-        return mParams;
+        return mBody;
+    }
+
+    public String getBodyContentType() {
+
+        return "application/json";
     }
 
     @Override

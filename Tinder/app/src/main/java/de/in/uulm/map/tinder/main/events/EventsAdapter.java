@@ -2,6 +2,7 @@ package de.in.uulm.map.tinder.main.events;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -114,25 +115,36 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
         holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
 
-        // TODO: Get real user ...
+        SharedPreferences accountPrefs = mContext.getSharedPreferences(
+                mContext.getString(R.string.store_account),
+                Context.MODE_PRIVATE);
 
-        final User user = new User();
+        final String userName = accountPrefs.getString(
+                mContext.getString(R.string.store_username), "");
+
+        boolean currentUserParticipates = false;
+        for(User u : e.participants) {
+            if(u.name.equals(userName)) {
+                currentUserParticipates = true;
+                break;
+            }
+        }
 
         holder.mJoinButton.setVisibility(
-                e.participants.contains(user) ? View.GONE : View.VISIBLE);
+                 currentUserParticipates ? View.GONE : View.VISIBLE);
         holder.mLeaveButton.setVisibility(
-                e.participants.contains(user) && e.creator != user
+                currentUserParticipates && !e.creator.name.equals(userName)
                         ? View.VISIBLE : View.GONE);
         holder.mMapButton.setVisibility(
-                e.participants.contains(user) ? View.VISIBLE : View.GONE);
+                currentUserParticipates ? View.VISIBLE : View.GONE);
         holder.mDeleteButton.setVisibility(
-                e.creator == user ? View.VISIBLE : View.GONE);
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real delete request ...
+                mPresenter.onDeleteClicked(e);
             }
         });
 
@@ -140,7 +152,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real join request ...
+                mPresenter.onJoinClicked(e);
             }
         });
 
@@ -148,7 +160,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real leave request ...
+                mPresenter.onLeaveClicked(e);
             }
         });
 

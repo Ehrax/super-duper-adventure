@@ -18,9 +18,11 @@ import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
 import de.in.uulm.map.tinder.network.JwtRequest;
 import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.util.BasePresenter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +53,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
     }
 
     @Override
-    public void loadEvents(EventsContract.EventsView view, final EventsAdapter adapter) {
+    public void loadEvents() {
 
         SharedPreferences accountPrefs = mContext.getSharedPreferences(
                 mContext.getString(R.string.store_account),
@@ -59,6 +61,8 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
 
         final String token = accountPrefs.getString(
                 mContext.getString(R.string.store_token), "");
+        final String userName = accountPrefs.getString(
+                mContext.getString(R.string.store_username), "");
 
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -89,15 +93,11 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         Location location = locationManager.
                 getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        /* FORE coordinates
+        // FORE coordinates as default coordinates, cause why not?
         double latitude = 48.4222129;
         double longitude = 9.9575566;
-        */
 
-        double latitude = 75.25;
-        double longitude = 175.48;
-
-        if(location != null) {
+        if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
         }
@@ -106,23 +106,51 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
         url += mContext.getString(R.string.API_event);
         url += "?category=" + category;
         url += "&distance=" + radius;
-        // url += "&latitude=" + latitude;
-        // url += "&longitude=" + longitude;
+        url += "&latitude=" + latitude;
+        url += "&longitude=" + longitude;
 
         final JwtRequest req = new JwtRequest(
                 Request.Method.GET,
                 url,
                 token,
+                null,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
+
+                        String s = new String(response);
 
                         Gson gson = new Gson();
 
                         List<Event> events = Arrays.asList(gson.fromJson(
                                 new String(response), Event[].class));
 
-                        adapter.setEvents(new ArrayList<>(events));
+                        ArrayList<Event> nearbyEvents = new ArrayList<>();
+                        ArrayList<Event> joinedEvents = new ArrayList<>();
+                        ArrayList<Event> createdEvents = new ArrayList<>();
+
+                        for (Event e : events) {
+                            boolean currentUserParticipates = false;
+
+                            for (User u : e.participants) {
+                                if (u.name.equals(userName)) {
+                                    currentUserParticipates = true;
+                                    break;
+                                }
+                            }
+
+                            if (!currentUserParticipates) {
+                                nearbyEvents.add(e);
+                            } else if (!e.creator.name.equals(userName)) {
+                                joinedEvents.add(e);
+                            } else {
+                                createdEvents.add(e);
+                            }
+                        }
+
+                        mNearbyView.getAdapter().setEvents(nearbyEvents);
+                        mJoinedView.getAdapter().setEvents(joinedEvents);
+                        mCreatedView.getAdapter().setEvents(createdEvents);
                     }
                 },
                 new Response.ErrorListener() {
@@ -134,6 +162,52 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 });
 
         Network.getInstance(mContext).getRequestQueue().add(req);
+    }
+
+    @Override
+    public void onDeleteClicked(Event e) {
+
+        SharedPreferences accountPrefs = mContext.getSharedPreferences(
+                mContext.getString(R.string.store_account),
+                Context.MODE_PRIVATE);
+
+        final String token = accountPrefs.getString(
+                mContext.getString(R.string.store_token), "");
+
+        String url = mContext.getString(R.string.API_base);
+        url += mContext.getString(R.string.API_event);
+        url += "/" + e.id;
+
+        JwtRequest req = new JwtRequest(Request.Method.DELETE,
+                url,
+                token,
+                null,
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+
+                        loadEvents();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        JwtRequest.showErrorToast(mContext, error);
+                    }
+                });
+
+        Network.getInstance(mContext).getRequestQueue().add(req);
+    }
+
+    @Override
+    public void onJoinClicked(Event e) {
+
+    }
+
+    @Override
+    public void onLeaveClicked(Event e) {
+
     }
 
     public void setNearbyView(EventsContract.EventsView view) {

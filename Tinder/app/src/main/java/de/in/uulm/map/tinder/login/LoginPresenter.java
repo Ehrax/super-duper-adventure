@@ -79,15 +79,17 @@ public class LoginPresenter implements LoginContract.Presenter {
 
                     JsonObject jsonResponse = new JsonParser().parse
                             (response).getAsJsonObject();
+                    String userName = jsonResponse.get("userName").getAsString();
                     String accessToken = jsonResponse.get("access_token").getAsString();
-                    String tokenExpireDate = jsonResponse.get(".expires")
-                            .getAsString();
+                    String tokenExpireDate = jsonResponse.get(".expires").getAsString();
 
                     mSharedEditor.putString(mContext.getString(R.string
                             .store_token), accessToken).commit();
                     mSharedEditor.putString(mContext.getString(R.string
-                            .store_token_expire), tokenExpireDate)
-                            .commit();
+                            .store_token_expire), tokenExpireDate);
+                    mSharedEditor.putString(mContext.getString(R.string
+                            .store_username), userName);
+                    mSharedEditor.commit();
 
                     mBackend.startActivity(new Intent(mContext, MainActivity
                             .class));

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Event {
 
-    @SerializedName("Id")
+    @SerializedName("EventModelID")
     public String id;
 
     @SerializedName("Title")
