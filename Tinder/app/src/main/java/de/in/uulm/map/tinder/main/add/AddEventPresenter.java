@@ -216,7 +216,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
                     Network.getInstance(mContext).getRequestQueue().add(req);
                 }
-            });
+            }).execute();
         } catch (JSONException e) {
             mView.showMessage("Event not created!");
             e.printStackTrace();
