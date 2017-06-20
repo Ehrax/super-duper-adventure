@@ -341,3 +341,5 @@ C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\Ti
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\TinderServer2.dll
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\TinderServer2.pdb
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\TinderServer2.Migrations.newmemberlist.resources
+C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\TinderServer2.Migrations.fluentAPI.resources
+C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Debug\TinderServer2.Migrations.manytomanyfix.resources

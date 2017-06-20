@@ -279,6 +279,14 @@
     <Compile Include="Migrations\201706021332003_newmemberlist.Designer.cs">
       <DependentUpon>201706021332003_newmemberlist.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706162142084_fluentAPI.cs" />
+    <Compile Include="Migrations\201706162142084_fluentAPI.Designer.cs">
+      <DependentUpon>201706162142084_fluentAPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706162153183_manytomanyfix.cs" />
+    <Compile Include="Migrations\201706162153183_manytomanyfix.Designer.cs">
+      <DependentUpon>201706162153183_manytomanyfix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -399,6 +407,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706021332003_newmemberlist.resx">
       <DependentUpon>201706021332003_newmemberlist.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706162142084_fluentAPI.resx">
+      <DependentUpon>201706162142084_fluentAPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706162153183_manytomanyfix.resx">
+      <DependentUpon>201706162153183_manytomanyfix.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
