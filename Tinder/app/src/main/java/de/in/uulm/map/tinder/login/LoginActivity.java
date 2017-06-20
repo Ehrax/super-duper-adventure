@@ -56,7 +56,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Ba
                 null && intent.getStringExtra(RegisterPresenter
                 .INTENT_EXTRA_PASSWORD) != null){
             presenter.signIn(intent.getStringExtra(RegisterPresenter
-                    .INTENT_EXTRA_USERNAME),intent.getStringExtra(RegisterPresenter.INTENT_EXTRA_PASSWORD));
+                    .INTENT_EXTRA_PASSWORD),intent.getStringExtra(RegisterPresenter
+                    .INTENT_EXTRA_USERNAME));
         }
 
     }
