@@ -163,8 +163,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: place marker at exact location
-
                 Uri gmmIntentUri = Uri.parse("geo:0,0?q="+e.latitude+","+e.longitude+"("+e.title+")");
 
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
