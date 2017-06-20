@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tinder</string>
+    <string name="app_name">Eventure</string>
     <string name="events_nearby">Events</string>
     <string name="events_joined">Joined</string>
     <string name="events_created">Created</string>

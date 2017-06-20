@@ -52,7 +52,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
         }
 
         if(mUri.contains("http://")) {
-            Network.getInstance(mContext)
+            Network.getInstance(mContext.getApplicationContext())
                     .getImageLoader()
                     .get(mUri, ImageLoader.getImageListener(mView.get(),
                             R.drawable.image_placeholder,

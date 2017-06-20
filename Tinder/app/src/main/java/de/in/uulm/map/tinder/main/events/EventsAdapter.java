@@ -3,10 +3,8 @@ package de.in.uulm.map.tinder.main.events;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,7 +165,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
                 // TODO: place marker at exact location
 
-                Uri gmmIntentUri = Uri.parse("geo:"+e.latitude+","+e.longitude);
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q="+e.latitude+","+e.longitude+"("+e.title+")");
 
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");

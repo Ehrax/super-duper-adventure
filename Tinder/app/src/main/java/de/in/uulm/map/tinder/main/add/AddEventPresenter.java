@@ -3,27 +3,19 @@ package de.in.uulm.map.tinder.main.add;
 import com.google.android.gms.location.places.Place;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.Base64;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageEncoder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -214,7 +206,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
                             },
                             ServerRequest.DEFAULT_ERROR_LISTENER);
 
-                    Network.getInstance(mContext).getRequestQueue().add(req);
+                    Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
                 }
             }).execute();
         } catch (JSONException e) {

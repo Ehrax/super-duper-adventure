@@ -14,14 +14,13 @@ import android.support.v4.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
-import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.network.ServerRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,6 +132,8 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
 
                         Gson gson = new Gson();
 
+                        String s = new String(response);
+
                         List<Event> events = Arrays.asList(gson.fromJson(
                                 new String(response), Event[].class));
 
@@ -169,7 +170,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 },
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
-        Network.getInstance(mContext).getRequestQueue().add(req);
+        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
@@ -193,7 +194,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 },
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
-        Network.getInstance(mContext).getRequestQueue().add(req);
+        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
@@ -217,7 +218,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 },
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
-        Network.getInstance(mContext).getRequestQueue().add(req);
+        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
@@ -241,6 +242,6 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 },
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
-        Network.getInstance(mContext).getRequestQueue().add(req);
+        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
 }

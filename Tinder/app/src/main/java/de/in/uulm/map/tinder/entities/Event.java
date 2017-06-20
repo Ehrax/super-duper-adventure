@@ -35,7 +35,7 @@ public class Event {
     @SerializedName("Category")
     public String category;
 
-    @SerializedName("EventImage")
+    @SerializedName("EventImageBase64")
     public String image;
 
     @SerializedName("Creator")

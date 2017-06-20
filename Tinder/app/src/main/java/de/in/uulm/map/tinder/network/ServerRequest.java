@@ -37,7 +37,7 @@ public class ServerRequest extends Request<byte[]> {
     /**
      * This is a little dirty hack to define a default error listener in a
      * static way which can access the non-static mContext. This object
-     * functions just a placeholder and is replaced in the constructor by
+     * functions just as a placeholder and is replaced in the constructor by
      * a non-static implementation, which can then access mContext.
      */
     public final static Response.ErrorListener DEFAULT_ERROR_LISTENER =
