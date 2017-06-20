@@ -69,12 +69,15 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
 
         recyclerView.setAdapter(mAdapter);
 
+        onFragmentBecomesVisible();
+
         return view;
     }
 
     @Override
     public void onFragmentBecomesVisible() {
 
+        mPresenter.loadEvents(this, mAdapter);
     }
 
     @Override

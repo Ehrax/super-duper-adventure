@@ -10,7 +10,6 @@ namespace TinderServer2.Models
         public EventModel()
         {
             Members = new List<ApplicationUser>();
-            Messages = new List<MessageModel>();
         }
 
         public int EventModelID { get; set; }
@@ -23,8 +22,7 @@ namespace TinderServer2.Models
         public double Longitude { get; set; }
         public Categories.Category Category { get; set; }
         public ApplicationUser Creator { get; set; }
-        public ICollection<ApplicationUser> Members { get; set; }
-        public ICollection<MessageModel> Messages { get; set; }
+        public virtual ICollection<ApplicationUser> Members { get; set; }
         public ImageModel EventImage { get; set; }
 
 

@@ -1,136 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/event_card_image"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/demo_img" />
+                    android:id="@+id/event_card_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_placeholder" />
 
             <RelativeLayout
-                android:id="@+id/event_card_title_line"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_image"
-                android:layout_marginTop="24dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
-
-                <TextView
-                    android:id="@+id/event_card_title"
+                    android:id="@+id/event_card_title_line"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Let's go Hiking"
-                    android:textColor="#212121"
-                    android:textSize="24sp" />
+                    android:layout_below="@id/event_card_image"
+                    android:layout_marginTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
 
                 <TextView
-                    android:id="@+id/event_card_user_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:text="5/7" />
+                        android:id="@+id/event_card_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Let's go Hiking"
+                        android:textColor="#212121"
+                        android:textSize="24sp" />
+
+                <TextView
+                        android:id="@+id/event_card_user_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="5/7" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/event_card_user_count"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/event_card_user_count"
-                    android:src="@drawable/ic_user" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/event_card_user_count"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@id/event_card_user_count"
+                        android:src="@drawable/ic_user" />
 
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/event_card_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/event_card_title_line"
-                android:paddingLeft="16dp"
-                android:paddingTop="3dp"
-                android:text="2:00 left" />
+                    android:id="@+id/event_card_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/event_card_title_line"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="3dp"
+                    android:text="2:00 left" />
 
             <TextView
-                android:id="@+id/event_card_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_time"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="16dp"
-                android:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat"
-                android:textColor="#212121" />
+                    android:id="@+id/event_card_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_time"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="16dp"
+                    android:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat"
+                    android:textColor="#212121" />
 
 
             <Button
-                android:id="@+id/event_card_join"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_description"
-                android:layout_alignParentRight="false"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Join Event" />
+                    android:id="@+id/event_card_join"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_alignParentRight="false"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Join Event" />
 
             <Button
-                android:id="@+id/event_card_leave"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_description"
-                android:layout_alignParentRight="false"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Leave Event" />
+                    android:id="@+id/event_card_leave"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_alignParentRight="false"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Leave Event" />
 
             <Button
-                android:id="@+id/event_card_chat"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_description"
-                android:layout_alignParentRight="false"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Leave Event" />
+                    android:id="@+id/event_card_chat"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_alignParentRight="false"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Leave Event" />
 
             <Button
-                android:id="@+id/event_card_map"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/event_card_description"
-                android:layout_alignParentRight="false"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Map" />
+                    android:id="@+id/event_card_delete"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:visibility="visible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Delete" />
+
+            <Button
+                    android:id="@+id/event_card_map"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/event_card_description"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Map" />
 
         </RelativeLayout>
->>>>>>> da4d7b7cd058a703e9984200e33ea485ef97d455
 
     </android.support.v7.widget.CardView>
 

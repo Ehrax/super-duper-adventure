@@ -17,16 +17,20 @@ using System.Drawing;
 using System.IO;
 using System.Web;
 using System.Drawing.Imaging;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TinderServer2.Controllers
 {
     [Authorize]
     public class EventController : ApiController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-        public ApplicationUserManager UserManager
+        private ApplicationDbContext db
         {
-            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
+            get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
+        }
+        private ApplicationUserManager UserManager       
+        {
+           get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
         }
 
         // GET: api/EventModels
@@ -198,6 +202,10 @@ namespace TinderServer2.Controllers
             {
                 return BadRequest(ModelState);
             }
+            if(eventModel.timeSpan <= 0)
+            {
+                return BadRequest("Zeitspanne muss groesser 0 sein");
+            }
 
             var currentEvent = new EventModel {
                 Title = eventModel.Title,
@@ -212,7 +220,12 @@ namespace TinderServer2.Controllers
             }
             currentEvent.Category = (Categories.Category) eventModel.Category;
             currentEvent.EndDate = DateTime.Now.AddMilliseconds(eventModel.timeSpan);
-            currentEvent.Creator = UserManager.FindById(User.Identity.GetUserId());
+
+            var currentUser = UserManager.FindById(User.Identity.GetUserId());
+
+            currentEvent.Creator = currentUser;
+            currentEvent.Members.Add(currentUser);
+            currentEvent.UserCounter = 1;
 
             if (!String.IsNullOrEmpty(eventModel.ImageBase64))
             {
@@ -222,7 +235,7 @@ namespace TinderServer2.Controllers
 
                 if (extension.Equals(String.Empty))
                 {
-                    return BadRequest("Das Bild muss im JPEG oder PNG Format sein!");
+                    return BadRequest("NotAImage");
                 }
 
                 string appPath = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath);
@@ -264,6 +277,21 @@ namespace TinderServer2.Controllers
             await db.SaveChangesAsync();
 
             return Ok(eventModel);
+        }
+
+        [Route("api/event/autodelete")]
+        [HttpDelete]
+        [ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> AutoDeleteEvent()
+        {
+            var EventsToDelete = db.Events.Where(e => e.EndDate.CompareTo(DateTime.Now) <= 0).ToList();
+            foreach (var currentEvent in EventsToDelete)
+            {
+                db.Events.Remove(currentEvent);
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+
         }
 
         protected override void Dispose(bool disposing)

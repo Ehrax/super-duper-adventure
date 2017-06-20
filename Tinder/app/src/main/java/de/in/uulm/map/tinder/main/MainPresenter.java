@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.login.LoginActivity;
+import de.in.uulm.map.tinder.filter.FilterActivity;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -18,7 +19,8 @@ public class MainPresenter implements MainContract.MainPresenter {
     private MainContract.Backend mBackend;
 
     public MainPresenter(Context ctxt, MainContract.Backend backend) {
-        mContext=ctxt;
+
+        mContext = ctxt;
         mBackend = backend;
     }
 
@@ -35,14 +37,22 @@ public class MainPresenter implements MainContract.MainPresenter {
      */
     @Override
     public boolean topNavOnOptionSelected(MenuItem item) {
-        if (item.getItemId() == R.id.top_nav_sign_out){
+
+        if (item.getItemId() == R.id.top_nav_filter) {
+            Intent intent = new Intent(mContext, FilterActivity.class);
+            mContext.startActivity(intent);
+            return true;
+        }
+
+        if (item.getItemId() == R.id.top_nav_sign_out) {
             SharedPreferences sharedPrefs = mContext.getSharedPreferences
-                    (mContext.getString(R.string.store_account),Context
+                    (mContext.getString(R.string.store_account), Context
                             .MODE_PRIVATE);
             sharedPrefs.edit().clear().apply();
             mBackend.startActivity(new Intent(mContext, LoginActivity.class));
             return true;
         }
+
         return false;
     }
 
