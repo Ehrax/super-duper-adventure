@@ -22,8 +22,11 @@ import de.in.uulm.map.tinder.filter.FilterPresenter;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -145,6 +148,23 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                         ArrayList<Event> createdEvents = new ArrayList<>();
 
                         for (Event e : events) {
+
+                            // TODO: remove this and make autodelete working again
+
+                            long end_date = new Date().getTime();
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+                            try {
+                                end_date = format.parse(e.end_date).getTime();
+                            } catch (ParseException ex) {
+                                ex.printStackTrace();
+                            }
+
+                            long left = end_date - new Date().getTime();
+
+                            if(left <= 0) {
+                                continue;
+                            }
+
                             boolean currentUserParticipates = false;
 
                             for (User u : e.participants) {
@@ -162,6 +182,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                                 createdEvents.add(e);
                             }
                         }
+
 
                         mNearbyView.getAdapter().setEvents(nearbyEvents);
                         mJoinedView.getAdapter().setEvents(joinedEvents);
