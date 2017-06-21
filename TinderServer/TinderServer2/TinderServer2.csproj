@@ -287,6 +287,18 @@
     <Compile Include="Migrations\201706162153183_manytomanyfix.Designer.cs">
       <DependentUpon>201706162153183_manytomanyfix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706171919055_image-event-relation.cs" />
+    <Compile Include="Migrations\201706171919055_image-event-relation.Designer.cs">
+      <DependentUpon>201706171919055_image-event-relation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706201724091_creator_event_relation.cs" />
+    <Compile Include="Migrations\201706201724091_creator_event_relation.Designer.cs">
+      <DependentUpon>201706201724091_creator_event_relation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201706211348247_newEventKey.cs" />
+    <Compile Include="Migrations\201706211348247_newEventKey.Designer.cs">
+      <DependentUpon>201706211348247_newEventKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -413,6 +425,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706162153183_manytomanyfix.resx">
       <DependentUpon>201706162153183_manytomanyfix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706171919055_image-event-relation.resx">
+      <DependentUpon>201706171919055_image-event-relation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706201724091_creator_event_relation.resx">
+      <DependentUpon>201706201724091_creator_event_relation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706211348247_newEventKey.resx">
+      <DependentUpon>201706211348247_newEventKey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
