@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
+import de.in.uulm.map.tinder.entities.Message;
 import de.in.uulm.map.tinder.main.add.AddEventFragment;
 import de.in.uulm.map.tinder.main.add.AddEventPresenter;
 import de.in.uulm.map.tinder.main.events.EventsAdapter;
@@ -19,10 +21,13 @@ import de.in.uulm.map.tinder.main.events.EventsPresenter;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatAdapter;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatFragment;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatPresenter;
+import de.in.uulm.map.tinder.util.FirebaseHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Jona on 21.05.2017.
- */
+ * Created by Jona on 21.05.2017. */
 
 public class MainActivity extends AppCompatActivity implements MainContract.Backend{
 
@@ -114,20 +119,43 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         pageAdapter.addFragment(addEventFragment, R.id.bottom_nav_add);
 
         /**
-         * Here you may add more fragments!
+         * group chat fragment
          */
         GroupChatFragment groupChatFragment = GroupChatFragment.newInstance
                 (EventsFragment.TAB_GROUP_CHAT);
-        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(groupChatFragment);
+
+        GroupChatPresenter groupChatPresenter = new GroupChatPresenter
+                (groupChatFragment, this);
         groupChatFragment.setPresenter(groupChatPresenter);
+
         GroupChatAdapter groupChatListAdapter = new GroupChatAdapter(groupChatPresenter);
         groupChatFragment.setAdapter(groupChatListAdapter);
 
         pageAdapter.addFragment(groupChatFragment, R.id.bottom_nav_chat);
 
+         /**
+         * Here you may add more fragments!
+         */
+
         viewPager.setAdapter(pageAdapter);
 
         super.onCreate(savedInstanceState);
+
+
+        // TODO removing firebase test stuff
+
+        FirebaseHelper firebaseHelper = new FirebaseHelper();
+
+        String userUuid = ";asdkjfa;dkfjas";
+
+        FirebaseGroupChat groupChat = new FirebaseGroupChat();
+        groupChat.eventId = "999999999999999";
+        groupChat.chatName = "My new group Chat";
+
+        firebaseHelper.createGroup(groupChat, userUuid);
+
+
+        // TODO end firebase test stuff
     }
 
     @Override

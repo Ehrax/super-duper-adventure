@@ -61,6 +61,12 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     }
 
     @Override
+    public GroupChatAdapter getAdapter() {
+
+        return this.mAdapter;
+    }
+
+    @Override
     public void setPresenter(GroupChatContract.Presenter presenter) {
 
         mPresenter = presenter;
@@ -69,5 +75,6 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     @Override
     public void onFragmentBecomesVisible() {
 
+        mPresenter.setupGroupChat();
     }
 }

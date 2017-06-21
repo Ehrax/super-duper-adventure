@@ -52,16 +52,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         Message message = mMessages.get(position);
 
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm");
-        holder.mUserName.setText(message.creator.name);
-        holder.mText.setText(message.text);
-        holder.mTime.setText(format.format(new Date(message.timestamp)));
+        holder.mUserName.setText(message.mUserName);
+
+        holder.mText.setText(message.mText);
+        holder.mTime.setText(format.format(new Date(message.mTimestamp)));
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 holder.mLayout.getLayoutParams();
 
         // TODO: compare creator id to current locally stored id
 
-        if(message.creator.id == "") {
+        if(message.mUid == "") {
             params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
             holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_own);
         } else {

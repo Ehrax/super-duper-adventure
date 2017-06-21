@@ -3,11 +3,9 @@ package de.in.uulm.map.tinder.util;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
+import de.in.uulm.map.tinder.entities.Message;
 import de.in.uulm.map.tinder.entities.User;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by alexanderrasputin on 11.05.17.
@@ -16,6 +14,8 @@ import java.util.Map;
 public class FirebaseHelper {
 
     private DatabaseReference mDatabase;
+    public static final String CHILD_GROUP_MESSAGES = "messages";
+    public static final String GROUP_CHATS = "group-chats";
 
     public FirebaseHelper() {
 
@@ -26,32 +26,29 @@ public class FirebaseHelper {
      * use this method if a user has created a group to create a new
      * groupchat in firebase, the user is automatically joining the chat
      *
-     * @param event see @Event.class
+     * @param groupChat see @FirebaseGroupChat.class
      */
-    private void createGroup(Event event, long timestamp) {
+    public void createGroup(FirebaseGroupChat groupChat, String userId) {
 
         DatabaseReference root = mDatabase.getRoot();
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("room-id-" + event.id, "");
-        root.updateChildren(map);
+        root.child(userId).child(GROUP_CHATS).child(groupChat.eventId).setValue
+                (groupChat);
     }
 
     /**
      * use this method to write messages into a group
      *
-     * @param user    see @User.class
-     * @param message the message the user wants to send
-     * @param eventId the event id the user is writing to
+     * @param eventId the group event id
+     * @param message See @Message.class
      */
-    private void writeMessageToGroup(User user, String message, long eventId,
-                                     long timestamp) {
+    public void writeMessageToGroup(String eventId, Message message, String
+            userId) {
 
-        DatabaseReference chat = mDatabase.child("room-id-" + eventId);
+        DatabaseReference chat = mDatabase.child(userId).child("group-chats")
+                .child(eventId);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", user.name);
-        map.put("message", message);
-        chat.updateChildren(map);
+        String key = chat.child(CHILD_GROUP_MESSAGES).push().getKey();
+        chat.child(CHILD_GROUP_MESSAGES).child(key).setValue(message);
     }
 }
