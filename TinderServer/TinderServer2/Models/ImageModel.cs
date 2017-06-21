@@ -13,6 +13,8 @@ namespace TinderServer2.Models
         }
         public int ImageModelID { get; set; }
         public string Path { get; set; }
+        public string Base64Image { get; set; }
+        public virtual EventModel Event { get; set; }
 
     }
 }

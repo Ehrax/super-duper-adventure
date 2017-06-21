@@ -500,11 +500,10 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:TinderServer2.Controllers.EventController.PutEvent(System.Int32,TinderServer2.Models.EventModel)">
+        <member name="M:TinderServer2.Controllers.EventController.PutEvent(TinderServer2.Models.UpdateEventBindingModel)">
             <summary>
             Updates the Event with the passed id. You have to pass all attributes of this event!
             </summary>
-            <param name="id"></param>
             <param name="eventModel"></param>
             <returns></returns>
         </member>
