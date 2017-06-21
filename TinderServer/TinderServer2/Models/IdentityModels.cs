@@ -11,7 +11,6 @@ namespace TinderServer2.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
-        public virtual ICollection<EventModel> Events { get; set; }
         public ImageModel ProfileImage { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
@@ -33,6 +32,18 @@ namespace TinderServer2.Models
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<EventModel>().HasMany(e => e.Members).WithMany().Map(x=> 
+            {
+                x.MapLeftKey("EventID");
+                x.MapRightKey("UserID");
+                x.ToTable("EventUser");
+                   
+            });
         }
 
         public DbSet<EventModel> Events { get; set; }

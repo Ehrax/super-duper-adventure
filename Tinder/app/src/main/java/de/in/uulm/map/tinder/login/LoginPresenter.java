@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.login;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -98,12 +99,15 @@ public class LoginPresenter implements LoginContract.Presenter {
                 @Override
                 public void onErrorResponse(VolleyError error) {
 
-                    JsonObject body = new JsonParser().parse(new String(
-                            error.networkResponse.data)).getAsJsonObject();
-
-                    String errorMsg = body.get("error_description").getAsString();
-
-                    Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show();
+                    //ToDO: propper error handling for wrong
+                    // username/password combination and server errors.
+                    JsonObject body = new Gson().fromJson(new String(error
+                                    .networkResponse
+                                    .data),
+                            JsonObject.class);
+                    Toast.makeText(mContext, body.toString().replace("{", "")
+                            .replace("}", ""), Toast
+                            .LENGTH_LONG).show();
                 }
             }) {
                 @Override
