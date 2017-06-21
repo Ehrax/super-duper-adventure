@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.register;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import android.content.Context;
@@ -22,8 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by maxka on 05.06.2017.

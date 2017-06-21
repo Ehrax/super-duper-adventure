@@ -11,9 +11,9 @@ public class User {
     @SerializedName("Id")
     public String id;
 
-    @SerializedName("UserName")
+    @SerializedName("Username")
     public String name;
 
-    @SerializedName("UserImage")
-    public String image;
+    @SerializedName("Email")
+    public String email;
 }

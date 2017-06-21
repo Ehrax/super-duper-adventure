@@ -2,12 +2,22 @@ package de.in.uulm.map.tinder.main.add;
 
 import com.google.android.gms.location.places.Place;
 
+import android.content.Context;
 import android.net.Uri;
 
-import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.User;
+import com.android.volley.Request;
+import com.android.volley.Response;
 
-import java.util.Date;
+import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.network.ServerRequest;
+import de.in.uulm.map.tinder.util.AsyncImageEncoder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -19,6 +29,8 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
     private final AddEventContract.Backend mBackend;
 
+    private final Context mContext;
+
     private Uri mImageUri = null;
 
     private long mDuration = 3600000 * 2;
@@ -29,8 +41,11 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
     private int mMaxUser = 5;
 
-    public AddEventPresenter(AddEventContract.View view, AddEventContract.Backend backend) {
+    public AddEventPresenter(Context context,
+                             AddEventContract.View view,
+                             AddEventContract.Backend backend) {
 
+        mContext = context;
         mView = view;
         mBackend = backend;
     }
@@ -118,7 +133,7 @@ public class AddEventPresenter implements AddEventContract.Presenter {
 
         String string = name + address;
 
-        if(string.isEmpty()) {
+        if (string.isEmpty()) {
             string = "" + location.getLatLng().latitude + ", " +
                     location.getLatLng().longitude;
         }
@@ -147,30 +162,57 @@ public class AddEventPresenter implements AddEventContract.Presenter {
     @Override
     public void onCreateClicked() {
 
-        Event event = new Event();
+        try {
+            final JSONObject obj = new JSONObject();
 
-        // TODO: get real user here ...
+            obj.put("title", mView.getTitle());
+            obj.put("description", mView.getDescription());
+            obj.put("timespan", mDuration);
+            obj.put("maxUsers", mMaxUser);
 
-        event.creator = new User();
-        event.participants.add(event.creator);
-        event.title = mView.getTitle();
-        event.description = mView.getDescription();
+            final List<String> categories = Arrays.asList(
+                    mContext.getResources().getStringArray(R.array.categories));
 
-        // TODO: real time serialization ...
+            obj.put("category", categories.indexOf(mCategory));
+            obj.put("latitude", mLocation.getLatLng().latitude);
+            obj.put("longitude", mLocation.getLatLng().longitude);
 
-        event.end_date = "" + new Date().getTime() + mDuration;
-        event.category = mCategory;
+            new AsyncImageEncoder(mImageUri, mContext, new AsyncImageEncoder.OnFinishedListener() {
+                @Override
+                public void onFinished(String encoded) {
 
-        // TODO: decode real image here ...
+                    try {
+                        obj.put("imagebase64", encoded);
+                    } catch (JSONException e) {
+                        mView.showMessage("Event not created!");
+                        e.printStackTrace();
+                        return;
+                    }
 
-        event.image = "";
-        event.max_user_count = mMaxUser;
-        event.latitude = mLocation.getLatLng().latitude;
-        event.longitude = mLocation.getLatLng().longitude;
+                    String url = mContext.getString(R.string.API_base);
+                    url += mContext.getString(R.string.API_event);
 
-        // TODO: Send to server ...
+                    ServerRequest req = new ServerRequest(
+                            Request.Method.POST,
+                            url,
+                            obj.toString().getBytes(),
+                            mContext,
+                            new Response.Listener<byte[]>() {
+                                @Override
+                                public void onResponse(byte[] response) {
 
-        mView.showMessage("Event created!");
+                                    mView.showMessage("Event created!");
+                                }
+                            },
+                            ServerRequest.DEFAULT_ERROR_LISTENER);
+
+                    Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+                }
+            }).execute();
+        } catch (JSONException e) {
+            mView.showMessage("Event not created!");
+            e.printStackTrace();
+        }
 
         mImageUri = null;
         mMaxUser = 4;

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Event {
 
-    @SerializedName("Id")
+    @SerializedName("EventModelID")
     public String id;
 
     @SerializedName("Title")
@@ -35,7 +35,7 @@ public class Event {
     @SerializedName("Category")
     public String category;
 
-    @SerializedName("EventImage")
+    @SerializedName("EventImageBase64")
     public String image;
 
     @SerializedName("Creator")

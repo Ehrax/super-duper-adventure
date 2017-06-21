@@ -2,10 +2,9 @@ package de.in.uulm.map.tinder.main.events;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,13 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
+import de.in.uulm.map.tinder.util.AsyncImageDecoder;
 
+import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
@@ -89,39 +93,53 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        if(e.image != null) {
-            byte[] bytes = Base64.decode(e.image, Base64.DEFAULT);
-            holder.mImage.setImageBitmap(
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+        new AsyncImageDecoder(e.image, new WeakReference<>(holder.mImage))
+                .execute();
+
+        long end_date = new Date().getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        try {
+            end_date = format.parse(e.end_date).getTime();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
         }
 
-        // TODO: find out the time actually left
-
-        long left = 0; // e.end_date - new Date().getTime();
+        long left = end_date - new Date().getTime();
         long hours = left / 3600000;
         long minutes = (left % 3600000) / 60000;
 
         holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
 
-        // TODO: Get real user ...
+        SharedPreferences accountPrefs = mContext.getSharedPreferences(
+                mContext.getString(R.string.store_account),
+                Context.MODE_PRIVATE);
 
-        final User user = new User();
+        final String userName = accountPrefs.getString(
+                mContext.getString(R.string.store_username), "");
+
+        boolean currentUserParticipates = false;
+        for(User u : e.participants) {
+            if(u.name.equals(userName)) {
+                currentUserParticipates = true;
+                break;
+            }
+        }
 
         holder.mJoinButton.setVisibility(
-                e.participants.contains(user) ? View.GONE : View.VISIBLE);
+                currentUserParticipates ? View.GONE : View.VISIBLE);
         holder.mLeaveButton.setVisibility(
-                e.participants.contains(user) && e.creator != user
+                currentUserParticipates && !e.creator.name.equals(userName)
                         ? View.VISIBLE : View.GONE);
         holder.mMapButton.setVisibility(
-                e.participants.contains(user) ? View.VISIBLE : View.GONE);
+                currentUserParticipates ? View.VISIBLE : View.GONE);
         holder.mDeleteButton.setVisibility(
-                e.creator == user ? View.VISIBLE : View.GONE);
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real delete request ...
+                mPresenter.onDeleteClicked(e);
             }
         });
 
@@ -129,7 +147,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real join request ...
+                mPresenter.onJoinClicked(e);
             }
         });
 
@@ -137,16 +155,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real leave request ...
+                mPresenter.onLeaveClicked(e);
             }
         });
 
         holder.mMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri gmmIntentUri = Uri.parse("geo:"+e.latitude+","+e.longitude);
+
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q="+e.latitude+","+e.longitude+"("+e.title+")");
+
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
+
                 if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
                     mContext.startActivity(mapIntent);
                 }
