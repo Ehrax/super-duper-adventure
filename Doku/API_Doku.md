@@ -73,7 +73,7 @@ Response:
     "EventModelID":8,
     "Title":"testeventasdasd",
     "Description":"testdescription",
-    "EndDate":"2017-06-02T17:11:46.007",
+    "StartDate":"2017-06-02T17:11:46.007",
     "UserCounter":0,
     "MaxUsers":5,
     "Latitude":75.25,
