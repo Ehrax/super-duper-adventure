@@ -17,7 +17,7 @@ namespace TinderServer2.Models
         public string Description { get; set; }
 
         [Required]
-        public long timeSpan { get; set; }
+        public DateTime StartDate { get; set; }
 
         [Required]
         [Range(2, 100)]
@@ -32,6 +32,9 @@ namespace TinderServer2.Models
         public double Longitude { get; set; }
 
         [Required]
+        public string Location { get; set; }
+
+        [Required]
         [Range(0, 4)]
         public int Category { get; set; }
 
@@ -43,10 +46,11 @@ namespace TinderServer2.Models
         public int EventModelID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime StartDate { get; set; }
         public int MaxUsers { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string Location { get; set; }
         public Categories.Category Category { get; set; }
         public string EventImageBase64 { get; set; }
     }
@@ -56,11 +60,12 @@ namespace TinderServer2.Models
         public int EventModelID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime StartDate { get; set; }
         public int UserCounter { get; set; }
         public int MaxUsers { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string Location { get; set; }
         public Categories.Category Category { get; set; }
         public ReturnApplicationUser Creator { get; set; }
         public List<ReturnApplicationUser> Members { get; set; }
@@ -72,10 +77,11 @@ namespace TinderServer2.Models
             MaxUsers = eventModel.MaxUsers;
             Title = eventModel.Title;
             Description = eventModel.Description;
-            EndDate = eventModel.EndDate;
+            StartDate = eventModel.StartDate;
             UserCounter = eventModel.UserCounter;
             Latitude = eventModel.Latitude;
             Longitude = eventModel.Longitude;
+            Location = eventModel.Location;
             Category = eventModel.Category;
             Creator = new ReturnApplicationUser(eventModel.Creator);
             EventImageBase64 = ImageHelper.LoadImageToBase64(eventModel.ImagePath);

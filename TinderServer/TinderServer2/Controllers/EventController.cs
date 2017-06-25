@@ -44,9 +44,17 @@ namespace TinderServer2.Controllers
         /// <param name="latitude"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public List<ReturnEventBindingModel> GetEvents(string category = "all", double longitude = -181, double latitude = -91, int distance = 5000)
+        public List<ReturnEventBindingModel> GetEvents(string category = "all", double longitude = -181, double latitude = -91, int distance = 5000, DateTime? fromDate = null,DateTime? toDate = null)
         {
-            var eventList = db.Events.ToList();
+            if(fromDate == null)
+            {
+                fromDate = DateTime.Now;
+            }
+            if(toDate == null)
+            {
+                toDate = DateTime.Now.AddYears(100);
+            }
+            var eventList = db.Events.Where(e => e.StartDate >= fromDate && e.StartDate <= toDate).ToList();
             if (longitude >= -180 && latitude >= -90 && longitude <= 180 && latitude <= 90)
             {
                 eventList = db.Events.ToList().Where(e =>
@@ -84,6 +92,7 @@ namespace TinderServer2.Controllers
 
             }
 
+
             List<ReturnEventBindingModel> returnEventList = new List<ReturnEventBindingModel>();
 
             foreach (var currentEvent in eventList)
@@ -114,6 +123,40 @@ namespace TinderServer2.Controllers
             return Ok(new ReturnEventBindingModel(eventModel));
         }
 
+        [HttpGet]
+        [Route("api/event/joined")]
+        public List<ReturnEventBindingModel> GetJoinedEvents()
+        {
+            string currentUserID = User.Identity.GetUserId();
+            List<EventModel> joinedEvents = db.Events.Where(e => e.Members.Any(m=>m.Id.Equals(currentUserID))).ToList();
+            List<ReturnEventBindingModel> returnJoinedEvents = new List<ReturnEventBindingModel>();
+            foreach (var joinedEvent in joinedEvents)
+            {
+                returnJoinedEvents.Add(new ReturnEventBindingModel(joinedEvent));
+                
+            }
+
+            return returnJoinedEvents;
+        }
+
+        [HttpGet]
+        [Route("api/event/created")]
+        public List<ReturnEventBindingModel> GetCreatedEvents()
+        {
+            string currentUserID = User.Identity.GetUserId();
+
+            List<EventModel> createdEvents = db.Events.Where(e => e.Creator.Id.Equals(currentUserID)).ToList();
+            List<ReturnEventBindingModel> returnCreatedEvents = new List<ReturnEventBindingModel>();
+            foreach (var joinedEvent in createdEvents)
+            {
+                returnCreatedEvents.Add(new ReturnEventBindingModel(joinedEvent));
+
+            }
+
+            return returnCreatedEvents;
+        }
+
+
         // PUT: api/Event/5
         /// <summary>
         /// Updates the Event with the passed id. You have to pass all attributes of this event!
@@ -140,7 +183,8 @@ namespace TinderServer2.Controllers
             try
             {
                 eventModel.UpdateEvent(updateEventModel);
-            }catch(Exception e) when (e is InvalidCastException || e is NullReferenceException)
+            }
+            catch (Exception e) when (e is InvalidCastException || e is NullReferenceException)
             {
                 return BadRequest(e.Message);
             }
@@ -230,9 +274,9 @@ namespace TinderServer2.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (eventModel.timeSpan <= 0)
+            if (eventModel.StartDate < DateTime.Now)
             {
-                return BadRequest("Zeitspanne muss groesser 0 sein");
+                return BadRequest("Start kann nicht in der Vergangenheit liegen");
             }
 
             var currentEvent = new EventModel
@@ -240,7 +284,10 @@ namespace TinderServer2.Controllers
                 Title = eventModel.Title,
                 Latitude = eventModel.Latitude,
                 Longitude = eventModel.Longitude,
-                MaxUsers = eventModel.MaxUsers
+                Location = eventModel.Location,
+                MaxUsers = eventModel.MaxUsers,
+                StartDate = eventModel.StartDate
+
             };
 
             if (!String.IsNullOrEmpty(eventModel.Description))
@@ -248,7 +295,6 @@ namespace TinderServer2.Controllers
                 currentEvent.Description = eventModel.Description;
             }
             currentEvent.Category = (Categories.Category)eventModel.Category;
-            currentEvent.EndDate = DateTime.Now.AddMilliseconds(eventModel.timeSpan);
 
             var currentUser = UserManager.FindById(User.Identity.GetUserId());
 
@@ -259,12 +305,12 @@ namespace TinderServer2.Controllers
 
             if (!String.IsNullOrEmpty(eventModel.ImageBase64))
             {
-                string filePath = ImageHelper.SaveBase64ImageToFileSystem(eventModel.ImageBase64, ImageHelper.ImageType.EVENTIMAGE, eventModel.Title + "_" + eventModel.timeSpan);
+                string filePath = ImageHelper.SaveBase64ImageToFileSystem(eventModel.ImageBase64, ImageHelper.ImageType.EVENTIMAGE, eventModel.Title + "_" + eventModel.StartDate.Millisecond);
                 if (filePath.Equals("NotAImage"))
                 {
                     return BadRequest("NotAImage");
                 }
-                if(filePath == null)
+                if (filePath == null)
                 {
                     return BadRequest("Error while uploading the Image, please try again");
                 }
@@ -307,7 +353,7 @@ namespace TinderServer2.Controllers
         [AllowAnonymous]
         public async Task<IHttpActionResult> AutoDeleteEvent()
         {
-            var EventsToDelete = db.Events.Where(e => e.EndDate.CompareTo(DateTime.Now) <= 0).ToList();
+            var EventsToDelete = db.Events.Where(e => e.StartDate.AddHours(24) < DateTime.Now).ToList();
             foreach (var currentEvent in EventsToDelete)
             {
                 db.Events.Remove(currentEvent);

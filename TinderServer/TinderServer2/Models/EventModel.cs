@@ -17,14 +17,15 @@ namespace TinderServer2.Models
         public int EventModelID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime StartDate { get; set; }
         public int UserCounter { get; set; }
         public int MaxUsers { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string Location { get; set; }
         public Categories.Category Category { get; set; }
         public String CreatorID { get; set; }
-       [ForeignKey("CreatorID")]
+        [ForeignKey("CreatorID")]
         public virtual ApplicationUser Creator { get; set; }
 
         public virtual ICollection<ApplicationUser> Members { get; set; }
@@ -52,11 +53,12 @@ namespace TinderServer2.Models
 
             Title = updateEventModel.Title;
             Description = updateEventModel.Description;
-            EndDate = updateEventModel.EndDate;
+            StartDate = updateEventModel.StartDate;
             MaxUsers = updateEventModel.MaxUsers;
             Latitude = updateEventModel.Latitude;
             Longitude = updateEventModel.Longitude;
             Category = updateEventModel.Category;
+            Location = updateEventModel.Location;
 
             
         }
