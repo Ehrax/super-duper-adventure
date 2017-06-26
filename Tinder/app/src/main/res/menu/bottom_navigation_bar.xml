@@ -17,11 +17,6 @@
             android:title="@string/events_created"
             app:showAsAction="always" />
     <item
-            android:id="@+id/bottom_nav_add"
-            android:icon="@drawable/plus"
-            android:title="@string/add"
-            app:showAsAction="always"/>
-    <item
             android:id="@+id/bottom_nav_chat"
             android:icon="@drawable/wechat"
             android:title="@string/chat"

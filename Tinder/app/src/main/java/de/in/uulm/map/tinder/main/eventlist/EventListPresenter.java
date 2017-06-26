@@ -1,10 +1,11 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import com.google.gson.Gson;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,6 +20,7 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
+import de.in.uulm.map.tinder.main.event.EventActivity;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 
@@ -33,32 +35,32 @@ import java.util.List;
  * Created by alexanderrasputin on 03.05.17.
  */
 
-public class EventsPresenter implements EventsContract.EventsPresenter {
+public class EventListPresenter implements EventListContract.EventsPresenter {
 
     private final Context mContext;
 
-    private EventsContract.EventsView mNearbyView;
+    private EventListContract.EventsView mNearbyView;
 
-    private EventsContract.EventsView mJoinedView;
+    private EventListContract.EventsView mJoinedView;
 
-    private EventsContract.EventsView mCreatedView;
+    private EventListContract.EventsView mCreatedView;
 
-    public EventsPresenter(Context context) {
+    public EventListPresenter(Context context) {
 
         mContext = context;
     }
 
-    public void setNearbyView(EventsContract.EventsView view) {
+    public void setNearbyView(EventListContract.EventsView view) {
 
         mNearbyView = view;
     }
 
-    public void setJoinedView(EventsContract.EventsView view) {
+    public void setJoinedView(EventListContract.EventsView view) {
 
         mJoinedView = view;
     }
 
-    public void setCreatedView(EventsContract.EventsView view) {
+    public void setCreatedView(EventListContract.EventsView view) {
 
         mCreatedView = view;
     }
@@ -154,7 +156,7 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                             long end_date = new Date().getTime();
                             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
                             try {
-                                end_date = format.parse(e.end_date).getTime();
+                                end_date = format.parse(e.start_date).getTime();
                             } catch (ParseException ex) {
                                 ex.printStackTrace();
                             }
@@ -264,5 +266,11 @@ public class EventsPresenter implements EventsContract.EventsPresenter {
                 ServerRequest.DEFAULT_ERROR_LISTENER);
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+    }
+
+    public void onEditClicked(Event e) {
+
+        Intent intent = new Intent(mContext, EventActivity.class);
+        mContext.startActivity(intent);
     }
 }

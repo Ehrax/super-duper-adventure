@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,39 +18,39 @@ import de.in.uulm.map.tinder.main.MainPageAdapter;
  * Created by Jona on 05.05.17.
  */
 
-public class EventsFragment extends Fragment implements EventsContract.EventsView{
+public class EventListFragment extends Fragment implements EventListContract.EventsView{
 
     public static final String TAB_NEARBY = "Nearby";
     public static final String TAB_JOINED = "Joined";
     public static final String TAB_MY_EVENTS = "My Events";
 
-    private EventsContract.EventsPresenter mPresenter;
+    private EventListContract.EventsPresenter mPresenter;
 
-    private EventsAdapter mAdapter;
+    private EventListAdapter mAdapter;
 
-    public static EventsFragment newInstance(String title) {
+    public static EventListFragment newInstance(String title) {
 
         Bundle args = new Bundle();
         args.putString(MainPageAdapter.TAB_TITLE, title);
 
-        EventsFragment fragment = new EventsFragment();
+        EventListFragment fragment = new EventListFragment();
         fragment.setArguments(args);
 
         return fragment;
     }
 
-    public EventsFragment() {
+    public EventListFragment() {
 
         setHasOptionsMenu(true);
     }
 
-    public void setAdapter(EventsAdapter adapter) {
+    public void setAdapter(EventListAdapter adapter) {
 
         this.mAdapter = adapter;
     }
 
     @Override
-    public void setPresenter(EventsContract.EventsPresenter presenter) {
+    public void setPresenter(EventListContract.EventsPresenter presenter) {
 
         this.mPresenter = presenter;
     }
@@ -87,7 +87,7 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     }
 
     @Override
-    public EventsAdapter getAdapter() {
+    public EventListAdapter getAdapter() {
 
         return mAdapter;
     }

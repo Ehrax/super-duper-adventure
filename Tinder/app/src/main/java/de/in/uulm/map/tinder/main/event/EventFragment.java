@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.add;
+package de.in.uulm.map.tinder.main.event;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -9,12 +9,12 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +35,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.util.AsyncImageDecoder;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 import de.in.uulm.map.tinder.util.PickerFactory;
 
@@ -44,6 +48,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -51,13 +56,13 @@ import java.util.List;
  * Created by Jona on 21.05.2017.
  */
 
-public class AddEventFragment extends Fragment implements AddEventContract.View, AddEventContract.Backend {
+public class EventFragment extends Fragment implements EventContract.View {
 
     private static final int IMAGE_REQ_CODE = 1;
 
     private static final int LOCATION_REQ_CODE = 2;
 
-    private AddEventContract.Presenter mPresenter;
+    private EventContract.Presenter mPresenter;
 
     private ImageView mImage;
 
@@ -65,7 +70,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
 
     private EditText mDescription;
 
-    private EditText mDuration;
+    private EditText mStartDate;
 
     private EditText mLocation;
 
@@ -77,9 +82,9 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
 
     private String mLastImagePath;
 
-    public static AddEventFragment newInstance() {
+    public static EventFragment newInstance() {
 
-        return new AddEventFragment();
+        return new EventFragment();
     }
 
     @Nullable
@@ -89,18 +94,18 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(
-                R.layout.fragment_add_event, container, false);
+                R.layout.fragment_event, container, false);
 
         mImage = (ImageView) view.findViewById(R.id.add_image);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mPresenter.onImageClicked();
+                selectImage();
             }
         });
 
-        TextWatcher watcher = new TextWatcher() {
+        TextWatcher titleWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -114,23 +119,41 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void afterTextChanged(Editable s) {
 
-                mPresenter.checkEnableCreateButton();
+                mPresenter.onTitleChanged(s.toString());
             }
         };
 
         mTitle = (EditText) view.findViewById(R.id.add_title);
-        mTitle.addTextChangedListener(watcher);
+        mTitle.addTextChangedListener(titleWatcher);
+
+        TextWatcher descriptionWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                mPresenter.onDescriptionChanged(s.toString());
+            }
+        };
 
         mDescription = (EditText) view.findViewById(R.id.add_description);
-        mDescription.addTextChangedListener(watcher);
+        mDescription.addTextChangedListener(descriptionWatcher);
 
-        mDuration = (EditText) view.findViewById(R.id.add_time);
-        mDuration.setOnClickListener(new View.OnClickListener() {
+        mStartDate = (EditText) view.findViewById(R.id.add_time);
+        mStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mDuration.setEnabled(false);
-                mPresenter.onDurationClicked();
+                mStartDate.setEnabled(false);
+                selectDuration();
             }
         });
 
@@ -140,7 +163,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mLocation.setEnabled(false);
-                mPresenter.onLocationClicked();
+                selectLocation();
             }
         });
 
@@ -150,7 +173,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mMaxUser.setEnabled(false);
-                mPresenter.onMaxUserClicked();
+                selectMaxUser();
             }
         });
 
@@ -160,7 +183,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mCategory.setEnabled(false);
-                mPresenter.onCategoryClicked();
+                selectCategory();
             }
         });
 
@@ -169,7 +192,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void onClick(View v) {
 
-                mPresenter.onCreateClicked();
+                mPresenter.onSubmitClicked();
             }
         });
 
@@ -179,14 +202,9 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     }
 
     @Override
-    public void setPresenter(AddEventContract.Presenter presenter) {
+    public void setPresenter(EventContract.Presenter presenter) {
 
         mPresenter = presenter;
-    }
-
-    @Override
-    public void onFragmentBecomesVisible() {
-
     }
 
     @Override
@@ -201,7 +219,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             mLocation.setEnabled(true);
 
             if (resultCode == Activity.RESULT_OK) {
-
                 Place place = PlacePicker.getPlace(getContext(), data);
                 mPresenter.onLocationSelected(place);
             }
@@ -221,30 +238,43 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     }
 
     @Override
-    public void setEnableCreateButton(boolean enabled) {
+    public void setEnableSubmitButton(boolean enabled) {
 
         mCreate.setEnabled(enabled);
     }
 
     @Override
-    public void showImage(Uri fileUri) {
+    public void showEvent(Event event) {
 
-        if (fileUri == null) {
+        showImage(event.image);
+        mTitle.setText(event.title);
+        mDescription.setText(event.description);
+        mLocation.setText(event.location);
+        mStartDate.setText(event.start_date);
+        mMaxUser.setText("" + event.max_user_count);
+        mCategory.setText(event.category);
+    }
+
+    @Override
+    public void showImage(String image) {
+
+        if (image == null || image.isEmpty()) {
             mImage.setImageResource(R.drawable.image_placeholder);
-        } else {
-            new AsyncImageLoader(fileUri.toString(),
+        } else if (image.contains("content://")) {
+            new AsyncImageLoader(image,
                     new WeakReference<>(mImage),
                     getContext()).execute();
+        } else {
+            new AsyncImageDecoder(image,
+                    new WeakReference<>(mImage));
         }
     }
 
     @Override
-    public void showDuration(long duration) {
+    public void showStartDate(long duration) {
 
-        long hours = duration / 3600000;
-        long minutes = (duration % 3600000) / 60000;
-
-        mDuration.setText(String.format("%02d:%02d", hours, minutes));
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        mStartDate.setText(format.format(new Date(duration)));
     }
 
     @Override
@@ -276,19 +306,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         snackbar.show();
     }
 
-    @Override
-    public String getTitle() {
-
-        return mTitle.getText().toString();
-    }
-
-    @Override
-    public String getDescription() {
-
-        return mDescription.getText().toString();
-    }
-
-    @Override
     public void selectImage() {
 
         // TODO: request permissions in a better way; this kinda sucks!
@@ -341,51 +358,38 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         startActivityForResult(chooser_intent, IMAGE_REQ_CODE);
     }
 
-    @Override
     public void selectDuration() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_time_chooser, null);
-        builder.setView(view);
-        builder.setTitle("Set Duration");
+        final Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
 
-        final NumberPicker hour_picker =
-                (NumberPicker) view.findViewById(R.id.hour_picker);
-        final NumberPicker minute_picker =
-                (NumberPicker) view.findViewById(R.id.minute_picker);
+        TimePickerDialog dialog = new TimePickerDialog(
+                getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-        hour_picker.setMaxValue(23);
-        hour_picker.setMinValue(0);
-        minute_picker.setMaxValue(59);
-        minute_picker.setMinValue(0);
+                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        c.set(Calendar.MINUTE, minute);
+                        mPresenter.onDurationSelected(c.getTime().getTime());
+                    }
+                },
+                hour,
+                minute,
+                DateFormat.is24HourFormat(getActivity()));
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                long time = hour_picker.getValue() * 3600000 +
-                        minute_picker.getValue() * 60000;
-
-                mDuration.setEnabled(true);
-                mPresenter.onDurationSelected(time);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
 
-                mDuration.setEnabled(true);
+                mStartDate.setEnabled(true);
             }
         });
 
-        builder.show();
+        dialog.show();
     }
 
-    @Override
     public void selectLocation() {
 
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -393,6 +397,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
                 == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            mLocation.setEnabled(true);
             return;
         }
 
@@ -410,7 +415,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         }
     }
 
-    @Override
     public void selectMaxUser() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -445,7 +449,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         builder.show();
     }
 
-    @Override
     public void selectCategory() {
 
         PickerFactory.categoryPicker(getContext(),

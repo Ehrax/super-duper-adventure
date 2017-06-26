@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,15 +26,15 @@ import java.util.Date;
 /**
  * Created by Jona on 04.05.17.
  */
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
+public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
 
     private final Context mContext;
 
-    private final EventsContract.EventsPresenter mPresenter;
+    private final EventListContract.EventsPresenter mPresenter;
 
     public ArrayList<Event> mEvents;
 
-    public EventsAdapter(Context context, EventsContract.EventsPresenter presenter) {
+    public EventListAdapter(Context context, EventListContract.EventsPresenter presenter) {
 
         mContext = context;
         mEvents = new ArrayList<>();
@@ -58,6 +58,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         public Button mLeaveButton;
         public Button mMapButton;
         public Button mDeleteButton;
+        public Button mEditButton;
 
         public ViewHolder(View itemView) {
 
@@ -72,6 +73,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             mLeaveButton = (Button) itemView.findViewById(R.id.event_card_leave);
             mMapButton = (Button) itemView.findViewById(R.id.event_card_map);
             mDeleteButton = (Button) itemView.findViewById(R.id.event_card_delete);
+            mEditButton = (Button) itemView.findViewById(R.id.event_card_edit);
         }
     }
 
@@ -99,7 +101,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         long end_date = new Date().getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         try {
-            end_date = format.parse(e.end_date).getTime();
+            end_date = format.parse(e.start_date).getTime();
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
@@ -134,6 +136,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 currentUserParticipates ? View.VISIBLE : View.GONE);
         holder.mDeleteButton.setVisibility(
                 e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
+        holder.mEditButton.setVisibility(
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,6 +160,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             public void onClick(View v) {
 
                 mPresenter.onLeaveClicked(e);
+            }
+        });
+
+        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mPresenter.onEditClicked(e);
             }
         });
 

@@ -11,11 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.add.AddEventFragment;
-import de.in.uulm.map.tinder.main.add.AddEventPresenter;
-import de.in.uulm.map.tinder.main.events.EventsAdapter;
-import de.in.uulm.map.tinder.main.events.EventsFragment;
-import de.in.uulm.map.tinder.main.events.EventsPresenter;
+import de.in.uulm.map.tinder.main.event.EventFragment;
+import de.in.uulm.map.tinder.main.event.EventPresenter;
+import de.in.uulm.map.tinder.main.eventlist.EventListAdapter;
+import de.in.uulm.map.tinder.main.eventlist.EventListFragment;
+import de.in.uulm.map.tinder.main.eventlist.EventListPresenter;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -77,43 +77,35 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
                     }
                 });
 
-        EventsPresenter eventsPresenter = new EventsPresenter(this);
+        EventListPresenter eventListPresenter = new EventListPresenter(this);
 
-        EventsFragment nearbyFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
-        nearbyFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
+        EventListFragment nearbyFragment =
+                EventListFragment.newInstance(EventListFragment.TAB_NEARBY);
+        nearbyFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        EventsFragment joinedFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_JOINED);
-        joinedFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
+        EventListFragment joinedFragment =
+                EventListFragment.newInstance(EventListFragment.TAB_JOINED);
+        joinedFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        EventsFragment createdFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
-        createdFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
+        EventListFragment createdFragment =
+                EventListFragment.newInstance(EventListFragment.TAB_MY_EVENTS);
+        createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        eventsPresenter.setNearbyView(nearbyFragment);
-        eventsPresenter.setJoinedView(joinedFragment);
-        eventsPresenter.setCreatedView(createdFragment);
+        eventListPresenter.setNearbyView(nearbyFragment);
+        eventListPresenter.setJoinedView(joinedFragment);
+        eventListPresenter.setCreatedView(createdFragment);
 
-        nearbyFragment.setPresenter(eventsPresenter);
-        joinedFragment.setPresenter(eventsPresenter);
-        createdFragment.setPresenter(eventsPresenter);
+        nearbyFragment.setPresenter(eventListPresenter);
+        joinedFragment.setPresenter(eventListPresenter);
+        createdFragment.setPresenter(eventListPresenter);
 
         pageAdapter.addFragment(nearbyFragment, R.id.bottom_nav_nearby);
         pageAdapter.addFragment(joinedFragment, R.id.bottom_nav_joined);
         pageAdapter.addFragment(createdFragment, R.id.bottom_nav_created);
 
-        AddEventFragment addEventFragment = AddEventFragment.newInstance();
-        AddEventPresenter addEventPresenter =
-                new AddEventPresenter(this, addEventFragment, addEventFragment);
-        addEventFragment.setPresenter(addEventPresenter);
-
-        pageAdapter.addFragment(addEventFragment, R.id.bottom_nav_add);
-
         /**
          * Here you may add more fragments!
          */
-
 
         viewPager.setAdapter(pageAdapter);
 

@@ -1,57 +1,50 @@
-package de.in.uulm.map.tinder.main.add;
+package de.in.uulm.map.tinder.main.event;
 
 import com.google.android.gms.location.places.Place;
 
 import android.net.Uri;
 import android.os.Bundle;
 
+import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
+import de.in.uulm.map.tinder.util.BaseView;
 
 /**
  * Created by Jona on 21.05.2017.
  */
 
-public interface AddEventContract {
+public interface EventContract {
 
-    interface View extends MainContract.MainView<Presenter> {
+    interface View extends BaseView<Presenter> {
 
-        void showImage(Uri fileUri);
-        void showDuration(long duration);
+        void showEvent(Event event);
+        void showImage(String image);
+        void showStartDate(long time);
         void showCategory(String category);
         void showLocation(String locationName);
         void showMaxUser(int maxUser);
         void showTitle(String title);
         void showDescription(String description);
-        void setEnableCreateButton(boolean enabled);
+        void setEnableSubmitButton(boolean enabled);
         void showMessage(String message);
-
-        String getTitle();
-        String getDescription();
     }
 
     interface Presenter extends BasePresenter {
 
-        void checkEnableCreateButton();
-        void onImageClicked();
-        void onDurationClicked();
-        void onLocationClicked();
-        void onMaxUserClicked();
-        void onCategoryClicked();
+        void checkEnableSubmitButton();
         void onImageSelected(Uri fileUri);
         void onDurationSelected(long time);
         void onLocationSelected(Place location);
         void onMaxUserSelected(int maxUser);
         void onCategorySelected(String category);
-        void onCreateClicked();
+        void onSubmitClicked();
+        void onTitleChanged(String s);
+        void onDescriptionChanged(String s);
     }
 
     interface Backend {
 
-        void selectImage();
-        void selectDuration();
-        void selectLocation();
-        void selectMaxUser();
-        void selectCategory();
+        void finish();
     }
 }

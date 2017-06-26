@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".groupchat.GroupChatActivity" />
-        <activity android:name=".login.LoginActivity">
+        <activity android:name=".main.event.EventActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

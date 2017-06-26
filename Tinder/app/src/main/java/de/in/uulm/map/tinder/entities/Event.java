@@ -2,6 +2,7 @@ package de.in.uulm.map.tinder.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by Jona on 01.05.2017.
  */
 
-public class Event {
+public class Event implements Serializable {
 
     @SerializedName("EventModelID")
     public String id;
@@ -20,8 +21,8 @@ public class Event {
     @SerializedName("Description")
     public String description;
 
-    @SerializedName("EndDate")
-    public String end_date;
+    @SerializedName("StartDate")
+    public String start_date;
 
     @SerializedName("MaxUsers")
     public int max_user_count;
@@ -31,6 +32,9 @@ public class Event {
 
     @SerializedName("Latitude")
     public double latitude;
+
+    @SerializedName("Location")
+    public String location;
 
     @SerializedName("Category")
     public String category;
