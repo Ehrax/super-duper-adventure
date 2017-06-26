@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.login.LoginActivity;
 import de.in.uulm.map.tinder.filter.FilterActivity;
+import de.in.uulm.map.tinder.tinderview.TinderViewActivity;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -50,6 +51,12 @@ public class MainPresenter implements MainContract.MainPresenter {
                             .MODE_PRIVATE);
             sharedPrefs.edit().clear().apply();
             mBackend.startActivity(new Intent(mContext, LoginActivity.class));
+            return true;
+        }
+
+        if (item.getItemId() == R.id.top_nav_flip_view) {
+            Intent intent = new Intent(mContext, TinderViewActivity.class);
+            mBackend.startActivity(intent);
             return true;
         }
 

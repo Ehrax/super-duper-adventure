@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -131,5 +132,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     public boolean onOptionsItemSelected(MenuItem item) {
 
         return mPresenter.topNavOnOptionSelected(item);
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+
+        super.startActivity(intent);
     }
 }

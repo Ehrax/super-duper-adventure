@@ -29,6 +29,7 @@
     <string name="settings">Settings</string>
     <string name="profile">Profile</string>
     <string name="sign_out">Sign out</string>
+    <string name="flip_view">Flip View</string>
 
     <!-- settings strings -->
     <string name="radius">Search Radius</string>
@@ -61,4 +62,9 @@
         <item>Sonstiges</item>
         <item>Alle</item>
     </string-array>
+
+    <!-- TinderView-->
+    <string name="tinder_view_in">Join</string>
+    <string name="tinder_view_out">Lame</string>
+    <string name="at_time">um</string>
 </resources>

@@ -344,3 +344,4 @@ C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.imageeventrelation.resources
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.creator_event_relation.resources
 C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.newEventKey.resources
+C:\Users\maxka\RepositoriesGitHub\Tinder\TinderServer\TinderServer2\obj\Release\TinderServer2.Migrations.user_event_relation.resources

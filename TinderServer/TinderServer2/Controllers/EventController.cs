@@ -353,7 +353,8 @@ namespace TinderServer2.Controllers
         [AllowAnonymous]
         public async Task<IHttpActionResult> AutoDeleteEvent()
         {
-            var EventsToDelete = db.Events.Where(e => e.StartDate.AddHours(24) < DateTime.Now).ToList();
+            DateTime dateTimeToCompare = DateTime.Now.Subtract(new TimeSpan(24,0,0));
+            var EventsToDelete = db.Events.Where(e => e.StartDate < dateTimeToCompare).ToList();
             foreach (var currentEvent in EventsToDelete)
             {
                 db.Events.Remove(currentEvent);

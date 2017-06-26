@@ -99,7 +99,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         long end_date = new Date().getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         try {
-            end_date = format.parse(e.end_date).getTime();
+            end_date = format.parse(e.start_date).getTime();
         } catch (ParseException ex) {
             ex.printStackTrace();
         }

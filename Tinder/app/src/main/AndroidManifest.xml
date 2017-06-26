@@ -38,6 +38,8 @@
                 android:parentActivityName=".main.MainActivity">
         </activity>
 
+        <activity android:name=".tinderview.TinderViewActivity"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3hMGqs4X_pQg7DrTA8xDS6whsGlu0TV0"/>
