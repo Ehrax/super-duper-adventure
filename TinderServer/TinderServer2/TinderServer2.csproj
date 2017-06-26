@@ -299,6 +299,10 @@
     <Compile Include="Migrations\201706211348247_newEventKey.Designer.cs">
       <DependentUpon>201706211348247_newEventKey.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706251326567_user_event_relation.cs" />
+    <Compile Include="Migrations\201706251326567_user_event_relation.Designer.cs">
+      <DependentUpon>201706251326567_user_event_relation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -434,6 +438,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706211348247_newEventKey.resx">
       <DependentUpon>201706211348247_newEventKey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706251326567_user_event_relation.resx">
+      <DependentUpon>201706251326567_user_event_relation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
