@@ -52,7 +52,8 @@ public class TinderViewFragment extends Fragment implements
         mToolbar = (Toolbar) view.findViewById(R.id
                 .tinder_activity_toolbar);
         mSwipeView = (SwipePlaceHolderView) view.findViewById(R.id.swipeView);
-        mContext = mPresenter.getContext();
+
+        mContext = getActivity();
 
         Point windowSize = DisplaySizeHelper.getDisplaySize(getActivity()
                 .getWindowManager());
@@ -78,6 +79,7 @@ public class TinderViewFragment extends Fragment implements
         for (int i = 0; i < 5; i++) {
             mSwipeView.addView(new TinderCard(mContext, event, mSwipeView));
         }
+
 
         activity.setSupportActionBar(mToolbar);
         //ActionBar actionBar = activity.getSupportActionBar();

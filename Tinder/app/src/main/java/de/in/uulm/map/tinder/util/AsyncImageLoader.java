@@ -51,7 +51,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
             return;
         }
 
-        if(mUri.contains("http://")) {
+        if(mUri.contains("http://")|| mUri.contains("https://")) {
             Network.getInstance(mContext.getApplicationContext())
                     .getImageLoader()
                     .get(mUri, ImageLoader.getImageListener(mView.get(),

@@ -2,6 +2,10 @@ package de.in.uulm.map.tinder.tinderview;
 
 import android.content.Context;
 
+import de.in.uulm.map.tinder.entities.Event;
+
+import java.util.List;
+
 /**
  * Created by maxka on 26.06.2017.
  */
@@ -30,8 +34,8 @@ public class TinderViewPresenter implements TinderViewContract.Presenter {
     }
 
     @Override
-    public Context getContext() {
+    public List<Event> loadEvents() {
 
-        return mContext;
+        return null;
     }
 }

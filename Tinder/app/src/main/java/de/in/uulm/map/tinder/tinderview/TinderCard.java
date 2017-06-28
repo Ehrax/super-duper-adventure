@@ -71,6 +71,7 @@ public class TinderCard {
     private void onSwipeIn() {
 
         Log.d("EVENT", "onSwipedIn");
+
     }
 
     @SwipeInState

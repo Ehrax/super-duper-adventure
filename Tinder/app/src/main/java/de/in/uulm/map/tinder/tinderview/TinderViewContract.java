@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.WindowManager;
 
+import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
+
+import java.util.List;
 
 /**
  * Created by maxka on 26.06.2017.
@@ -15,11 +18,12 @@ public interface TinderViewContract {
 
     interface View extends BaseView<Presenter> {
 
+
     }
 
     interface Presenter extends BasePresenter {
 
-        Context getContext();
+        List<Event> loadEvents();
     }
 
     interface Backend {

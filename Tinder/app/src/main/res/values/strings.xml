@@ -64,7 +64,7 @@
     </string-array>
 
     <!-- TinderView-->
-    <string name="tinder_view_in">Join</string>
+    <string name="tinder_view_in">Rock n´ Roll</string>
     <string name="tinder_view_out">Lame</string>
     <string name="at_time">um</string>
 </resources>

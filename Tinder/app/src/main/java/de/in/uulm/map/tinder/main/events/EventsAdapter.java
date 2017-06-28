@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Jona on 04.05.17.
@@ -92,7 +93,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mDescription.setText(e.description);
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
-
         new AsyncImageDecoder(e.image, new WeakReference<>(holder.mImage))
                 .execute();
 
