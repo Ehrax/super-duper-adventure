@@ -6,13 +6,18 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 import com.mindorks.placeholderview.annotations.*;
 import com.mindorks.placeholderview.annotations.swipe.*;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.network.Network;
+import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageDecoder;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 
@@ -50,7 +55,10 @@ public class TinderCard {
         new AsyncImageDecoder(mEvent.image, new WeakReference<>(mImgEvent))
                 .execute();
         mTxtEventName.setText(mEvent.title + ", " + mEvent
-                .getFormattedStartDate() + R.string.at_time + mEvent.getFormattedStartTime());
+                .getFormattedStartDate() + " " + mContext.getString(R.string
+                .at_time) + " " + mEvent
+                .getFormattedStartTime
+                        ());
         mTxtLocation.setText(mEvent.location);
     }
 
@@ -70,7 +78,25 @@ public class TinderCard {
     @SwipeIn
     private void onSwipeIn() {
 
-        Log.d("EVENT", "onSwipedIn");
+        String url = mContext.getString(R.string.API_base);
+        url += mContext.getString(R.string.API_event);
+        url += "/" + mEvent.id + "/join";
+
+        ServerRequest req = new ServerRequest(
+                Request.Method.PUT,
+                url,
+                null,
+                mContext,
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+
+
+                    }
+                },
+                ServerRequest.DEFAULT_ERROR_LISTENER);
+
+        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
 
     }
 

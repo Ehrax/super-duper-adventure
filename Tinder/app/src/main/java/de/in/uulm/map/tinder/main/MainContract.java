@@ -32,5 +32,7 @@ public interface MainContract {
     interface Backend {
 
         void startActivity(Intent intent);
+
+        void startActivityFlip(Intent intent);
     }
 }

@@ -52,7 +52,7 @@ namespace TinderServer2.Models
         public double Longitude { get; set; }
         public string Location { get; set; }
         public Categories.Category Category { get; set; }
-        public string EventImageBase64 { get; set; }
+        public string ImageBase64 { get; set; }
     }
 
     public class ReturnEventBindingModel

@@ -2,6 +2,7 @@ package de.in.uulm.map.tinder.tinderview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
 import de.in.uulm.map.tinder.entities.Event;
@@ -24,11 +25,15 @@ public interface TinderViewContract {
     interface Presenter extends BasePresenter {
 
         List<Event> loadEvents();
+
+        boolean topNavOnOptionSelected(MenuItem item);
     }
 
     interface Backend {
 
         void startActivity(Intent intent);
+
+        void startActivityFlip(Intent intent);
 
     }
 }

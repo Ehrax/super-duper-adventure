@@ -22,7 +22,7 @@ import de.in.uulm.map.tinder.main.events.EventsPresenter;
  * Created by Jona on 21.05.2017.
  */
 
-public class MainActivity extends AppCompatActivity implements MainContract.Backend{
+public class MainActivity extends AppCompatActivity implements MainContract.Backend {
 
     private MainPresenter mPresenter;
 
@@ -138,5 +138,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     public void startActivity(Intent intent) {
 
         super.startActivity(intent);
+    }
+
+    @Override
+    public void startActivityFlip(Intent intent) {
+
+        startActivity(intent);
+        overridePendingTransition(R.transition.grow_from_middle, R
+                .transition.shrink_to_middle);
     }
 }

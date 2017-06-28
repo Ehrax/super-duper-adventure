@@ -33,13 +33,13 @@ namespace TinderServer2.Models
 
         public void UpdateEvent  (UpdateEventBindingModel updateEventModel)
         {
-            if (String.Empty.Equals(updateEventModel.EventImageBase64))
+            if (String.Empty.Equals(updateEventModel.ImageBase64))
             {
                 ImagePath = null;
             }
-            else if (updateEventModel.EventImageBase64 != null)
+            else if (updateEventModel.ImageBase64 != null)
             {
-                string filePath = ImageHelper.SaveBase64ImageToFileSystem(updateEventModel.EventImageBase64, ImageHelper.ImageType.EVENTIMAGE, Title + "_" + Creator.Id);
+                string filePath = ImageHelper.SaveBase64ImageToFileSystem(updateEventModel.ImageBase64, ImageHelper.ImageType.EVENTIMAGE, Title + "_" + Creator.Id);
                 if (filePath.Equals("NotAImage"))
                 {
                     throw new InvalidCastException("NotAImage");

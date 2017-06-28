@@ -12,5 +12,6 @@
             android:textStyle="bold"
             android:layout_margin="40dp"
             android:textColor="@android:color/holo_red_light"
-            android:text="@string/tinder_view_out"/>
+            android:text="@string/tinder_view_out"
+            android:background="@drawable/textview_border_tinder_swipe_out"/>
 </LinearLayout>

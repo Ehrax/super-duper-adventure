@@ -35,8 +35,8 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
     /**
      * This constructor will set all required member variables.
      *
-     * @param uri the uri of the image
-     * @param view the view in which the image should be loaded
+     * @param uri     the uri of the image
+     * @param view    the view in which the image should be loaded
      * @param context the current context.
      */
     public AsyncImageLoader(String uri,
@@ -47,11 +47,11 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
         this.mView = view;
         this.mContext = context;
 
-        if(view.get().getTag() != null && view.get().getTag().equals(mUri)) {
+        if (view.get().getTag() != null && view.get().getTag().equals(mUri)) {
             return;
         }
 
-        if(mUri.contains("http://")|| mUri.contains("https://")) {
+        if (mUri.contains("http://") || mUri.contains("https://")) {
             Network.getInstance(mContext.getApplicationContext())
                     .getImageLoader()
                     .get(mUri, ImageLoader.getImageListener(mView.get(),
@@ -65,7 +65,8 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(Void... params) {
 
-        if(mUri.contains("http://") || mUri.isEmpty()) {
+        if (mUri.contains("http://") || mUri.contains("https://") || mUri.isEmpty
+                ()) {
             return null;
         }
 
@@ -150,7 +151,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
             return mContext.getAssets().open(mUri.substring(22));
         }
 
-        if(mUri.contains("content://")) {
+        if (mUri.contains("content://")) {
             return mContext.getContentResolver().openInputStream(Uri.parse(mUri));
         }
 

@@ -41,4 +41,19 @@ public class TinderViewActivity extends AppCompatActivity implements
 
         super.startActivity(intent);
     }
+
+    @Override
+    public void startActivityFlip(Intent intent) {
+        startActivity(intent);
+        overridePendingTransition(R.transition.grow_from_middle,R.transition
+                .shrink_to_middle);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        overridePendingTransition(R.transition.grow_from_middle,R.transition
+                .shrink_to_middle);
+        super.onBackPressed();
+    }
 }
