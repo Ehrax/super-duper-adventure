@@ -20,7 +20,6 @@ public class EventActivity extends AppCompatActivity implements EventContract.Ba
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.content_frame_layout);
 
         EventFragment fragment = (EventFragment) getSupportFragmentManager()

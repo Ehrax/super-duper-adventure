@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.login.LoginActivity;
 import de.in.uulm.map.tinder.filter.FilterActivity;
+import de.in.uulm.map.tinder.main.event.EventActivity;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -40,6 +41,12 @@ public class MainPresenter implements MainContract.MainPresenter {
 
         if (item.getItemId() == R.id.top_nav_filter) {
             Intent intent = new Intent(mContext, FilterActivity.class);
+            mContext.startActivity(intent);
+            return true;
+        }
+
+        if(item.getItemId() == R.id.top_nav_add) {
+            Intent intent = new Intent(mContext, EventActivity.class);
             mContext.startActivity(intent);
             return true;
         }

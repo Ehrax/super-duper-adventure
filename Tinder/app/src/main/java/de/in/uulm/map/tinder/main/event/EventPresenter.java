@@ -2,7 +2,6 @@ package de.in.uulm.map.tinder.main.event;
 
 import com.google.android.gms.location.places.Place;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import android.content.Context;
@@ -13,6 +12,7 @@ import com.android.volley.Response;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageEncoder;
@@ -56,14 +56,14 @@ public class EventPresenter implements EventContract.Presenter {
 
         if(mEvent == null) {
             mEvent = new Event();
-            mEvent.image = "";
+            mEvent.has_image = false;
             mEvent.title = "";
             mEvent.description = "";
             mEvent.start_date = "";
             mEvent.longitude = -181;
             mEvent.latitude = -90;
             mEvent.location = "";
-            mEvent.category = "Ausgehen";
+            mEvent.category = "0";
             mEvent.max_user_count = 5;
         }
 
@@ -75,11 +75,11 @@ public class EventPresenter implements EventContract.Presenter {
         boolean enabled = true;
         enabled &= mEvent.title != null && !mEvent.title.isEmpty();
         enabled &= mEvent.title != null && !mEvent.title.isEmpty();
-        enabled &= mEvent.category != null;
-        enabled &= mEvent.start_date != null;
+        enabled &= mEvent.category != null && !mEvent.start_date.isEmpty();
+        enabled &= mEvent.start_date != null && !mEvent.start_date.isEmpty();
         enabled &= Math.abs(mEvent.latitude) < 181;
         enabled &= Math.abs(mEvent.longitude) < 91;
-        enabled &= mEvent.location != null;
+        enabled &= mEvent.location != null && !mEvent.start_date.isEmpty();
         enabled &= mEvent.max_user_count != -1;
         mView.setEnableSubmitButton(enabled);
     }
@@ -87,8 +87,8 @@ public class EventPresenter implements EventContract.Presenter {
     @Override
     public void onImageSelected(Uri imageUri) {
 
-        mEvent.image = imageUri.toString();
-        mView.showImage(mEvent.image);
+        mEvent.has_image = true;
+        mView.showImage(imageUri.toString());
         checkEnableSubmitButton();
     }
 
@@ -163,12 +163,13 @@ public class EventPresenter implements EventContract.Presenter {
         obj.addProperty("Category",
                 categories.indexOf(obj.get("Category").getAsString()));
 
-        if(!mEvent.image.contains("content://")) {
+        if(mView.getImageUri() == null || !mView.getImageUri().contains("content://")) {
             sendEvent(obj);
+            return;
         }
 
         new AsyncImageEncoder(
-                Uri.parse(mEvent.image),
+                Uri.parse(mView.getImageUri()),
                 mContext,
                 new AsyncImageEncoder.OnFinishedListener() {
                     @Override
@@ -185,7 +186,7 @@ public class EventPresenter implements EventContract.Presenter {
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_event);
 
-        int method = mEvent == null ? Request.Method.POST : Request.Method.PUT;
+        int method = mCreateMode ? Request.Method.POST : Request.Method.PUT;
 
         ServerRequest req = new ServerRequest(
                 method,
@@ -199,7 +200,7 @@ public class EventPresenter implements EventContract.Presenter {
                         mBackend.finish();
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
 

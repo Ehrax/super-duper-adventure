@@ -39,8 +39,8 @@ public class Event implements Serializable {
     @SerializedName("Category")
     public String category;
 
-    @SerializedName("EventImageBase64")
-    public String image;
+    @SerializedName("HasImage")
+    public boolean has_image;
 
     @SerializedName("Creator")
     public User creator;

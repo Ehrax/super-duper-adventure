@@ -11,8 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.event.EventFragment;
-import de.in.uulm.map.tinder.main.event.EventPresenter;
 import de.in.uulm.map.tinder.main.eventlist.EventListAdapter;
 import de.in.uulm.map.tinder.main.eventlist.EventListFragment;
 import de.in.uulm.map.tinder.main.eventlist.EventListPresenter;
@@ -115,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.top_navigation_bar, menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar_main, menu);
         return true;
     }
 

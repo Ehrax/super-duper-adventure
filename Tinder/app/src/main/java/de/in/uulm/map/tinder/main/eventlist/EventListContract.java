@@ -10,14 +10,14 @@ import de.in.uulm.map.tinder.util.BasePresenter;
 
 public interface EventListContract {
 
-    interface EventsView extends MainContract.MainView<EventsPresenter> {
+    interface EventListView extends MainContract.MainView<EventListPresenter> {
 
         EventListAdapter getAdapter();
     }
 
-    interface EventsPresenter extends BasePresenter {
+    interface EventListPresenter extends BasePresenter {
 
-        void loadEvents();
+        void loadEvents(EventListView view);
 
         void onDeleteClicked(Event e);
         void onJoinClicked(Event e);

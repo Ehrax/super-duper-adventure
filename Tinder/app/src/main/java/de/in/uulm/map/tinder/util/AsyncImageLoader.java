@@ -51,7 +51,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
             return;
         }
 
-        if(mUri.contains("http://")) {
+        if(mUri.startsWith("http")) {
             Network.getInstance(mContext.getApplicationContext())
                     .getImageLoader()
                     .get(mUri, ImageLoader.getImageListener(mView.get(),
@@ -65,7 +65,7 @@ public class AsyncImageLoader extends AsyncTask<Void, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(Void... params) {
 
-        if(mUri.contains("http://") || mUri.isEmpty()) {
+        if(mUri.startsWith("http") || mUri.isEmpty()) {
             return null;
         }
 

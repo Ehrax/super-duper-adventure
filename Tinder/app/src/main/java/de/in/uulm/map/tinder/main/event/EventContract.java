@@ -19,7 +19,7 @@ public interface EventContract {
     interface View extends BaseView<Presenter> {
 
         void showEvent(Event event);
-        void showImage(String image);
+        void showImage(String uri);
         void showStartDate(long time);
         void showCategory(String category);
         void showLocation(String locationName);
@@ -28,6 +28,7 @@ public interface EventContract {
         void showDescription(String description);
         void setEnableSubmitButton(boolean enabled);
         void showMessage(String message);
+        String getImageUri();
     }
 
     interface Presenter extends BasePresenter {

@@ -15,7 +15,7 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
-import de.in.uulm.map.tinder.util.AsyncImageDecoder;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -30,15 +30,21 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
 
     private final Context mContext;
 
-    private final EventListContract.EventsPresenter mPresenter;
+    private final EventListContract.EventListPresenter mPresenter;
 
     public ArrayList<Event> mEvents;
 
-    public EventListAdapter(Context context, EventListContract.EventsPresenter presenter) {
+    public EventListAdapter(Context context, EventListContract.EventListPresenter presenter) {
 
         mContext = context;
         mEvents = new ArrayList<>();
         mPresenter = presenter;
+    }
+
+    public void removeEvent(Event event) {
+
+        mEvents.remove(event);
+        notifyDataSetChanged();
     }
 
     public void setEvents(ArrayList<Event> events) {
@@ -95,8 +101,16 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        new AsyncImageDecoder(e.image, new WeakReference<>(holder.mImage))
-                .execute();
+        if(e.has_image) {
+            String uri = mContext.getString(R.string.API_base);
+            uri += mContext.getString(R.string.API_event_image);
+            uri += "/" + e.id;
+            new AsyncImageLoader(uri,
+                    new WeakReference<>(holder.mImage), mContext).execute();
+        } else {
+            //TODO: load default category images here
+            holder.mImage.setImageResource(R.drawable.image_placeholder);
+        }
 
         long end_date = new Date().getTime();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");

@@ -1,16 +1,10 @@
 package de.in.uulm.map.tinder.main.eventlist;
 
-import com.google.gson.Gson;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 
 import com.android.volley.Request;
@@ -18,49 +12,45 @@ import com.android.volley.Response;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.entities.User;
-import de.in.uulm.map.tinder.filter.FilterPresenter;
 import de.in.uulm.map.tinder.main.event.EventActivity;
+import de.in.uulm.map.tinder.network.DefaultErrorListener;
+import de.in.uulm.map.tinder.network.EventRequest;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by alexanderrasputin on 03.05.17.
  */
 
-public class EventListPresenter implements EventListContract.EventsPresenter {
+public class EventListPresenter implements EventListContract.EventListPresenter {
 
     private final Context mContext;
 
-    private EventListContract.EventsView mNearbyView;
+    private EventListContract.EventListView mNearbyView;
 
-    private EventListContract.EventsView mJoinedView;
+    private EventListContract.EventListView mJoinedView;
 
-    private EventListContract.EventsView mCreatedView;
+    private EventListContract.EventListView mCreatedView;
 
     public EventListPresenter(Context context) {
 
         mContext = context;
     }
 
-    public void setNearbyView(EventListContract.EventsView view) {
+    public void setNearbyView(EventListContract.EventListView view) {
 
         mNearbyView = view;
     }
 
-    public void setJoinedView(EventListContract.EventsView view) {
+    public void setJoinedView(EventListContract.EventListView view) {
 
         mJoinedView = view;
     }
 
-    public void setCreatedView(EventListContract.EventsView view) {
+    public void setCreatedView(EventListContract.EventListView view) {
 
         mCreatedView = view;
     }
@@ -71,29 +61,12 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
     }
 
     @Override
-    public void loadEvents() {
-
-        SharedPreferences accountPrefs = mContext.getSharedPreferences(
-                mContext.getString(R.string.store_account),
-                Context.MODE_PRIVATE);
-
-        final String userName = accountPrefs.getString(
-                mContext.getString(R.string.store_username), "");
-
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(mContext);
-
-        int radius = prefs.getInt(FilterPresenter.EVENT_RADIUS, 1);
-        String category = prefs.getString(FilterPresenter.EVENT_CATEGORY, "all");
-        if (category.equals("Alle")) {
-            category = "all";
-        } else {
-            category = category.toLowerCase();
-        }
+    public void loadEvents(final EventListContract.EventListView view) {
 
         // TODO: asking for permissions this way sucks!
 
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
 
             ActivityCompat.requestPermissions((Activity) mContext,
@@ -101,103 +74,32 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
             return;
         }
 
-        LocationManager locationManager = (LocationManager)
-                mContext.getSystemService(Context.LOCATION_SERVICE);
-
-        // TODO: trigger real location updates here and
-        // replace null test and default coordinates
-
-        Location location = locationManager.
-                getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        // FORE coordinates as default coordinates, cause why not?
-        double latitude = 48.4222129;
-        double longitude = 9.9575566;
-
-        if (location != null) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
+        String groupUri;
+        if(view == mCreatedView) {
+            groupUri = "Created";
+        } else if (view == mJoinedView) {
+            groupUri = "Joined";
+        } else {
+            groupUri = "";
         }
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
-        url += "?category=" + category;
-        url += "&distance=" + radius;
-        url += "&latitude=" + latitude;
-        url += "&longitude=" + longitude;
-
-        final ServerRequest req = new ServerRequest(
-                Request.Method.GET,
-                url,
-                null,
+        EventRequest req = EventRequest.newInstance(
+                groupUri,
                 mContext,
-                new Response.Listener<byte[]>() {
+                new Response.Listener<List<Event>>() {
                     @Override
-                    public void onResponse(byte[] response) {
+                    public void onResponse(List<Event> response) {
 
-                        Gson gson = new Gson();
-
-                        String s = new String(response);
-
-                        List<Event> events = Arrays.asList(gson.fromJson(
-                                new String(response), Event[].class));
-
-                        // TODO: it feels like those allocation are somewhat slow
-                        // maybe avoid creating the lists here
-
-                        ArrayList<Event> nearbyEvents = new ArrayList<>();
-                        ArrayList<Event> joinedEvents = new ArrayList<>();
-                        ArrayList<Event> createdEvents = new ArrayList<>();
-
-                        for (Event e : events) {
-
-                            // TODO: remove this and make autodelete working again
-
-                            long end_date = new Date().getTime();
-                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-                            try {
-                                end_date = format.parse(e.start_date).getTime();
-                            } catch (ParseException ex) {
-                                ex.printStackTrace();
-                            }
-
-                            long left = end_date - new Date().getTime();
-
-                            if(left <= 0) {
-                                continue;
-                            }
-
-                            boolean currentUserParticipates = false;
-
-                            for (User u : e.participants) {
-                                if (u.name.equals(userName)) {
-                                    currentUserParticipates = true;
-                                    break;
-                                }
-                            }
-
-                            if (!currentUserParticipates) {
-                                nearbyEvents.add(e);
-                            } else if (!e.creator.name.equals(userName)) {
-                                joinedEvents.add(e);
-                            } else {
-                                createdEvents.add(e);
-                            }
-                        }
-
-
-                        mNearbyView.getAdapter().setEvents(nearbyEvents);
-                        mJoinedView.getAdapter().setEvents(joinedEvents);
-                        mCreatedView.getAdapter().setEvents(createdEvents);
+                        view.getAdapter().setEvents((ArrayList<Event>)response);
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
-    public void onDeleteClicked(Event e) {
+    public void onDeleteClicked(final Event e) {
 
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_event);
@@ -212,10 +114,10 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        loadEvents();
+                        mCreatedView.getAdapter().removeEvent(e);
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
@@ -236,10 +138,10 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        loadEvents();
+                        // TODO: drink some tea
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
@@ -260,10 +162,10 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        loadEvents();
+                        // TODO: drink some coffee
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
     }
@@ -271,6 +173,7 @@ public class EventListPresenter implements EventListContract.EventsPresenter {
     public void onEditClicked(Event e) {
 
         Intent intent = new Intent(mContext, EventActivity.class);
+        intent.putExtra(EventActivity.EVENT_EXTRA, e);
         mContext.startActivity(intent);
     }
 }

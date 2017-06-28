@@ -18,15 +18,22 @@ import de.in.uulm.map.tinder.main.MainPageAdapter;
  * Created by Jona on 05.05.17.
  */
 
-public class EventListFragment extends Fragment implements EventListContract.EventsView{
+public class EventListFragment extends Fragment implements EventListContract.EventListView {
 
     public static final String TAB_NEARBY = "Nearby";
     public static final String TAB_JOINED = "Joined";
     public static final String TAB_MY_EVENTS = "My Events";
 
-    private EventListContract.EventsPresenter mPresenter;
+    private EventListContract.EventListPresenter mPresenter;
 
     private EventListAdapter mAdapter;
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        mPresenter.loadEvents(this);
+    }
 
     public static EventListFragment newInstance(String title) {
 
@@ -50,7 +57,7 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
     }
 
     @Override
-    public void setPresenter(EventListContract.EventsPresenter presenter) {
+    public void setPresenter(EventListContract.EventListPresenter presenter) {
 
         this.mPresenter = presenter;
     }
@@ -77,13 +84,13 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
     @Override
     public void onFragmentBecomesVisible() {
 
-        mPresenter.loadEvents();
+        mPresenter.loadEvents(this);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.top_nav_bar_events, menu);
+        inflater.inflate(R.menu.top_nav_bar_eventlist, menu);
     }
 
     @Override

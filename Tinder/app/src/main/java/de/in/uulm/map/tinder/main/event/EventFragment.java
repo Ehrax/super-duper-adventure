@@ -24,13 +24,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -40,12 +45,12 @@ import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.util.AsyncImageDecoder;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 import de.in.uulm.map.tinder.util.PickerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,7 +83,7 @@ public class EventFragment extends Fragment implements EventContract.View {
 
     private EditText mCategory;
 
-    private Button mCreate;
+    private MenuItem mSubmit;
 
     private String mLastImagePath;
 
@@ -95,6 +100,7 @@ public class EventFragment extends Fragment implements EventContract.View {
 
         View view = inflater.inflate(
                 R.layout.fragment_event, container, false);
+
 
         mImage = (ImageView) view.findViewById(R.id.add_image);
         mImage.setOnClickListener(new View.OnClickListener() {
@@ -187,18 +193,36 @@ public class EventFragment extends Fragment implements EventContract.View {
             }
         });
 
-        mCreate = (Button) view.findViewById(R.id.add_btn_create);
-        mCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.event_activity_toolbar);
+        activity.setSupportActionBar(toolbar);
 
-                mPresenter.onSubmitClicked();
-            }
-        });
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        mPresenter.start();
+        setHasOptionsMenu(true);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.top_nav_bar_event, menu);
+        mSubmit = menu.getItem(0);
+
+        mPresenter.start();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.top_nav_submit) {
+            mPresenter.onSubmitClicked();
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -240,34 +264,54 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public void setEnableSubmitButton(boolean enabled) {
 
-        mCreate.setEnabled(enabled);
+        mSubmit.getIcon().setAlpha(enabled ? 255 : 50);
+        mSubmit.setEnabled(enabled);
     }
 
     @Override
     public void showEvent(Event event) {
 
-        showImage(event.image);
+        if(event.has_image) {
+            String uri = getString(R.string.API_base);
+            uri += getString(R.string.API_event_image);
+            uri += "/" + event.id;
+            showImage(uri);
+        } else {
+            //TODO: load category image here
+        }
+
         mTitle.setText(event.title);
         mDescription.setText(event.description);
         mLocation.setText(event.location);
-        mStartDate.setText(event.start_date);
         mMaxUser.setText("" + event.max_user_count);
-        mCategory.setText(event.category);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        try {
+            showStartDate(format.parse(event.start_date).getTime());
+        } catch (ParseException e) {
+            mStartDate.setText("");
+        }
+
+        final String[] categories =
+                getResources().getStringArray(R.array.categories);
+        int index = Math.max(0, Integer.parseInt(event.category));
+        String category = categories[index];
+        mCategory.setText(category);
+        mPresenter.onCategorySelected(category);
     }
 
     @Override
-    public void showImage(String image) {
+    public String getImageUri() {
 
-        if (image == null || image.isEmpty()) {
-            mImage.setImageResource(R.drawable.image_placeholder);
-        } else if (image.contains("content://")) {
-            new AsyncImageLoader(image,
-                    new WeakReference<>(mImage),
-                    getContext()).execute();
-        } else {
-            new AsyncImageDecoder(image,
-                    new WeakReference<>(mImage));
-        }
+        return (String) mImage.getTag();
+    }
+
+    @Override
+    public void showImage(String uri) {
+
+        new AsyncImageLoader(uri,
+                new WeakReference<>(mImage),
+                getContext()).execute();
     }
 
     @Override
@@ -345,7 +389,7 @@ public class EventFragment extends Fragment implements EventContract.View {
         String file_name = "JPEG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").
                 format(new Date()) + ".jpg";
         File directory = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+               Environment.DIRECTORY_PICTURES);
         File img = new File(directory, file_name);
 
         mLastImagePath = img.getAbsolutePath();

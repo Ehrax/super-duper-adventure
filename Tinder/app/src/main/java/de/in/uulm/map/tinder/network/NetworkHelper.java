@@ -22,15 +22,15 @@ public class NetworkHelper {
         if (context == null) {
             return false;
         }
+
         ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
         if (netInfo != null && netInfo.isConnected()) {
             return true;
         }
+
         return false;
-
-
     }
-
 }
