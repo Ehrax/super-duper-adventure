@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,6 +14,7 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.main.eventlist.EventListAdapter;
 import de.in.uulm.map.tinder.main.eventlist.EventListFragment;
 import de.in.uulm.map.tinder.main.eventlist.EventListPresenter;
+import de.in.uulm.map.tinder.util.ActivityUtils;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -33,59 +34,20 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
         mPresenter = new MainPresenter(this, this);
 
-        final MainPageAdapter pageAdapter =
-                new MainPageAdapter(getSupportFragmentManager());
-
         final BottomNavigationView bottomNavigationView =
                 (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // not used ...
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-                bottomNavigationView.setSelectedItemId(
-                        pageAdapter.getIdByIndex(position));
-
-                MainContract.MainView fragment = (MainContract.MainView)
-                        pageAdapter.getItem(position);
-                fragment.onFragmentBecomesVisible();
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // not used ...
-            }
-        });
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        viewPager.setCurrentItem(
-                                pageAdapter.getIndexById(item.getItemId()));
-                        return true;
-                    }
-                });
-
         EventListPresenter eventListPresenter = new EventListPresenter(this);
 
-        EventListFragment nearbyFragment =
+        final EventListFragment nearbyFragment =
                 EventListFragment.newInstance(EventListFragment.TAB_NEARBY);
         nearbyFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        EventListFragment joinedFragment =
+        final EventListFragment joinedFragment =
                 EventListFragment.newInstance(EventListFragment.TAB_JOINED);
         joinedFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        EventListFragment createdFragment =
+        final EventListFragment createdFragment =
                 EventListFragment.newInstance(EventListFragment.TAB_MY_EVENTS);
         createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
@@ -97,15 +59,43 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         joinedFragment.setPresenter(eventListPresenter);
         createdFragment.setPresenter(eventListPresenter);
 
-        pageAdapter.addFragment(nearbyFragment, R.id.bottom_nav_nearby);
-        pageAdapter.addFragment(joinedFragment, R.id.bottom_nav_joined);
-        pageAdapter.addFragment(createdFragment, R.id.bottom_nav_created);
+        EventListFragment fragment = (EventListFragment)
+                getSupportFragmentManager().findFragmentById(R.id.content_frame);
 
-        /**
-         * Here you may add more fragments!
-         */
+        if(fragment == null) {
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
+                    nearbyFragment, R.id.content_frame);
+        }
 
-        viewPager.setAdapter(pageAdapter);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                        Fragment fragment = null;
+
+                        if(item.getItemId() == R.id.bottom_nav_nearby) {
+                            fragment = nearbyFragment;
+                        } else if (item.getItemId() == R.id.bottom_nav_joined) {
+                            fragment = joinedFragment;
+                        } else if (item.getItemId() == R.id.bottom_nav_created) {
+                            fragment = createdFragment;
+                        }
+
+                        if(fragment == null) {
+                            return false;
+                        }
+
+                        ActivityUtils.addFragmentToActivity(
+                                getSupportFragmentManager(),
+                                fragment,
+                                R.id.content_frame);
+
+                        return true;
+                    }
+                });
+
+        // bottomNavigationView.setSelectedItemId(R.id.bottom_nav_nearby);
 
         super.onCreate(savedInstanceState);
     }

@@ -264,7 +264,7 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public void setEnableSubmitButton(boolean enabled) {
 
-        mSubmit.getIcon().setAlpha(enabled ? 255 : 50);
+        mSubmit.getIcon().setAlpha(enabled ? 255 : 110);
         mSubmit.setEnabled(enabled);
     }
 

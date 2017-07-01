@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
             android:id="@+id/bottom_nav_nearby"
-            android:icon="@drawable/calendar_clock"
+            android:icon="@drawable/nearby"
             android:title="@string/events_nearby"
             app:showAsAction="always" />
     <item

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 /**
  * Created by Jona on 05.05.17.
@@ -37,13 +36,7 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
 
     public static EventListFragment newInstance(String title) {
 
-        Bundle args = new Bundle();
-        args.putString(MainPageAdapter.TAB_TITLE, title);
-
-        EventListFragment fragment = new EventListFragment();
-        fragment.setArguments(args);
-
-        return fragment;
+        return new EventListFragment();
     }
 
     public EventListFragment() {
