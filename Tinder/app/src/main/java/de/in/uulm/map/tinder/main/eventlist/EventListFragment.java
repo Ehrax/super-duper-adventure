@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main.eventlist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,8 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
     private EventListContract.EventListPresenter mPresenter;
 
     private EventListAdapter mAdapter;
+
+    private RecyclerView mRecyclerView;
 
     @Override
     public void onResume() {
@@ -62,12 +65,12 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.event_list, container, false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.event_list);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.event_list);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         onFragmentBecomesVisible();
 
@@ -76,7 +79,16 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
 
     @Override
     public void onFragmentBecomesVisible() {
+        mPresenter.loadEvents(this);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mAdapter = new EventListAdapter(getContext(), mPresenter);
+        mRecyclerView.setAdapter(mAdapter);
         mPresenter.loadEvents(this);
     }
 

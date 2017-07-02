@@ -2,10 +2,10 @@ package de.in.uulm.map.tinder.main.eventlist;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class EventListPresenter implements EventListContract.EventListPresenter {
 
-    private final Context mContext;
+    private final AppCompatActivity mActivity;
 
     private EventListContract.EventListView mNearbyView;
 
@@ -35,9 +35,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
     private EventListContract.EventListView mCreatedView;
 
-    public EventListPresenter(Context context) {
+    public EventListPresenter(AppCompatActivity context) {
 
-        mContext = context;
+        mActivity = context;
     }
 
     public void setNearbyView(EventListContract.EventListView view) {
@@ -65,11 +65,11 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
         // TODO: asking for permissions this way sucks!
 
-        if (ActivityCompat.checkSelfPermission(mContext,
+        if (ActivityCompat.checkSelfPermission(mActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
 
-            ActivityCompat.requestPermissions((Activity) mContext,
+            ActivityCompat.requestPermissions((Activity) mActivity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             return;
         }
@@ -85,7 +85,7 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
         EventRequest req = EventRequest.newInstance(
                 groupUri,
-                mContext,
+                mActivity,
                 new Response.Listener<List<Event>>() {
                     @Override
                     public void onResponse(List<Event> response) {
@@ -93,23 +93,23 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                         view.getAdapter().setEvents((ArrayList<Event>)response);
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
     public void onDeleteClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id;
 
         ServerRequest req = new ServerRequest(
                 Request.Method.DELETE,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
@@ -118,23 +118,23 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                         mJoinedView.getAdapter().removeEvent(e);
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
     public void onJoinClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id + "/join";
 
         ServerRequest req = new ServerRequest(
                 Request.Method.PUT,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
@@ -143,23 +143,23 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                         loadEvents(mJoinedView);
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
     public void onLeaveClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id + "/leave";
 
         ServerRequest req = new ServerRequest(
                 Request.Method.PUT,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
@@ -168,15 +168,15 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                         loadEvents(mNearbyView);
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     public void onEditClicked(Event e) {
 
-        Intent intent = new Intent(mContext, EventActivity.class);
+        Intent intent = new Intent(mActivity, EventActivity.class);
         intent.putExtra(EventActivity.EVENT_EXTRA, e);
-        mContext.startActivity(intent);
+        mJoinedView.startActivityForResult(intent, 0);
     }
 }
