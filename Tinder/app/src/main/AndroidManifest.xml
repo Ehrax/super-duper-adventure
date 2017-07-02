@@ -45,14 +45,15 @@
                 android:screenOrientation="portrait"
                 android:parentActivityName=".main.MainActivity"/>
 
+        <activity android:name=".profile.ProfileActivity"
+                android:parentActivityName=".main.MainActivity"
+                android:screenOrientation="portrait" />
+
         <activity android:name=".chat.ChatActivity"
                 android:screenOrientation="portrait"/>
 
         <activity android:name=".groupchat.GroupChatActivity"
                 android:screenOrientation="portrait"/>
-
-        <activity android:name=".profile.ProfileActivity"
-                android:screenOrientation="portrait"></activity>
 
         <meta-data
                 android:name="com.google.android.geo.API_KEY"

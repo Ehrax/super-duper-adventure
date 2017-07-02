@@ -13,6 +13,7 @@ public interface EventListContract {
     interface EventListView extends MainContract.MainView<EventListPresenter> {
 
         EventListAdapter getAdapter();
+        String getGroupUri();
     }
 
     interface EventListPresenter extends BasePresenter {
