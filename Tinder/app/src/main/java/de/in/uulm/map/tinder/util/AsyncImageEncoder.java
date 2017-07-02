@@ -24,7 +24,7 @@ public class AsyncImageEncoder extends AsyncTask<Void, Void, String> {
 
     private Context mContext;
 
-    private OnFinishedListener mListner;
+    private OnFinishedListener mListener;
 
     public interface OnFinishedListener {
 
@@ -41,7 +41,7 @@ public class AsyncImageEncoder extends AsyncTask<Void, Void, String> {
 
         mUri = uri;
         mContext = context;
-        mListner = listener;
+        mListener = listener;
     }
 
     @Override
@@ -49,9 +49,15 @@ public class AsyncImageEncoder extends AsyncTask<Void, Void, String> {
 
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
+            options.inJustDecodeBounds = true;
 
             InputStream in = mContext.getContentResolver().openInputStream(mUri);
+            BitmapFactory.decodeStream(in, null, options);
+
+            options.inSampleSize = calculateInSampleSize(options, 512, 512);
+            options.inJustDecodeBounds = false;
+
+            in = mContext.getContentResolver().openInputStream(mUri);
             Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -64,9 +70,34 @@ public class AsyncImageEncoder extends AsyncTask<Void, Void, String> {
         }
     }
 
+    /**
+     * Shamelessly ripped from here: (as usual)
+     *
+     * https://developer.android.com/training/displaying-bitmaps/load-bitmap.html#load-bitmap
+     */
+    private int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     @Override
     protected void onPostExecute(String encoded) {
 
-        mListner.onFinished(encoded);
+        mListener.onFinished(encoded);
     }
 }
