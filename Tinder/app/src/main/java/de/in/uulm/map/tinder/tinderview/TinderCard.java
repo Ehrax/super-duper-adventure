@@ -14,6 +14,7 @@ import com.mindorks.placeholderview.annotations.swipe.*;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageDecoder;
@@ -52,8 +53,17 @@ public class TinderCard {
     @Resolve
     private void onResolved() {
 
-        new AsyncImageDecoder(mEvent.image, new WeakReference<>(mImgEvent))
-                .execute();
+        if(mEvent.has_image) {
+            String uri = mContext.getString(R.string.API_base);
+            uri += mContext.getString(R.string.API_event_image);
+            uri += "/" + mEvent.id;
+            new AsyncImageLoader(uri,
+                    new WeakReference<>(mImgEvent), mContext).execute();
+        } else {
+            //TODO: load default category images here
+            mImgEvent.setImageResource(R.drawable.image_placeholder);
+        }
+
         mTxtEventName.setText(mEvent.title + ", " + mEvent
                 .getFormattedStartDate() + " " + mContext.getString(R.string
                 .at_time) + " " + mEvent
@@ -94,7 +104,7 @@ public class TinderCard {
 
                     }
                 },
-                ServerRequest.DEFAULT_ERROR_LISTENER);
+                new DefaultErrorListener(mContext));
 
         Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
 

@@ -49,13 +49,13 @@ public class AsyncImageEncoder extends AsyncTask<Void, Void, String> {
 
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
+            //options.inSampleSize = 8;
 
             InputStream in = mContext.getContentResolver().openInputStream(mUri);
             Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
             byte[] array = out.toByteArray();
             return Base64.encodeToString(array, Base64.DEFAULT);

@@ -73,22 +73,25 @@ public class TinderViewFragment extends Fragment implements
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg));
 
 
-        List<Event> events = mPresenter.loadEvents();
-
-        for (Event event : events) {
-            mSwipeView.addView(new TinderCard(mContext, event, mSwipeView));
-        }
-
+        mPresenter.loadEvents();
 
         activity.setSupportActionBar(mToolbar);
-        //ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
 
         return view;
     }
 
     @Override
+    public void setEvents(List<Event> eventList) {
+
+        for (Event event : eventList) {
+            mSwipeView.addView(new TinderCard(mContext, event, mSwipeView));
+        }
+    }
+
+    @Override
     public void setPresenter(TinderViewContract.Presenter presenter) {
+
         mPresenter = presenter;
     }
 
@@ -101,6 +104,6 @@ public class TinderViewFragment extends Fragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.top_nav_bar_tinder_view,menu);
+        inflater.inflate(R.menu.top_nav_bar_tinder_view, menu);
     }
 }

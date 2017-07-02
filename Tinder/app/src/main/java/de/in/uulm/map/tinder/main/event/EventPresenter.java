@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 
 import com.android.volley.Request;
@@ -17,10 +19,12 @@ import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageEncoder;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -54,7 +58,7 @@ public class EventPresenter implements EventContract.Presenter {
     @Override
     public void start() {
 
-        if(mEvent == null) {
+        if (mEvent == null) {
             mEvent = new Event();
             mEvent.has_image = false;
             mEvent.title = "";
@@ -121,12 +125,24 @@ public class EventPresenter implements EventContract.Presenter {
         mEvent.latitude = location.getLatLng().latitude;
         mEvent.longitude = location.getLatLng().longitude;
 
-        String name = location.getName() == null ? "" :
-                location.getName().toString();
-        String address = location.getAddress() == null ? "" :
-                ", " + location.getAddress().toString();
 
-        mEvent.location = name + address;
+        Geocoder gcd = new Geocoder(mContext, Locale.getDefault());
+
+        try {
+            List<Address> addresses = gcd.getFromLocation(mEvent.latitude, mEvent
+                    .longitude, 1);
+            if(addresses.size()>0) {
+                mEvent.location = addresses.get(0).getLocality();
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            String name = location.getName() == null ? "" :
+                    location.getName().toString();
+            String address = location.getAddress() == null ? "" :
+                    ", " + location.getAddress().toString();
+            mEvent.location = name + address;
+        }
+
 
         if (mEvent.location.isEmpty()) {
             mEvent.location = "" + mEvent.latitude + ", " + mEvent.longitude;
@@ -163,7 +179,7 @@ public class EventPresenter implements EventContract.Presenter {
         obj.addProperty("Category",
                 categories.indexOf(obj.get("Category").getAsString()));
 
-        if(mView.getImageUri() == null || !mView.getImageUri().contains("content://")) {
+        if (mView.getImageUri() == null || !mView.getImageUri().contains("content://")) {
             sendEvent(obj);
             return;
         }
@@ -175,7 +191,7 @@ public class EventPresenter implements EventContract.Presenter {
                     @Override
                     public void onFinished(String encoded) {
 
-                        obj.addProperty("EventImageBase64", encoded);
+                        obj.addProperty("ImageBase64", encoded);
                         sendEvent(obj);
                     }
                 }).execute();

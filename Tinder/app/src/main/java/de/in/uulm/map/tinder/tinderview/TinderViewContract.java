@@ -19,12 +19,13 @@ public interface TinderViewContract {
 
     interface View extends BaseView<Presenter> {
 
+        void setEvents(List<Event> eventList);
 
     }
 
     interface Presenter extends BasePresenter {
 
-        List<Event> loadEvents();
+        void loadEvents();
 
         boolean topNavOnOptionSelected(MenuItem item);
     }
