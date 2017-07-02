@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -59,13 +60,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         joinedFragment.setPresenter(eventListPresenter);
         createdFragment.setPresenter(eventListPresenter);
 
-        EventListFragment fragment = (EventListFragment)
-                getSupportFragmentManager().findFragmentById(R.id.content_frame);
-
-        if(fragment == null) {
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
-                    nearbyFragment, R.id.content_frame);
-        }
+        ActivityUtils.addFragmentToActivity(
+                getSupportFragmentManager(),
+                nearbyFragment,
+                R.id.content_frame);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -74,16 +72,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
                         Fragment fragment = null;
 
-                        if(item.getItemId() == R.id.bottom_nav_nearby) {
-                            fragment = nearbyFragment;
-                        } else if (item.getItemId() == R.id.bottom_nav_joined) {
-                            fragment = joinedFragment;
-                        } else if (item.getItemId() == R.id.bottom_nav_created) {
-                            fragment = createdFragment;
-                        }
-
-                        if(fragment == null) {
-                            return false;
+                        switch(item.getItemId()) {
+                            case R.id.bottom_nav_nearby:
+                                fragment = nearbyFragment;
+                                break;
+                            case R.id.bottom_nav_my_events:
+                                fragment = joinedFragment;
+                                break;
+                            default:
+                                return false;
                         }
 
                         ActivityUtils.addFragmentToActivity(
@@ -94,10 +91,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
                         return true;
                     }
                 });
-
-        // bottomNavigationView.setSelectedItemId(R.id.bottom_nav_nearby);
-
-        super.onCreate(savedInstanceState);
     }
 
     @Override

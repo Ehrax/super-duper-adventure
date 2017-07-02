@@ -25,13 +25,15 @@
 
 
     <TextView
-            android:text="@string/radius"
+            android:id="@+id/radius_seek_bar_text"
+            android:text="5 km"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="20dp"/>
-
+            android:layout_marginTop="26dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/darker_gray"/>
 
     <SeekBar
             android:layout_width="match_parent"
@@ -39,44 +41,25 @@
             android:id="@+id/radius_seek_bar"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="18dp"
             android:max="24"/>
-
-    <TextView
-            android:id="@+id/radius_seek_bar_text"
-            android:text="50 km"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:textAlignment="center"
-            android:textColor="@android:color/darker_gray"/>
 
     <View style="@style/VerticalDivider"
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
-
-    <TextView
-            android:text="@string/category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="25dp"/>
+            android:layout_height="1dp"/>
 
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sport"
-            android:ems="10"
+            android:text="Alle"
+            style="@style/FullWidthEditText"
             android:id="@+id/settings_category"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:focusable="false"
             android:cursorVisible="false"/>
+
+    <View style="@style/VerticalDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
 
 </LinearLayout>

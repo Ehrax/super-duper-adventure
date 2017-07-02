@@ -7,14 +7,9 @@
             android:title="@string/events_nearby"
             app:showAsAction="always" />
     <item
-            android:id="@+id/bottom_nav_joined"
+            android:id="@+id/bottom_nav_my_events"
             android:icon="@drawable/calendar_check"
-            android:title="@string/events_joined"
-            app:showAsAction="always" />
-    <item
-            android:id="@+id/bottom_nav_created"
-            android:icon="@drawable/pencil"
-            android:title="@string/events_created"
+            android:title="@string/events_my"
             app:showAsAction="always" />
     <item
             android:id="@+id/bottom_nav_chat"

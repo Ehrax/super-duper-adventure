@@ -114,7 +114,8 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                     @Override
                     public void onResponse(byte[] response) {
 
-                        mCreatedView.getAdapter().removeEvent(e);
+                        mNearbyView.getAdapter().removeEvent(e);
+                        mJoinedView.getAdapter().removeEvent(e);
                     }
                 },
                 new DefaultErrorListener(mContext));
@@ -123,7 +124,7 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
     }
 
     @Override
-    public void onJoinClicked(Event e) {
+    public void onJoinClicked(final Event e) {
 
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_event);
@@ -138,7 +139,8 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                     @Override
                     public void onResponse(byte[] response) {
 
-                        // TODO: drink some tea
+                        loadEvents(mNearbyView);
+                        loadEvents(mJoinedView);
                     }
                 },
                 new DefaultErrorListener(mContext));
@@ -147,7 +149,7 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
     }
 
     @Override
-    public void onLeaveClicked(Event e) {
+    public void onLeaveClicked(final Event e) {
 
         String url = mContext.getString(R.string.API_base);
         url += mContext.getString(R.string.API_event);
@@ -162,7 +164,8 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                     @Override
                     public void onResponse(byte[] response) {
 
-                        // TODO: drink some coffee
+                        loadEvents(mJoinedView);
+                        loadEvents(mNearbyView);
                     }
                 },
                 new DefaultErrorListener(mContext));

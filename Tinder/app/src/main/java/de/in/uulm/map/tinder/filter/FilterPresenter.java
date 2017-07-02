@@ -42,6 +42,7 @@ public class FilterPresenter implements FilterContract.Presenter {
         mView.setCategoryEnabled(false);
 
         PickerFactory.categoryPicker(mContext,
+                true,
                 new PickerFactory.OnConfirmListener<String>() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, String value) {

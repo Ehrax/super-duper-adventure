@@ -175,7 +175,7 @@ public class EventPresenter implements EventContract.Presenter {
                     @Override
                     public void onFinished(String encoded) {
 
-                        obj.addProperty("EventImageBase64", encoded);
+                        obj.addProperty("ImageBase64", encoded);
                         sendEvent(obj);
                     }
                 }).execute();
