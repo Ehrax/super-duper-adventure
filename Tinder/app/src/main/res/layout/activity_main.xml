@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             app:itemBackground="@color/color_primary"
-            app:menu="@menu/bottom_navigation_bar"
+            app:menu="@menu/bottom_nav_bar"
             app:itemIconTint="@drawable/navbar_state_selected"
             app:itemTextColor="@drawable/navbar_state_selected" />
 

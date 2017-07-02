@@ -27,6 +27,7 @@
     <!-- top bar -->
     <string name="filter">Filter</string>
     <string name="settings">Settings</string>
+    <string name="event">Event</string>
     <string name="profile">Profile</string>
     <string name="sign_out">Sign out</string>
     <string name="flip_view">Flip View</string>
@@ -40,6 +41,7 @@
     <string name="API_getToken">/token</string>
     <string name="API_register">/api/account/register</string>
     <string name="API_event">/api/Event</string>
+    <string name="API_event_image">/api/Event/image</string>
 
     <!-- Network -->
     <string name="no_connection">It seems like you´re not connected to
@@ -52,6 +54,7 @@
     <string name="store_username">USERNAME</string>
     <string name="store_token">TOKEN</string>
     <string name="store_token_expire">TOKEN_EXPIRE</string>
+    <string name="check">Check</string>
 
     <!-- Categories -->
     <string-array name="categories">

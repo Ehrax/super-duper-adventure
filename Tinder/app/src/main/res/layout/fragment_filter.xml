@@ -19,7 +19,7 @@
                 android:elevation="4dp"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:title="@string/app_name" />
+                app:title="@string/filter" />
 
     </android.support.design.widget.AppBarLayout>
 

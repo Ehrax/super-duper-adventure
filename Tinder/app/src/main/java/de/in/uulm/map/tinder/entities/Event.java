@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Locale;
  * Created by Jona on 01.05.2017.
  */
 
-public class Event {
+public class Event implements Serializable {
 
     @SerializedName("EventModelID")
     public String id;
@@ -45,8 +46,8 @@ public class Event {
     @SerializedName("Category")
     public String category;
 
-    @SerializedName("EventImageBase64")
-    public String image;
+    @SerializedName("HasImage")
+    public boolean has_image;
 
     @SerializedName("Creator")
     public User creator;
