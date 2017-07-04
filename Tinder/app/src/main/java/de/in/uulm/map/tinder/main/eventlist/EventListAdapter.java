@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,30 +15,36 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
-import de.in.uulm.map.tinder.util.AsyncImageDecoder;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
  */
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
+public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
 
     private final Context mContext;
 
-    private final EventsContract.EventsPresenter mPresenter;
+    private final EventListContract.EventListPresenter mPresenter;
 
     public ArrayList<Event> mEvents;
 
-    public EventsAdapter(Context context, EventsContract.EventsPresenter presenter) {
+    public EventListAdapter(Context context, EventListContract.EventListPresenter presenter) {
 
         mContext = context;
         mEvents = new ArrayList<>();
         mPresenter = presenter;
+    }
+
+    public void removeEvent(Event event) {
+
+        int i = mEvents.indexOf(event);
+        mEvents.remove(event);
+        notifyItemRemoved(i);
     }
 
     public void setEvents(ArrayList<Event> events) {
@@ -58,6 +64,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         public Button mLeaveButton;
         public Button mMapButton;
         public Button mDeleteButton;
+        public Button mEditButton;
 
         public ViewHolder(View itemView) {
 
@@ -72,6 +79,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             mLeaveButton = (Button) itemView.findViewById(R.id.event_card_leave);
             mMapButton = (Button) itemView.findViewById(R.id.event_card_map);
             mDeleteButton = (Button) itemView.findViewById(R.id.event_card_delete);
+            mEditButton = (Button) itemView.findViewById(R.id.event_card_edit);
         }
     }
 
@@ -85,7 +93,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         final Event e = mEvents.get(position);
         holder.mTitle.setText(e.title);
@@ -93,22 +101,25 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        new AsyncImageDecoder(e.image, new WeakReference<>(holder.mImage))
-                .execute();
+        if(e.has_image) {
+            String uri = mContext.getString(R.string.API_base);
+            uri += mContext.getString(R.string.API_event_image);
+            uri += "/" + e.id;
+            new AsyncImageLoader(uri,
+                    new WeakReference<>(holder.mImage), mContext).execute();
+        } else {
+            //TODO: load default category images here
+            holder.mImage.setImageResource(R.drawable.image_placeholder);
+        }
 
-        long end_date = new Date().getTime();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatPresent = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         try {
-            end_date = format.parse(e.end_date).getTime();
+            long start_date = formatParse.parse(e.start_date).getTime();
+            holder.mTime.setText(formatPresent.format(start_date));
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
-
-        long left = end_date - new Date().getTime();
-        long hours = left / 3600000;
-        long minutes = (left % 3600000) / 60000;
-
-        holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
 
         SharedPreferences accountPrefs = mContext.getSharedPreferences(
                 mContext.getString(R.string.store_account),
@@ -134,11 +145,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 currentUserParticipates ? View.VISIBLE : View.GONE);
         holder.mDeleteButton.setVisibility(
                 e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
+        holder.mEditButton.setVisibility(
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                holder.mDeleteButton.setEnabled(false);
                 mPresenter.onDeleteClicked(e);
             }
         });
@@ -156,6 +170,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             public void onClick(View v) {
 
                 mPresenter.onLeaveClicked(e);
+            }
+        });
+
+        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mPresenter.onEditClicked(e);
             }
         });
 

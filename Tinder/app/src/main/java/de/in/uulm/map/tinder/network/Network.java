@@ -45,9 +45,10 @@ public class Network {
 
         mRequestQueue = Volley.newRequestQueue(context);
 
-        mImageLoader = new ImageLoader(
+        mImageLoader = new AuthImageLoader(
                 mRequestQueue,
-                new LruBitmapCache(LruBitmapCache.getCacheSize(context)));
+                new LruBitmapCache(LruBitmapCache.getCacheSize(context)),
+                context);
     }
 
     /**

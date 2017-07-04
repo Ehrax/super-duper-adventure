@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,45 +12,43 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 /**
  * Created by Jona on 05.05.17.
  */
 
-public class EventsFragment extends Fragment implements EventsContract.EventsView{
+public class EventListFragment extends Fragment implements EventListContract.EventListView {
 
-    public static final String TAB_NEARBY = "Nearby";
-    public static final String TAB_JOINED = "Joined";
-    public static final String TAB_MY_EVENTS = "My Events";
+    private String mGroupUri;
 
-    private EventsContract.EventsPresenter mPresenter;
+    private EventListContract.EventListPresenter mPresenter;
 
-    private EventsAdapter mAdapter;
+    private EventListAdapter mAdapter;
 
-    public static EventsFragment newInstance(String title) {
+    @Override
+    public void onResume() {
 
-        Bundle args = new Bundle();
-        args.putString(MainPageAdapter.TAB_TITLE, title);
+        super.onResume();
+        mPresenter.loadEvents(this);
+    }
 
-        EventsFragment fragment = new EventsFragment();
-        fragment.setArguments(args);
+    public static EventListFragment newInstance(EventListPresenter presenter, String groupUri) {
+
+        EventListFragment fragment = new EventListFragment();
+        fragment.mPresenter = presenter;
+        fragment.mGroupUri = groupUri;
+        fragment.setHasOptionsMenu(true);
 
         return fragment;
     }
 
-    public EventsFragment() {
-
-        setHasOptionsMenu(true);
-    }
-
-    public void setAdapter(EventsAdapter adapter) {
+    public void setAdapter(EventListAdapter adapter) {
 
         this.mAdapter = adapter;
     }
 
     @Override
-    public void setPresenter(EventsContract.EventsPresenter presenter) {
+    public void setPresenter(EventListContract.EventListPresenter presenter) {
 
         this.mPresenter = presenter;
     }
@@ -77,18 +75,24 @@ public class EventsFragment extends Fragment implements EventsContract.EventsVie
     @Override
     public void onFragmentBecomesVisible() {
 
-        mPresenter.loadEvents();
+        mPresenter.loadEvents(this);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.top_nav_bar_events, menu);
+        inflater.inflate(R.menu.top_nav_bar_eventlist, menu);
     }
 
     @Override
-    public EventsAdapter getAdapter() {
+    public EventListAdapter getAdapter() {
 
         return mAdapter;
+    }
+
+    @Override
+    public String getGroupUri() {
+
+        return mGroupUri;
     }
 }

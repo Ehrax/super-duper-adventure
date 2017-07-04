@@ -30,16 +30,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             app:itemBackground="@color/color_primary"
-            app:menu="@menu/bottom_navigation_bar"
+            app:menu="@menu/bottom_nav_bar"
             app:itemIconTint="@drawable/navbar_state_selected"
             app:itemTextColor="@drawable/navbar_state_selected" />
 
-    <android.support.v4.view.ViewPager
-            android:id="@+id/main_view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+    <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_above="@+id/bottom_navigation_menu"
             android:layout_below="@+id/main_bar_layout"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </RelativeLayout>
