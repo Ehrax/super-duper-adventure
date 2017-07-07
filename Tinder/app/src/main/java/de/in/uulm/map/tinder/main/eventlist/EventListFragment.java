@@ -20,9 +20,7 @@ import de.in.uulm.map.tinder.R;
 
 public class EventListFragment extends Fragment implements EventListContract.EventListView {
 
-    public static final String TAB_NEARBY = "Nearby";
-    public static final String TAB_JOINED = "Joined";
-    public static final String TAB_MY_EVENTS = "My Events";
+    private String mGroupUri;
 
     private EventListContract.EventListPresenter mPresenter;
 
@@ -37,14 +35,14 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
         mPresenter.loadEvents(this);
     }
 
-    public static EventListFragment newInstance(String title) {
+    public static EventListFragment newInstance(EventListPresenter presenter, String groupUri) {
 
-        return new EventListFragment();
-    }
+        EventListFragment fragment = new EventListFragment();
+        fragment.mPresenter = presenter;
+        fragment.mGroupUri = groupUri;
+        fragment.setHasOptionsMenu(true);
 
-    public EventListFragment() {
-
-        setHasOptionsMenu(true);
+        return fragment;
     }
 
     public void setAdapter(EventListAdapter adapter) {
@@ -102,5 +100,11 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
     public EventListAdapter getAdapter() {
 
         return mAdapter;
+    }
+
+    @Override
+    public String getGroupUri() {
+
+        return mGroupUri;
     }
 }

@@ -41,24 +41,20 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         EventListPresenter eventListPresenter = new EventListPresenter(this);
 
         final EventListFragment nearbyFragment =
-                EventListFragment.newInstance(EventListFragment.TAB_NEARBY);
+                EventListFragment.newInstance(eventListPresenter, "");
         nearbyFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
         final EventListFragment joinedFragment =
-                EventListFragment.newInstance(EventListFragment.TAB_JOINED);
+                EventListFragment.newInstance(eventListPresenter, "Joined");
         joinedFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
         final EventListFragment createdFragment =
-                EventListFragment.newInstance(EventListFragment.TAB_MY_EVENTS);
+                EventListFragment.newInstance(eventListPresenter, "Created");
         createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-        eventListPresenter.setNearbyView(nearbyFragment);
-        eventListPresenter.setJoinedView(joinedFragment);
-        eventListPresenter.setCreatedView(createdFragment);
-
-        nearbyFragment.setPresenter(eventListPresenter);
-        joinedFragment.setPresenter(eventListPresenter);
-        createdFragment.setPresenter(eventListPresenter);
+        eventListPresenter.addEventView(nearbyFragment);
+        eventListPresenter.addEventView(joinedFragment);
+        eventListPresenter.addEventView(createdFragment);
 
         ActivityUtils.addFragmentToActivity(
                 getSupportFragmentManager(),
