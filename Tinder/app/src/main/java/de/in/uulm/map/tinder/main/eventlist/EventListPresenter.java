@@ -29,30 +29,17 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
     private final AppCompatActivity mActivity;
 
-    private EventListContract.EventListView mNearbyView;
-
-    private EventListContract.EventListView mJoinedView;
-
-    private EventListContract.EventListView mCreatedView;
+    private ArrayList<EventListContract.EventListView> mViews;
 
     public EventListPresenter(AppCompatActivity context) {
 
-        mActivity = context;
+        mContext = context;
+        mViews = new ArrayList<>();
     }
 
-    public void setNearbyView(EventListContract.EventListView view) {
+    public void addEventView(EventListContract.EventListView view) {
 
-        mNearbyView = view;
-    }
-
-    public void setJoinedView(EventListContract.EventListView view) {
-
-        mJoinedView = view;
-    }
-
-    public void setCreatedView(EventListContract.EventListView view) {
-
-        mCreatedView = view;
+        mViews.add(view);
     }
 
     @Override
@@ -74,18 +61,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
             return;
         }
 
-        String groupUri;
-        if(view == mCreatedView) {
-            groupUri = "Created";
-        } else if (view == mJoinedView) {
-            groupUri = "Joined";
-        } else {
-            groupUri = "";
-        }
-
         EventRequest req = EventRequest.newInstance(
-                groupUri,
-                mActivity,
+                view.getGroupUri(),
+                mContext,
                 new Response.Listener<List<Event>>() {
                     @Override
                     public void onResponse(List<Event> response) {
@@ -113,9 +91,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
-
-                        mNearbyView.getAdapter().removeEvent(e);
-                        mJoinedView.getAdapter().removeEvent(e);
+                        for(EventListContract.EventListView v : mViews) {
+                            v.getAdapter().removeEvent(e);
+                        }
                     }
                 },
                 new DefaultErrorListener(mActivity));
@@ -139,8 +117,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                     @Override
                     public void onResponse(byte[] response) {
 
-                        loadEvents(mNearbyView);
-                        loadEvents(mJoinedView);
+                        for(EventListContract.EventListView v : mViews) {
+                            loadEvents(v);
+                        }
                     }
                 },
                 new DefaultErrorListener(mActivity));
@@ -164,8 +143,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                     @Override
                     public void onResponse(byte[] response) {
 
-                        loadEvents(mJoinedView);
-                        loadEvents(mNearbyView);
+                        for(EventListContract.EventListView v : mViews) {
+                            loadEvents(v);
+                        }
                     }
                 },
                 new DefaultErrorListener(mActivity));

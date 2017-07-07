@@ -16,6 +16,7 @@ public interface EventListContract {
 
         void startActivityForResult(Intent intent, int requestCode);
         EventListAdapter getAdapter();
+        String getGroupUri();
     }
 
     interface EventListPresenter extends BasePresenter {
