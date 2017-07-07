@@ -33,7 +33,7 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
     public EventListPresenter(AppCompatActivity context) {
 
-        mContext = context;
+        mActivity = context;
         mViews = new ArrayList<>();
     }
 
@@ -63,7 +63,7 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
         EventRequest req = EventRequest.newInstance(
                 view.getGroupUri(),
-                mContext,
+                mActivity,
                 new Response.Listener<List<Event>>() {
                     @Override
                     public void onResponse(List<Event> response) {
