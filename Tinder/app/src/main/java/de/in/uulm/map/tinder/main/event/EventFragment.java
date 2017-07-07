@@ -50,7 +50,6 @@ import de.in.uulm.map.tinder.util.PickerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -284,13 +283,7 @@ public class EventFragment extends Fragment implements EventContract.View {
         mDescription.setText(event.description);
         mLocation.setText(event.location);
         mMaxUser.setText("" + event.max_user_count);
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        try {
-            showStartDate(format.parse(event.start_date).getTime());
-        } catch (ParseException e) {
-            mStartDate.setText("");
-        }
+        mStartDate.setText(event.getFormattedStartDate());
 
         final String[] categories =
                 getResources().getStringArray(R.array.categories);

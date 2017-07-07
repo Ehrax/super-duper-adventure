@@ -2,14 +2,12 @@ package de.in.uulm.map.tinder.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,7 +27,7 @@ public class Event implements Serializable {
     public String description;
 
     @SerializedName("StartDate")
-    public String start_date;
+    private String start_date;
 
     @SerializedName("MaxUsers")
     public int max_user_count;
@@ -55,39 +53,35 @@ public class Event implements Serializable {
     @SerializedName("Members")
     public List<User> participants = new ArrayList<>();
 
-    public GregorianCalendar getStartDate() {
+    private static final DateFormat SERVER_DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
 
-        Date date;
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS",
-                Locale.ENGLISH);
-        try {
-            date = formatter.parse(start_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            date = null;
+    public void setStartDate(Date date) {
+
+        if(date == null) {
+            start_date = "";
+        } else {
+            start_date = SERVER_DATE_FORMAT.format(date);
         }
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        return calendar;
+    }
+
+    public Date getStartDate() {
+
+        try {
+            return SERVER_DATE_FORMAT.parse(start_date);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     public String getFormattedStartDate() {
 
-        GregorianCalendar startDate = getStartDate();
-        return startDate.get(Calendar.DAY_OF_MONTH) + "." + ((startDate.get
-                (Calendar
-                        .MONTH) + 1) < 10 ? "0" : "") + (startDate.get(Calendar.MONTH) + 1) + "" +
-                "." + startDate.get(Calendar.YEAR);
-
+        return SimpleDateFormat.getDateInstance(DateFormat.SHORT)
+                .format(getStartDate());
     }
 
     public String getFormattedStartTime() {
 
-        GregorianCalendar startDate = getStartDate();
-
-        return (startDate.get(Calendar.HOUR_OF_DAY) < 10 ? "0" : "") +
-                startDate.get(Calendar.HOUR_OF_DAY) + ":" +
-                (startDate.get(Calendar.MINUTE) < 10 ? "0" : "") +
-                startDate.get(Calendar.MINUTE);
+        return new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(getStartDate());
     }
 }

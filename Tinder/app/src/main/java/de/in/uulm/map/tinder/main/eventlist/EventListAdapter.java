@@ -18,11 +18,8 @@ import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Jona on 04.05.17.
@@ -113,15 +110,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             holder.mImage.setImageResource(R.drawable.image_placeholder);
         }
 
-        long end_date = new Date().getTime();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        try {
-            end_date = format.parse(e.start_date).getTime();
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-
-        long left = end_date - new Date().getTime();
+        long left = e.getStartDate().getTime() - new Date().getTime();
         long hours = left / 3600000;
         long minutes = (left % 3600000) / 60000;
 
