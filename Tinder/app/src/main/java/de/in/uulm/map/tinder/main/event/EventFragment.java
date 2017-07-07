@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -90,6 +91,8 @@ public class EventFragment extends Fragment implements EventContract.View {
     private MenuItem mSubmit;
 
     private String mLastImagePath;
+
+    private ContentLoadingProgressBar mProgressBar;
 
     public static EventFragment newInstance() {
 
@@ -197,6 +200,11 @@ public class EventFragment extends Fragment implements EventContract.View {
             }
         });
 
+        mProgressBar = (ContentLoadingProgressBar)
+                view.findViewById(R.id.event_progress_bar);
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.hide();
+
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.event_activity_toolbar);
         activity.setSupportActionBar(toolbar);
@@ -271,6 +279,16 @@ public class EventFragment extends Fragment implements EventContract.View {
 
         mSubmit.getIcon().setAlpha(enabled ? 255 : 110);
         mSubmit.setEnabled(enabled);
+    }
+
+    @Override
+    public void setProgressBarVisible(boolean visible) {
+
+        if(visible) {
+            mProgressBar.show();
+        } else {
+            mProgressBar.hide();
+        }
     }
 
     @Override

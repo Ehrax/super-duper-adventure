@@ -2,11 +2,10 @@ package de.in.uulm.map.tinder.main.event;
 
 import com.google.android.gms.location.places.Place;
 
+import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 
 import de.in.uulm.map.tinder.entities.Event;
-import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
@@ -27,6 +26,7 @@ public interface EventContract {
         void showTitle(String title);
         void showDescription(String description);
         void setEnableSubmitButton(boolean enabled);
+        void setProgressBarVisible(boolean visible);
         void showMessage(String message);
         String getImageUri();
     }
@@ -46,6 +46,7 @@ public interface EventContract {
 
     interface Backend {
 
+        void setResult(int resultCode, Intent intent);
         void finish();
     }
 }
