@@ -177,6 +177,6 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
         Intent intent = new Intent(mActivity, EventActivity.class);
         intent.putExtra(EventActivity.EVENT_EXTRA, e);
-        mJoinedView.startActivityForResult(intent, 0);
+        mActivity.startActivityForResult(intent, 0);
     }
 }
