@@ -7,6 +7,9 @@ import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
 import de.in.uulm.map.tinder.entities.Message;
 import de.in.uulm.map.tinder.entities.User;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 /**
  * Created by alexanderrasputin on 11.05.17.
  */
@@ -28,12 +31,22 @@ public class FirebaseHelper {
      *
      * @param groupChat see @FirebaseGroupChat.class
      */
-    public void createGroup(FirebaseGroupChat groupChat, String userId) {
+    public void createGroup(FirebaseGroupChat groupChat) {
 
         DatabaseReference root = mDatabase.getRoot();
 
-        root.child(userId).child(GROUP_CHATS).child(groupChat.eventId).setValue
-                (groupChat);
+        HashMap<String, Object> chat = new HashMap<>();
+        chat.put("chatName", groupChat.chatName);
+        chat.put("timestamp", groupChat.timestamp);
+        chat.put("img", groupChat.img);
+
+        root.child(groupChat.eventId).setValue(chat);
+    }
+
+    public void updateGroup(String chatId, HashMap<String, Object> updates) {
+
+        DatabaseReference chatRef = mDatabase.getRoot().child(chatId);
+        chatRef.updateChildren(updates);
     }
 
     /**
@@ -42,13 +55,20 @@ public class FirebaseHelper {
      * @param eventId the group event id
      * @param message See @Message.class
      */
-    public void writeMessageToGroup(String eventId, Message message, String
-            userId) {
+    public void writeMessageToGroup(String eventId, Message message) {
 
-        DatabaseReference chat = mDatabase.child(userId).child("group-chats")
-                .child(eventId);
+        DatabaseReference chatRef = mDatabase.getRoot().child(eventId);
+        DatabaseReference messagesRef = chatRef.child("messages");
 
-        String key = chat.child(CHILD_GROUP_MESSAGES).push().getKey();
-        chat.child(CHILD_GROUP_MESSAGES).child(key).setValue(message);
+        String key = messagesRef.push().getKey();
+
+        HashMap<String, Object> sendingMessage = new HashMap<>();
+        sendingMessage.put("userName", message.mUserName);
+        sendingMessage.put("userId", message.mUid);
+        sendingMessage.put("userImage", message.mUserImg);
+        sendingMessage.put("timestamp", message.mTimestamp);
+        sendingMessage.put("text", message.mText);
+
+        messagesRef.child(key).setValue(sendingMessage);
     }
 }

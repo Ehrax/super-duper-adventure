@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         GroupChatAdapter groupChatListAdapter = new GroupChatAdapter(groupChatPresenter);
         groupChatFragment.setAdapter(groupChatListAdapter);
 
+
         pageAdapter.addFragment(groupChatFragment, R.id.bottom_nav_chat);
 
          /**
@@ -141,19 +142,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
         super.onCreate(savedInstanceState);
 
-
         // TODO removing firebase test stuff
-
         FirebaseHelper firebaseHelper = new FirebaseHelper();
+        FirebaseGroupChat chat = new FirebaseGroupChat();
 
-        String userUuid = ";asdkjfa;dkfjas";
+        chat.chatName = "My chat";
+        chat.eventId = "123456768";
+        chat.img = "some base64 image";
+        chat.timestamp = "0129310293";
+        chat.lastMessage = "this was the last msg";
 
-        FirebaseGroupChat groupChat = new FirebaseGroupChat();
-        groupChat.eventId = "999999999999999";
-        groupChat.chatName = "My new group Chat";
-
-        firebaseHelper.createGroup(groupChat, userUuid);
-
+        firebaseHelper.createGroup(chat);
 
         // TODO end firebase test stuff
     }

@@ -28,7 +28,6 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
     private GroupChatContract.View mView;
 
-
     public GroupChatPresenter(GroupChatContract.View view, Context context) {
         mView = view;
         mContext = context;
@@ -40,38 +39,13 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
     }
 
     @Override
-    public void setupGroupChat() {
-        final String mUserId = ";asdkjfa;dkfjas";
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        final DatabaseReference chatsChild = db.getReference(mUserId +
-                "/group-chats");
+    public ArrayList<FirebaseGroupChat> setupGroupChat() {
 
+        final FirebaseDatabase db = FirebaseDatabase.getInstance();
         ArrayList<FirebaseGroupChat> groupChat = new ArrayList<>();
 
-        chatsChild.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                HashMap<String, Object> rootMap = (HashMap<String, Object>)
-                        dataSnapshot.getValue();
 
-                for (Map.Entry<String, Object> rootEntry : rootMap.entrySet()) {
-                    HashMap<String, Object> childMap = (HashMap<String, Object>)
-                            rootEntry.getValue();
-
-                    for (Map.Entry<String, Object> childEntry : childMap
-                            .entrySet ()) {
-
-                        FirebaseGroupChat chat = new FirebaseGroupChat();
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        return groupChat;
     }
 }

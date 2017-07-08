@@ -1,10 +1,12 @@
 package de.in.uulm.map.tinder.main.groupchat;
 
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
 import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ import java.util.List;
 public class GroupChatContract {
 
     interface Presenter extends BasePresenter {
-        void setupGroupChat();
+        ArrayList<FirebaseGroupChat> setupGroupChat();
     }
 
     interface View extends MainContract.MainView<Presenter> {

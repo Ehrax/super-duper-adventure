@@ -58,6 +58,8 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         ViewGroup view = (ViewGroup) LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.fragment_group_chat_item, parent, false);
 
+        // TODO fetch here all group chats the user has joined
+
         return  new ViewHolder(view);
     }
 
@@ -82,11 +84,6 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
 
         }
-    }
-
-    public void setGroupChats(ArrayList<FirebaseGroupChat> chats) {
-
-        mGroupChats = chats;
     }
 
     @Override
