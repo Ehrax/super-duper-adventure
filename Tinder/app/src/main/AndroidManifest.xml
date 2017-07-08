@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="de.in.uulm.map.tinder">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
             android:allowBackup="true"
@@ -16,31 +16,48 @@
             android:label="@string/app_name"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity
-                android:name=".main.MainActivity"
-                android:windowSoftInputMode="adjustPan">
 
-        </activity>
-        <activity android:name=".chat.ChatActivity" />
-        <activity android:name=".groupchat.GroupChatActivity" />
-        <activity android:name=".login.LoginActivity">
+        <activity android:name=".login.LoginActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".register.RegisterActivity"/>
+
+        <activity android:name=".register.RegisterActivity"
+                android:screenOrientation="portrait"/>
+
+        <activity
+                android:name=".main.MainActivity"
+                android:screenOrientation="portrait"
+                android:windowSoftInputMode="adjustPan" />
+
+        <activity
+                android:name=".main.event.EventActivity"
+                android:label="@string/event"
+                android:screenOrientation="portrait"
+                android:parentActivityName=".main.MainActivity" />
 
         <activity
                 android:name=".filter.FilterActivity"
                 android:label="@string/settings"
-                android:parentActivityName=".main.MainActivity">
-        </activity>
+                android:screenOrientation="portrait"
+                android:parentActivityName=".main.MainActivity"/>
+
+        <activity android:name=".profile.ProfileActivity"
+                android:parentActivityName=".main.MainActivity"
+                android:screenOrientation="portrait" />
+
+        <activity android:name=".chat.ChatActivity"
+                android:screenOrientation="portrait"/>
+
+        <activity android:name=".groupchat.GroupChatActivity"
+                android:screenOrientation="portrait"/>
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB3hMGqs4X_pQg7DrTA8xDS6whsGlu0TV0"/>
+                android:name="com.google.android.geo.API_KEY"
+                android:value="AIzaSyB3hMGqs4X_pQg7DrTA8xDS6whsGlu0TV0" />
 
     </application>
 

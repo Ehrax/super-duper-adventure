@@ -1,4 +1,4 @@
-package de.in.uulm.map.tinder.main.add;
+package de.in.uulm.map.tinder.main.event;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -9,54 +9,69 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 import de.in.uulm.map.tinder.util.PickerFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Jona on 21.05.2017. */
 
-public class AddEventFragment extends Fragment implements AddEventContract.View, AddEventContract.Backend {
+public class EventFragment extends Fragment implements EventContract.View {
 
     private static final int IMAGE_REQ_CODE = 1;
 
     private static final int LOCATION_REQ_CODE = 2;
 
-    private AddEventContract.Presenter mPresenter;
+    private static final int IMAGE_PERMISSON_REQ = 1;
+
+    private static final int LOCATION_PERMISSON_REQ = 2;
+
+    private EventContract.Presenter mPresenter;
 
     private ImageView mImage;
 
@@ -64,7 +79,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
 
     private EditText mDescription;
 
-    private EditText mDuration;
+    private EditText mStartDate;
 
     private EditText mLocation;
 
@@ -72,13 +87,15 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
 
     private EditText mCategory;
 
-    private Button mCreate;
+    private MenuItem mSubmit;
 
     private String mLastImagePath;
 
-    public static AddEventFragment newInstance() {
+    private ContentLoadingProgressBar mProgressBar;
 
-        return new AddEventFragment();
+    public static EventFragment newInstance() {
+
+        return new EventFragment();
     }
 
     @Nullable
@@ -88,18 +105,19 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(
-                R.layout.fragment_add_event, container, false);
+                R.layout.fragment_event, container, false);
+
 
         mImage = (ImageView) view.findViewById(R.id.add_image);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mPresenter.onImageClicked();
+                trySelectImage(true);
             }
         });
 
-        TextWatcher watcher = new TextWatcher() {
+        TextWatcher titleWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -113,23 +131,41 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             @Override
             public void afterTextChanged(Editable s) {
 
-                mPresenter.checkEnableCreateButton();
+                mPresenter.onTitleChanged(s.toString());
             }
         };
 
         mTitle = (EditText) view.findViewById(R.id.add_title);
-        mTitle.addTextChangedListener(watcher);
+        mTitle.addTextChangedListener(titleWatcher);
+
+        TextWatcher descriptionWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                mPresenter.onDescriptionChanged(s.toString());
+            }
+        };
 
         mDescription = (EditText) view.findViewById(R.id.add_description);
-        mDescription.addTextChangedListener(watcher);
+        mDescription.addTextChangedListener(descriptionWatcher);
 
-        mDuration = (EditText) view.findViewById(R.id.add_time);
-        mDuration.setOnClickListener(new View.OnClickListener() {
+        mStartDate = (EditText) view.findViewById(R.id.add_time);
+        mStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mDuration.setEnabled(false);
-                mPresenter.onDurationClicked();
+                mStartDate.setEnabled(false);
+                selectDuration();
             }
         });
 
@@ -139,7 +175,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mLocation.setEnabled(false);
-                mPresenter.onLocationClicked();
+                trySelectLocation(true);
             }
         });
 
@@ -149,7 +185,7 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mMaxUser.setEnabled(false);
-                mPresenter.onMaxUserClicked();
+                selectMaxUser();
             }
         });
 
@@ -159,33 +195,52 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             public void onClick(View v) {
 
                 mCategory.setEnabled(false);
-                mPresenter.onCategoryClicked();
+                selectCategory();
             }
         });
 
-        mCreate = (Button) view.findViewById(R.id.add_btn_create);
-        mCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mProgressBar = (ContentLoadingProgressBar)
+                view.findViewById(R.id.event_progress_bar);
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.hide();
 
-                mPresenter.onCreateClicked();
-            }
-        });
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.event_activity_toolbar);
+        activity.setSupportActionBar(toolbar);
 
-        mPresenter.start();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        setHasOptionsMenu(true);
 
         return view;
     }
 
     @Override
-    public void setPresenter(AddEventContract.Presenter presenter) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        mPresenter = presenter;
+        inflater.inflate(R.menu.top_nav_bar_event, menu);
+        mSubmit = menu.getItem(0);
+
+        mPresenter.start();
     }
 
     @Override
-    public void onFragmentBecomesVisible() {
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        if (item.getItemId() == R.id.top_nav_submit) {
+            item.setEnabled(false);
+            mPresenter.onSubmitClicked();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void setPresenter(EventContract.Presenter presenter) {
+
+        mPresenter = presenter;
     }
 
     @Override
@@ -200,7 +255,6 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
             mLocation.setEnabled(true);
 
             if (resultCode == Activity.RESULT_OK) {
-
                 Place place = PlacePicker.getPlace(getContext(), data);
                 mPresenter.onLocationSelected(place);
             }
@@ -220,30 +274,73 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     }
 
     @Override
-    public void setEnableCreateButton(boolean enabled) {
+    public void setEnableSubmitButton(boolean enabled) {
 
-        mCreate.setEnabled(enabled);
+        mSubmit.getIcon().setAlpha(enabled ? 255 : 110);
+        mSubmit.setEnabled(enabled);
     }
 
     @Override
-    public void showImage(Uri fileUri) {
+    public void setProgressBarVisible(boolean visible) {
 
-        if (fileUri == null) {
-            mImage.setImageResource(R.drawable.image_placeholder);
+        if(visible) {
+            mProgressBar.show();
         } else {
-            new AsyncImageLoader(fileUri.toString(),
-                    new WeakReference<>(mImage),
-                    getContext()).execute();
+            mProgressBar.hide();
         }
     }
 
     @Override
-    public void showDuration(long duration) {
+    public void showEvent(Event event) {
 
-        long hours = duration / 3600000;
-        long minutes = (duration % 3600000) / 60000;
+        if (event.has_image) {
+            String uri = getString(R.string.API_base);
+            uri += getString(R.string.API_event_image);
+            uri += "/" + event.id;
+            showImage(uri);
+        } else {
+            //TODO: load category image here
+        }
 
-        mDuration.setText(String.format("%02d:%02d", hours, minutes));
+        mTitle.setText(event.title);
+        mDescription.setText(event.description);
+        mLocation.setText(event.location);
+        mMaxUser.setText("" + event.max_user_count);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        try {
+            showStartDate(format.parse(event.start_date).getTime());
+        } catch (ParseException e) {
+            mStartDate.setText("");
+        }
+
+        final String[] categories =
+                getResources().getStringArray(R.array.categories);
+        int index = Math.max(0, Integer.parseInt(event.category));
+        String category = categories[index];
+        mCategory.setText(category);
+        mPresenter.onCategorySelected(category);
+    }
+
+    @Override
+    public String getImageUri() {
+
+        return (String) mImage.getTag();
+    }
+
+    @Override
+    public void showImage(String uri) {
+
+        new AsyncImageLoader(uri,
+                new WeakReference<>(mImage),
+                getContext()).execute();
+    }
+
+    @Override
+    public void showStartDate(long duration) {
+
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        mStartDate.setText(format.format(new Date(duration)));
     }
 
     @Override
@@ -276,35 +373,44 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
     }
 
     @Override
-    public String getTitle() {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
 
-        return mTitle.getText().toString();
+        if(requestCode == IMAGE_PERMISSON_REQ) {
+            trySelectImage(false);
+        } else if (requestCode == LOCATION_PERMISSON_REQ) {
+            trySelectLocation(false);
+        }
     }
 
-    @Override
-    public String getDescription() {
+    public void trySelectImage(boolean askForPermissions) {
 
-        return mDescription.getText().toString();
+        boolean hasPermissions = ContextCompat.checkSelfPermission(
+                getContext(),
+                Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+
+        hasPermissions &= ContextCompat.checkSelfPermission(
+                getContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        if(hasPermissions) {
+            selectImage();
+            return;
+        }
+
+        if (askForPermissions){
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    IMAGE_PERMISSON_REQ);
+        }
     }
 
-    @Override
     public void selectImage() {
-
-        // TODO: request permissions in a better way; this kinda sucks!
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA}, 0);
-            return;
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            return;
-        }
 
         ArrayList<Intent> possible_intents = new ArrayList<>();
 
@@ -333,73 +439,74 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         mLastImagePath = img.getAbsolutePath();
         capture_intent.putExtra(MediaStore.EXTRA_OUTPUT, mLastImagePath);
 
-        Intent chooser_intent = Intent.createChooser(capture_intent, "Bild auswählen");
+        Intent chooser_intent = Intent.createChooser(capture_intent, "Choose image");
         chooser_intent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
                 possible_intents.toArray(new Parcelable[possible_intents.size()]));
 
         startActivityForResult(chooser_intent, IMAGE_REQ_CODE);
     }
 
-    @Override
     public void selectDuration() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_time_chooser, null);
-        builder.setView(view);
-        builder.setTitle("Set Duration");
+        final Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
 
-        final NumberPicker hour_picker =
-                (NumberPicker) view.findViewById(R.id.hour_picker);
-        final NumberPicker minute_picker =
-                (NumberPicker) view.findViewById(R.id.minute_picker);
+        TimePickerDialog dialog = new TimePickerDialog(
+                getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-        hour_picker.setMaxValue(23);
-        hour_picker.setMinValue(0);
-        minute_picker.setMaxValue(59);
-        minute_picker.setMinValue(0);
+                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        c.set(Calendar.MINUTE, minute);
+                        mPresenter.onDurationSelected(c.getTime().getTime());
+                    }
+                },
+                hour,
+                minute,
+                DateFormat.is24HourFormat(getActivity()));
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                long time = hour_picker.getValue() * 3600000 +
-                        minute_picker.getValue() * 60000;
-
-                mDuration.setEnabled(true);
-                mPresenter.onDurationSelected(time);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
 
-                mDuration.setEnabled(true);
+                mStartDate.setEnabled(true);
             }
         });
 
-        builder.show();
+        dialog.show();
     }
 
-    @Override
-    public void selectLocation() {
+    public void trySelectLocation(boolean askForPermission) {
 
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        boolean hasPermission = ContextCompat.checkSelfPermission(
+                getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                == PackageManager.PERMISSION_GRANTED;
+
+        if (hasPermission) {
+            selectLocation();
             return;
         }
 
+        if(askForPermission) {
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSON_REQ);
+        } else {
+            mLocation.setEnabled(true);
+        }
+    }
+
+    public void selectLocation() {
+
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
         try {
             Intent intent = builder.build(getActivity());
             startActivityForResult(intent, LOCATION_REQ_CODE);
-
         } catch (GooglePlayServicesRepairableException e) {
             GooglePlayServicesUtil
                     .getErrorDialog(e.getConnectionStatusCode(), getActivity(), 0);
@@ -409,12 +516,11 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         }
     }
 
-    @Override
     public void selectMaxUser() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        builder.setTitle("Set Max Participants");
+        builder.setTitle("Participants");
 
         final NumberPicker picker = new NumberPicker(getContext());
         picker.setMinValue(2);
@@ -444,10 +550,10 @@ public class AddEventFragment extends Fragment implements AddEventContract.View,
         builder.show();
     }
 
-    @Override
     public void selectCategory() {
 
         PickerFactory.categoryPicker(getContext(),
+                false,
                 new PickerFactory.OnConfirmListener<String>() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, String value) {

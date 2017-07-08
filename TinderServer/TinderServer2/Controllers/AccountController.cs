@@ -390,38 +390,38 @@ namespace TinderServer2.Controllers
             if (String.IsNullOrEmpty(base64Image))
             {
                 var currentUser = db.Users.Find(User.Identity.GetUserId());
-                currentUser.ProfileImage = null;
+                currentUser.ProfileImagePath = null;
                 await db.SaveChangesAsync();
                 return Ok();
             }
             else
             {
-                var imageBytes = Convert.FromBase64String(ImageHelper.FixBase64ForImage(base64Image));
-
-                string extension = ImageHelper.GetExtension(imageBytes);
-
-                if (extension.Equals(String.Empty))
+                string filePath = ImageHelper.SaveBase64ImageToFileSystem(base64Image, ImageHelper.ImageType.PROFILEIMAGE, User.Identity.Name+"_"+User.Identity.GetUserId());
+                if (filePath.Equals("NotAImage"))
                 {
-                    return BadRequest("Das Profil Bild muss im PNG oder JPEG Format sein!");
+                    return BadRequest("NotAImage");
+                }
+                if (filePath == null)
+                {
+                    return BadRequest("Error while uploading the Image, please try again");
                 }
 
-                string appPath = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath);
-                string filePath = appPath + "\\images\\user\\" + User.Identity.Name + "_" + ImageHelper.createName() + extension;
-
-                ImageHelper.SaveImage(imageBytes, filePath);
-
-                var imageModel = new ImageModel { Path = filePath };
-                db.Images.Add(imageModel);
-                await db.SaveChangesAsync();
-
                 var user = db.Users.Find(User.Identity.GetUserId());
-                user.ProfileImage = imageModel;
+                user.ProfileImagePath = filePath;
                 await db.SaveChangesAsync();
 
                 return Ok();
             }
             
             
+        }
+
+        [Route("GetID")]
+        [HttpGet]
+        public async Task<String> GetID()
+        {
+            return User.Identity.GetUserId();
+
         }
 
         protected override void Dispose(bool disposing)

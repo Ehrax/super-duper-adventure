@@ -481,7 +481,7 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
-        <member name="M:TinderServer2.Controllers.EventController.GetEvents(System.String,System.Double,System.Double,System.Int32)">
+        <member name="M:TinderServer2.Controllers.EventController.GetEvents(System.String,System.Double,System.Double,System.Int32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Get all Events filtered by category or distance from a given location.
             All parameters are optional. Distance default is 5 km . If you don't pass values for longitude and/or latitude or the passed values are 
@@ -500,11 +500,10 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:TinderServer2.Controllers.EventController.PutEvent(System.Int32,TinderServer2.Models.EventModel)">
+        <member name="M:TinderServer2.Controllers.EventController.PutEvent(TinderServer2.Models.UpdateEventBindingModel)">
             <summary>
             Updates the Event with the passed id. You have to pass all attributes of this event!
             </summary>
-            <param name="id"></param>
             <param name="eventModel"></param>
             <returns></returns>
         </member>

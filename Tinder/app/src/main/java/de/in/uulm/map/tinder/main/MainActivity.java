@@ -4,30 +4,27 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
-import de.in.uulm.map.tinder.entities.Message;
-import de.in.uulm.map.tinder.main.add.AddEventFragment;
-import de.in.uulm.map.tinder.main.add.AddEventPresenter;
-import de.in.uulm.map.tinder.main.events.EventsAdapter;
-import de.in.uulm.map.tinder.main.events.EventsFragment;
-import de.in.uulm.map.tinder.main.events.EventsPresenter;
+import de.in.uulm.map.tinder.main.eventlist.EventListAdapter;
+import de.in.uulm.map.tinder.main.eventlist.EventListFragment;
+import de.in.uulm.map.tinder.main.eventlist.EventListPresenter;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatAdapter;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatFragment;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatPresenter;
-import de.in.uulm.map.tinder.util.FirebaseHelper;
+import de.in.uulm.map.tinder.util.ActivityUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Jona on 21.05.2017. */
+ * Created by Jona on 21.05.2017.
+ */
 
 public class MainActivity extends AppCompatActivity implements MainContract.Backend{
 
@@ -36,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -43,124 +41,74 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
 
         mPresenter = new MainPresenter(this, this);
 
-        final MainPageAdapter pageAdapter =
-                new MainPageAdapter(getSupportFragmentManager());
-
         final BottomNavigationView bottomNavigationView =
                 (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // not used ...
-            }
+        EventListPresenter eventListPresenter = new EventListPresenter(this);
 
-            @Override
-            public void onPageSelected(int position) {
+        final EventListFragment nearbyFragment =
+                EventListFragment.newInstance(eventListPresenter, "");
+        nearbyFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-                bottomNavigationView.setSelectedItemId(
-                        pageAdapter.getIdByIndex(position));
+        final EventListFragment joinedFragment =
+                EventListFragment.newInstance(eventListPresenter, "Joined");
+        joinedFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-                MainContract.MainView fragment = (MainContract.MainView)
-                        pageAdapter.getItem(position);
-                fragment.onFragmentBecomesVisible();
-                invalidateOptionsMenu();
-            }
+        final EventListFragment createdFragment =
+                EventListFragment.newInstance(eventListPresenter, "Created");
+        createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // not used ...
-            }
-        });
+
+        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(this);
+
+        final GroupChatFragment groupChatFragment =
+                GroupChatFragment.newInstance(groupChatPresenter);
+        groupChatFragment.setAdapter(new GroupChatAdapter(groupChatPresenter, this));
+
+        eventListPresenter.addEventView(nearbyFragment);
+        eventListPresenter.addEventView(joinedFragment);
+        eventListPresenter.addEventView(createdFragment);
+
+        ActivityUtils.addFragmentToActivity(
+                getSupportFragmentManager(),
+                nearbyFragment,
+                R.id.content_frame);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                        viewPager.setCurrentItem(
-                                pageAdapter.getIndexById(item.getItemId()));
+                        Fragment fragment = null;
+
+                        switch(item.getItemId()) {
+                            case R.id.bottom_nav_nearby:
+                                fragment = nearbyFragment;
+                                break;
+                            case R.id.bottom_nav_my_events:
+                                fragment = joinedFragment;
+                                break;
+                            case R.id.bottom_nav_chat:
+                                fragment = groupChatFragment;
+                                break;
+                            default:
+                                return false;
+                        }
+
+                        ActivityUtils.addFragmentToActivity(
+                                getSupportFragmentManager(),
+                                fragment,
+                                R.id.content_frame);
+
                         return true;
                     }
                 });
-
-        EventsPresenter eventsPresenter = new EventsPresenter(this);
-
-        EventsFragment nearbyFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_NEARBY);
-        nearbyFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
-
-        EventsFragment joinedFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_JOINED);
-        joinedFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
-
-        EventsFragment createdFragment =
-                EventsFragment.newInstance(EventsFragment.TAB_MY_EVENTS);
-        createdFragment.setAdapter(new EventsAdapter(this, eventsPresenter));
-
-        eventsPresenter.setNearbyView(nearbyFragment);
-        eventsPresenter.setJoinedView(nearbyFragment);
-        eventsPresenter.setCreatedView(nearbyFragment);
-
-        nearbyFragment.setPresenter(eventsPresenter);
-        joinedFragment.setPresenter(eventsPresenter);
-        createdFragment.setPresenter(eventsPresenter);
-
-        pageAdapter.addFragment(nearbyFragment, R.id.bottom_nav_nearby);
-        pageAdapter.addFragment(joinedFragment, R.id.bottom_nav_joined);
-        pageAdapter.addFragment(createdFragment, R.id.bottom_nav_created);
-
-        AddEventFragment addEventFragment = AddEventFragment.newInstance();
-        AddEventPresenter addEventPresenter =
-                new AddEventPresenter(addEventFragment, addEventFragment);
-        addEventFragment.setPresenter(addEventPresenter);
-
-        pageAdapter.addFragment(addEventFragment, R.id.bottom_nav_add);
-
-        /**
-         * group chat fragment
-         */
-        GroupChatFragment groupChatFragment = GroupChatFragment.newInstance
-                (EventsFragment.TAB_GROUP_CHAT);
-
-        GroupChatPresenter groupChatPresenter = new GroupChatPresenter
-                (groupChatFragment, this);
-        groupChatFragment.setPresenter(groupChatPresenter);
-
-        GroupChatAdapter groupChatListAdapter = new GroupChatAdapter(groupChatPresenter);
-        groupChatFragment.setAdapter(groupChatListAdapter);
-
-
-        pageAdapter.addFragment(groupChatFragment, R.id.bottom_nav_chat);
-
-         /**
-         * Here you may add more fragments!
-         */
-
-        viewPager.setAdapter(pageAdapter);
-
-        super.onCreate(savedInstanceState);
-
-        // TODO removing firebase test stuff
-        FirebaseHelper firebaseHelper = new FirebaseHelper();
-        FirebaseGroupChat chat = new FirebaseGroupChat();
-
-        chat.chatName = "My chat";
-        chat.eventId = "123456768";
-        chat.img = "some base64 image";
-        chat.timestamp = "0129310293";
-        chat.lastMessage = "this was the last msg";
-
-        firebaseHelper.createGroup(chat);
-
-        // TODO end firebase test stuff
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.top_navigation_bar, menu);
+        getMenuInflater().inflate(R.menu.top_nav_bar_main, menu);
         return true;
     }
 

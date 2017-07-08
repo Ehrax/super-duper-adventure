@@ -1,16 +1,18 @@
 package de.in.uulm.map.tinder.register;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import de.in.uulm.map.tinder.R;
@@ -20,8 +22,7 @@ import de.in.uulm.map.tinder.network.Network;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by maxka on 05.06.2017.
@@ -56,8 +57,7 @@ public class RegisterPresenter implements RegisterContract.Presenter {
 
     @Override
     public void signUp(String email, final String username, final String
-            password, String
-                               confirmPassword) {
+            password, String confirmPassword) {
 
         String url = mContext.getString(R.string.API_base) + mContext.getString
                 (R.string.API_register);
@@ -87,17 +87,45 @@ public class RegisterPresenter implements RegisterContract.Presenter {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                ByteArrayInputStream bis = new ByteArrayInputStream(error
-                        .networkResponse.data);
-
-                //ToDO:Error Handling like username already in use etc.
-                JsonObject body = new JsonParser().parse(new JsonReader(new
-                        InputStreamReader(bis))).getAsJsonObject();
-
-                Toast.makeText(mContext, body.toString(), Toast
-                        .LENGTH_LONG).show();
+                //TODO: handle errors like username already in use etc.
+                try {
+                    JsonObject body = new Gson().fromJson(new String(error
+                                    .networkResponse
+                                    .data),
+                            JsonObject.class);
+                    Toast.makeText(mContext, body.toString().replace("{", "")
+                            .replace("}", ""), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.print(e.getMessage());
+                }
             }
-        });
+        }) {
+            //Override the parsing of the response because standard
+            // parseNetworkResponse produces an error if the response body is
+            // empty.
+            @Override
+            protected Response<JSONObject> parseNetworkResponse
+            (NetworkResponse response) {
+
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
+            }
+        };
 
         Network.getInstance(mApplicationContext).getRequestQueue().add
                 (registerRequest);

@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -44,13 +45,17 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
 
     private final GroupChatContract.Presenter mPresenter;
 
+    private final Context mContext;
+
     public ArrayList<FirebaseGroupChat> mGroupChats;
 
 
-    public GroupChatAdapter(GroupChatContract.Presenter presenter) {
+    public GroupChatAdapter(GroupChatContract.Presenter presenter, Context
+            context) {
 
         mPresenter = presenter;
         mGroupChats = new ArrayList<>();
+        mContext = context;
     }
 
     @Override

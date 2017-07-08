@@ -37,7 +37,7 @@ public class FilterFragment extends Fragment implements
             container, @Nullable Bundle savedInstanceState) {
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        View view = inflater.inflate(R.layout.fragment_settings, container,
+        View view = inflater.inflate(R.layout.fragment_filter, container,
                 false);
 
         Toolbar settingsToolbar = (Toolbar) view.findViewById

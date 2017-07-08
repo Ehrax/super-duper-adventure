@@ -26,10 +26,7 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
     private Context mContext;
 
-    private GroupChatContract.View mView;
-
-    public GroupChatPresenter(GroupChatContract.View view, Context context) {
-        mView = view;
+    public GroupChatPresenter(Context context) {
         mContext = context;
     }
 
@@ -43,7 +40,6 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         ArrayList<FirebaseGroupChat> groupChat = new ArrayList<>();
-
 
 
         return groupChat;

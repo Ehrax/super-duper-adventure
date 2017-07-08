@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 import static android.content.ContentValues.TAG;
 
@@ -25,14 +24,15 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
 
     private GroupChatContract.Presenter mPresenter;
 
-    public static GroupChatFragment newInstance(String title) {
+    private RecyclerView mRecyclerView;
 
-        Bundle args = new Bundle();
-        args.putString(MainPageAdapter.TAB_TITLE, title);
-        
+
+    public static GroupChatFragment newInstance(GroupChatPresenter presenter) {
+
         GroupChatFragment fragment = new GroupChatFragment();
-        fragment.setArguments(args);
-        
+        fragment.mPresenter = presenter;
+        fragment.setHasOptionsMenu(true);
+
         return fragment;
     }
 
@@ -45,12 +45,16 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
         View view = inflater.inflate(R.layout.fragment_group_chat, container,
                 false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id
+        mRecyclerView = (RecyclerView) view.findViewById(R.id
                 .group_chat_list);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 (getContext()));
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mRecyclerView.setAdapter(mAdapter);
+
+        onFragmentBecomesVisible();
 
         return view;
     }
@@ -73,8 +77,5 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     }
 
     @Override
-    public void onFragmentBecomesVisible() {
-
-        mPresenter.setupGroupChat();
-    }
+    public void onFragmentBecomesVisible() { }
 }

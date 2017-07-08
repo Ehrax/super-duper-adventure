@@ -28,9 +28,9 @@ namespace TinderServer2.Controllers
         {
             get { return Request.GetOwinContext().Get<ApplicationDbContext>(); }
         }
-        private ApplicationUserManager UserManager       
+        private ApplicationUserManager UserManager
         {
-           get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
+            get { return Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
         }
 
         // GET: api/EventModels
@@ -44,12 +44,20 @@ namespace TinderServer2.Controllers
         /// <param name="latitude"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public IQueryable<EventModel> GetEvents(string category="all",double longitude=-181,double latitude=-91,int distance = 5000)
+        public List<ReturnEventBindingModel> GetEvents(string category = "all", double longitude = -181, double latitude = -91, int distance = 5000, DateTime? fromDate = null,DateTime? toDate = null)
         {
-            IQueryable<EventModel> eventList = db.Events;
-            if (longitude >= -180 && latitude >= -90 && longitude<=180 && latitude<=90)
+            if(fromDate == null)
             {
-                eventList = db.Events.Where(e =>
+                fromDate = DateTime.Now;
+            }
+            if(toDate == null)
+            {
+                toDate = DateTime.Now.AddYears(100);
+            }
+            var eventList = db.Events.Where(e => e.StartDate >= fromDate && e.StartDate <= toDate).ToList();
+            if (longitude >= -180 && latitude >= -90 && longitude <= 180 && latitude <= 90)
+            {
+                eventList = db.Events.ToList().Where(e =>
                         GreatCircleDistance.CalculateDistance(new Location
                         {
                             Longitude = e.Longitude,
@@ -59,21 +67,41 @@ namespace TinderServer2.Controllers
                             Longitude = longitude,
                             Latitude = latitude
                         }) <= distance
-                    );
+                    ).ToList();
             }
-            
+
             switch (category.ToLower())
             {
-                case "all": return eventList;
-                case "sport": return eventList.Where(e => e.Category == Categories.Category.Sport);
-                case "erholung": return eventList.Where(e => e.Category == Categories.Category.Erholung);
-                case "kultur": return eventList.Where(e => e.Category == Categories.Category.Kultur);
-                case "ausgehen": return eventList.Where(e => e.Category == Categories.Category.Ausgehen);
-                case "sonstiges": return eventList.Where(e => e.Category == Categories.Category.Sonstiges);
+                case "all": break;
+                case "sport":
+                    eventList = eventList.Where(e => e.Category == Categories.Category.Sport).ToList();
+                    break;
+                case "erholung":
+                    eventList = eventList.Where(e => e.Category == Categories.Category.Erholung).ToList();
+                    break;
+                case "kultur":
+                    eventList = eventList.Where(e => e.Category == Categories.Category.Kultur).ToList();
+                    break;
+                case "ausgehen":
+                    eventList = eventList.Where(e => e.Category == Categories.Category.Ausgehen).ToList();
+                    break;
+                case "sonstiges":
+                    eventList = eventList.Where(e => e.Category == Categories.Category.Sonstiges).ToList();
+                    break;
+                default: break;
 
             }
-            
-            return db.Events;
+
+
+            List<ReturnEventBindingModel> returnEventList = new List<ReturnEventBindingModel>();
+
+            foreach (var currentEvent in eventList)
+            {
+                ReturnEventBindingModel returnEvent = new ReturnEventBindingModel(currentEvent);
+                returnEventList.Add(returnEvent);
+            }
+            return returnEventList;
+
         }
 
         /// <summary>
@@ -82,7 +110,7 @@ namespace TinderServer2.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: api/Event/5
-        [ResponseType(typeof(EventModel))]
+        [ResponseType(typeof(ReturnEventBindingModel))]
         public async Task<IHttpActionResult> GetEvent(int id)
         {
             EventModel eventModel = await db.Events.FindAsync(id);
@@ -91,32 +119,76 @@ namespace TinderServer2.Controllers
                 return NotFound();
             }
 
-            return Ok(eventModel);
+
+            return Ok(new ReturnEventBindingModel(eventModel));
         }
+
+        [HttpGet]
+        [Route("api/event/joined")]
+        public List<ReturnEventBindingModel> GetJoinedEvents()
+        {
+            string currentUserID = User.Identity.GetUserId();
+            List<EventModel> joinedEvents = db.Events.Where(e => e.Members.Any(m=>m.Id.Equals(currentUserID))).ToList();
+            List<ReturnEventBindingModel> returnJoinedEvents = new List<ReturnEventBindingModel>();
+            foreach (var joinedEvent in joinedEvents)
+            {
+                returnJoinedEvents.Add(new ReturnEventBindingModel(joinedEvent));
+                
+            }
+
+            return returnJoinedEvents;
+        }
+
+        [HttpGet]
+        [Route("api/event/created")]
+        public List<ReturnEventBindingModel> GetCreatedEvents()
+        {
+            string currentUserID = User.Identity.GetUserId();
+
+            List<EventModel> createdEvents = db.Events.Where(e => e.Creator.Id.Equals(currentUserID)).ToList();
+            List<ReturnEventBindingModel> returnCreatedEvents = new List<ReturnEventBindingModel>();
+            foreach (var joinedEvent in createdEvents)
+            {
+                returnCreatedEvents.Add(new ReturnEventBindingModel(joinedEvent));
+
+            }
+
+            return returnCreatedEvents;
+        }
+
 
         // PUT: api/Event/5
         /// <summary>
         /// Updates the Event with the passed id. You have to pass all attributes of this event!
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="eventModel"></param>
         /// <returns></returns>
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutEvent(int id, EventModel eventModel)
+        [ResponseType(typeof(ReturnEventBindingModel))]
+        public async Task<IHttpActionResult> PutEvent(UpdateEventBindingModel updateEventModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != eventModel.EventModelID)
+            EventModel eventModel = db.Events.FirstOrDefault(e => e.EventModelID == updateEventModel.EventModelID);
+            if (eventModel == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-            if(User.Identity.GetUserId() != eventModel.Creator.Id)
+            if (User.Identity.GetUserId() != eventModel.Creator.Id)
             {
                 return Unauthorized();
             }
+
+            try
+            {
+                eventModel.UpdateEvent(updateEventModel);
+            }
+            catch (Exception e) when (e is InvalidCastException || e is NullReferenceException)
+            {
+                return BadRequest(e.Message);
+            }
+
             db.Entry(eventModel).State = EntityState.Modified;
 
             try
@@ -125,7 +197,7 @@ namespace TinderServer2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EventModelExists(id))
+                if (!EventModelExists(updateEventModel.EventModelID))
                 {
                     return NotFound();
                 }
@@ -188,7 +260,7 @@ namespace TinderServer2.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        
+
         // POST: api/Event
         /// <summary>
         /// This method is used to create a event.
@@ -202,24 +274,27 @@ namespace TinderServer2.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if(eventModel.timeSpan <= 0)
+            if (eventModel.StartDate < DateTime.Now)
             {
-                return BadRequest("Zeitspanne muss groesser 0 sein");
+                return BadRequest("Start kann nicht in der Vergangenheit liegen");
             }
 
-            var currentEvent = new EventModel {
+            var currentEvent = new EventModel
+            {
                 Title = eventModel.Title,
                 Latitude = eventModel.Latitude,
                 Longitude = eventModel.Longitude,
-                MaxUsers = eventModel.MaxUsers
+                Location = eventModel.Location,
+                MaxUsers = eventModel.MaxUsers,
+                StartDate = eventModel.StartDate
+
             };
 
             if (!String.IsNullOrEmpty(eventModel.Description))
             {
                 currentEvent.Description = eventModel.Description;
             }
-            currentEvent.Category = (Categories.Category) eventModel.Category;
-            currentEvent.EndDate = DateTime.Now.AddMilliseconds(eventModel.timeSpan);
+            currentEvent.Category = (Categories.Category)eventModel.Category;
 
             var currentUser = UserManager.FindById(User.Identity.GetUserId());
 
@@ -227,27 +302,20 @@ namespace TinderServer2.Controllers
             currentEvent.Members.Add(currentUser);
             currentEvent.UserCounter = 1;
 
+
             if (!String.IsNullOrEmpty(eventModel.ImageBase64))
             {
-                var imageBytes = Convert.FromBase64String(ImageHelper.FixBase64ForImage(eventModel.ImageBase64));
-
-                string extension = ImageHelper.GetExtension(imageBytes);
-
-                if (extension.Equals(String.Empty))
+                string filePath = ImageHelper.SaveBase64ImageToFileSystem(eventModel.ImageBase64, ImageHelper.ImageType.EVENTIMAGE, eventModel.Title + "_" + eventModel.StartDate.Millisecond);
+                if (filePath.Equals("NotAImage"))
                 {
                     return BadRequest("NotAImage");
                 }
+                if (filePath == null)
+                {
+                    return BadRequest("Error while uploading the Image, please try again");
+                }
 
-                string appPath = HttpContext.Current.Request.MapPath(HttpContext.Current.Request.ApplicationPath);
-                string filePath = appPath + "\\images\\events\\" + eventModel.Title +"_"+ ImageHelper.createName() + extension;
-
-                ImageHelper.SaveImage(imageBytes,filePath);
-
-                var imageModel = new ImageModel { Path = filePath };
-                db.Images.Add(imageModel);
-                await db.SaveChangesAsync();
-
-                currentEvent.EventImage = imageModel;
+                currentEvent.ImagePath = filePath;
 
             }
 
@@ -256,19 +324,19 @@ namespace TinderServer2.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = currentEvent.EventModelID }, eventModel);
         }
-        
+
 
         // DELETE: api/Event/5
         [ResponseType(typeof(EventModel))]
         public async Task<IHttpActionResult> DeleteEvent(int id)
         {
-            EventModel eventModel = await db.Events.FindAsync(id);
+            EventModel eventModel = db.Events.FirstOrDefault(e => e.EventModelID == id);
             if (eventModel == null)
             {
                 return NotFound();
             }
-            
-            if(User.Identity.GetUserId() != eventModel.Creator.Id)
+
+            if (User.Identity.GetUserId() != eventModel.Creator.Id)
             {
                 return Unauthorized();
             }
@@ -282,13 +350,16 @@ namespace TinderServer2.Controllers
         [Route("api/event/autodelete")]
         [HttpDelete]
         [ResponseType(typeof(void))]
+        [AllowAnonymous]
         public async Task<IHttpActionResult> AutoDeleteEvent()
         {
-            var EventsToDelete = db.Events.Where(e => e.EndDate.CompareTo(DateTime.Now) <= 0).ToList();
+            var EventsToDelete = db.Events.Where(e => e.StartDate.AddHours(24) < DateTime.Now).ToList();
             foreach (var currentEvent in EventsToDelete)
             {
                 db.Events.Remove(currentEvent);
             }
+
+            await db.SaveChangesAsync();
 
             return StatusCode(HttpStatusCode.NoContent);
 

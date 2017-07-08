@@ -1,11 +1,10 @@
-package de.in.uulm.map.tinder.main.events;
+package de.in.uulm.map.tinder.main.eventlist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,25 +15,36 @@ import android.widget.TextView;
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.User;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
+import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
  * Created by Jona on 04.05.17.
  */
-public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder> {
+public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
 
     private final Context mContext;
 
-    private final EventsContract.EventsPresenter mPresenter;
+    private final EventListContract.EventListPresenter mPresenter;
 
     public ArrayList<Event> mEvents;
 
-    public EventsAdapter(Context context, EventsContract.EventsPresenter presenter) {
+    public EventListAdapter(Context context, EventListContract.EventListPresenter presenter) {
 
         mContext = context;
         mEvents = new ArrayList<>();
         mPresenter = presenter;
+    }
+
+    public void removeEvent(Event event) {
+
+        int i = mEvents.indexOf(event);
+        mEvents.remove(event);
+        notifyItemRemoved(i);
     }
 
     public void setEvents(ArrayList<Event> events) {
@@ -54,6 +64,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         public Button mLeaveButton;
         public Button mMapButton;
         public Button mDeleteButton;
+        public Button mEditButton;
 
         public ViewHolder(View itemView) {
 
@@ -68,6 +79,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             mLeaveButton = (Button) itemView.findViewById(R.id.event_card_leave);
             mMapButton = (Button) itemView.findViewById(R.id.event_card_map);
             mDeleteButton = (Button) itemView.findViewById(R.id.event_card_delete);
+            mEditButton = (Button) itemView.findViewById(R.id.event_card_edit);
         }
     }
 
@@ -81,7 +93,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         final Event e = mEvents.get(position);
         holder.mTitle.setText(e.title);
@@ -89,39 +101,59 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         holder.mUserCount.setText(
                 e.participants.size() + "/" + e.max_user_count);
 
-        if(e.image != null) {
-            byte[] bytes = Base64.decode(e.image, Base64.DEFAULT);
-            holder.mImage.setImageBitmap(
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+        if(e.has_image) {
+            String uri = mContext.getString(R.string.API_base);
+            uri += mContext.getString(R.string.API_event_image);
+            uri += "/" + e.id;
+            new AsyncImageLoader(uri,
+                    new WeakReference<>(holder.mImage), mContext).execute();
+        } else {
+            //TODO: load default category images here
+            holder.mImage.setImageResource(R.drawable.image_placeholder);
         }
 
-        // TODO: find out the time actually left
+        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatPresent = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        try {
+            long start_date = formatParse.parse(e.start_date).getTime();
+            holder.mTime.setText(formatPresent.format(start_date));
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
 
-        long left = 0; // e.end_date - new Date().getTime();
-        long hours = left / 3600000;
-        long minutes = (left % 3600000) / 60000;
+        SharedPreferences accountPrefs = mContext.getSharedPreferences(
+                mContext.getString(R.string.store_account),
+                Context.MODE_PRIVATE);
 
-        holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
+        final String userName = accountPrefs.getString(
+                mContext.getString(R.string.store_username), "");
 
-        // TODO: Get real user ...
-
-        final User user = new User();
+        boolean currentUserParticipates = false;
+        for(User u : e.participants) {
+            if(u.name.equals(userName)) {
+                currentUserParticipates = true;
+                break;
+            }
+        }
 
         holder.mJoinButton.setVisibility(
-                e.participants.contains(user) ? View.GONE : View.VISIBLE);
+                currentUserParticipates ? View.GONE : View.VISIBLE);
         holder.mLeaveButton.setVisibility(
-                e.participants.contains(user) && e.creator != user
+                currentUserParticipates && !e.creator.name.equals(userName)
                         ? View.VISIBLE : View.GONE);
         holder.mMapButton.setVisibility(
-                e.participants.contains(user) ? View.VISIBLE : View.GONE);
+                currentUserParticipates ? View.VISIBLE : View.GONE);
         holder.mDeleteButton.setVisibility(
-                e.creator == user ? View.VISIBLE : View.GONE);
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
+        holder.mEditButton.setVisibility(
+                e.creator.name.equals(userName) ? View.VISIBLE : View.GONE);
 
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real delete request ...
+                holder.mDeleteButton.setEnabled(false);
+                mPresenter.onDeleteClicked(e);
             }
         });
 
@@ -129,7 +161,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real join request ...
+                mPresenter.onJoinClicked(e);
             }
         });
 
@@ -137,16 +169,27 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                // TODO: Issue real leave request ...
+                mPresenter.onLeaveClicked(e);
+            }
+        });
+
+        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mPresenter.onEditClicked(e);
             }
         });
 
         holder.mMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri gmmIntentUri = Uri.parse("geo:"+e.latitude+","+e.longitude);
+
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q="+e.latitude+","+e.longitude+"("+e.title+")");
+
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
+
                 if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
                     mContext.startActivity(mapIntent);
                 }

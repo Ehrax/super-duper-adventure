@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">Tinder</string>
-    <string name="events_nearby">Events</string>
-    <string name="events_joined">Joined</string>
-    <string name="events_created">Created</string>
+    <string name="app_name">Eventure</string>
+    <string name="events_nearby">Nearby</string>
+    <string name="events_my">My Events</string>
     <string name="chat">Chat</string>
     <string name="add">Add</string>
 
@@ -27,6 +26,7 @@
     <!-- top bar -->
     <string name="filter">Filter</string>
     <string name="settings">Settings</string>
+    <string name="event">Event</string>
     <string name="profile">Profile</string>
     <string name="sign_out">Sign out</string>
 
@@ -38,7 +38,8 @@
     <string name="API_base">https://urban-action.max-karthan.de/TinderAPI</string>
     <string name="API_getToken">/token</string>
     <string name="API_register">/api/account/register</string>
-    <string name="API_getEvent">/api/Event</string>
+    <string name="API_event">/api/Event</string>
+    <string name="API_event_image">/api/Event/image</string>
 
     <!-- Network -->
     <string name="no_connection">It seems like you´re not connected to
@@ -48,6 +49,18 @@
     <string name="store_account">ACCOUNT_SHARED_PREFERENCES</string>
   
     <!-- SharedPreferences Keys -->
+    <string name="store_username">USERNAME</string>
     <string name="store_token">TOKEN</string>
     <string name="store_token_expire">TOKEN_EXPIRE</string>
+    <string name="check">Check</string>
+
+    <!-- Categories -->
+    <string-array name="categories">
+        <item>Sport</item>
+        <item>Ausgehen</item>
+        <item>Erholung</item>
+        <item>Kultur</item>
+        <item>Sonstiges</item>
+        <item>Alle</item>
+    </string-array>
 </resources>

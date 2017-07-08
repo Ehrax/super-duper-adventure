@@ -20,6 +20,8 @@ public class Network {
 
     private ImageLoader mImageLoader;
 
+    private LruBitmapCache mBitmapCache;
+
     /**
      * This will return an instance of the Network class. If there is no
      * current instance present a new instance will be created.
@@ -45,9 +47,12 @@ public class Network {
 
         mRequestQueue = Volley.newRequestQueue(context);
 
-        mImageLoader = new ImageLoader(
+        mBitmapCache = new LruBitmapCache(LruBitmapCache.getCacheSize(context));
+
+        mImageLoader = new AuthImageLoader(
                 mRequestQueue,
-                new LruBitmapCache(LruBitmapCache.getCacheSize(context)));
+                mBitmapCache,
+                context);
     }
 
     /**
@@ -68,6 +73,16 @@ public class Network {
     public ImageLoader getImageLoader() {
 
         return mImageLoader;
+    }
+
+    /**
+     * Getter for Bitmap Cache
+     *
+     * @return bitmap cache for this application context
+     */
+    public LruBitmapCache getBitmapCache() {
+
+        return mBitmapCache;
     }
 }
 
