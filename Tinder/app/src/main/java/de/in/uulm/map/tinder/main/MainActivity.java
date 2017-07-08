@@ -59,10 +59,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
         createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
 
-        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(this);
-
         final GroupChatFragment groupChatFragment =
-                GroupChatFragment.newInstance(groupChatPresenter);
+                GroupChatFragment.newInstance();
+        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(this,
+                groupChatFragment);
+
+        groupChatFragment.setPresenter(groupChatPresenter);
         groupChatFragment.setAdapter(new GroupChatAdapter(groupChatPresenter, this));
 
         eventListPresenter.addEventView(nearbyFragment);

@@ -27,10 +27,9 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     private RecyclerView mRecyclerView;
 
 
-    public static GroupChatFragment newInstance(GroupChatPresenter presenter) {
+    public static GroupChatFragment newInstance() {
 
         GroupChatFragment fragment = new GroupChatFragment();
-        fragment.mPresenter = presenter;
         fragment.setHasOptionsMenu(true);
 
         return fragment;
@@ -77,5 +76,10 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     }
 
     @Override
-    public void onFragmentBecomesVisible() { }
+    public void onFragmentBecomesVisible() {
+
+        mPresenter.start();
+        mPresenter.loadEvents();
+        // TODO remove this after just for test purpose
+    }
 }

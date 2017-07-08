@@ -17,4 +17,25 @@ public class FirebaseGroupChat {
     public FirebaseGroupChat() {
         // default constructor required for calls to DataSnapshot.getValue
     }
+
+    public FirebaseGroupChat(String eventId, String chatName, String timestamp, String img, String lastMessage) {
+
+        this.eventId = eventId;
+        this.chatName = chatName;
+        this.timestamp = timestamp;
+        this.img = img;
+        this.lastMessage = lastMessage;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        FirebaseGroupChat chat = (FirebaseGroupChat) obj;
+
+        if (eventId.equals(chat.eventId)) {
+            return true;
+        }
+
+        return false;
+    }
 }

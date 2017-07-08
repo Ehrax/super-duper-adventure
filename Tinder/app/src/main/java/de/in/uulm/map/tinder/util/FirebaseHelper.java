@@ -36,9 +36,11 @@ public class FirebaseHelper {
         DatabaseReference root = mDatabase.getRoot();
 
         HashMap<String, Object> chat = new HashMap<>();
+        chat.put("eventId", groupChat.eventId);
         chat.put("chatName", groupChat.chatName);
         chat.put("timestamp", groupChat.timestamp);
         chat.put("img", groupChat.img);
+        chat.put("lastMessage", groupChat.lastMessage);
 
         root.child(groupChat.eventId).setValue(chat);
     }

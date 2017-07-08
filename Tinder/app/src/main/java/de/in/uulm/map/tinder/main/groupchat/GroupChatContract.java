@@ -16,7 +16,8 @@ import java.util.List;
 public class GroupChatContract {
 
     interface Presenter extends BasePresenter {
-        ArrayList<FirebaseGroupChat> setupGroupChat();
+        void loadGroupChats(ArrayList<Event> events);
+        void loadEvents();
     }
 
     interface View extends MainContract.MainView<Presenter> {

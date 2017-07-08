@@ -25,6 +25,7 @@ import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
 import de.in.uulm.map.tinder.util.FirebaseHelper;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,8 +64,6 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         ViewGroup view = (ViewGroup) LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.fragment_group_chat_item, parent, false);
 
-        // TODO fetch here all group chats the user has joined
-
         return  new ViewHolder(view);
     }
 
@@ -75,20 +74,28 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         holder.mGroupNameTextView.setText(groupChat.chatName);
         holder.mGroupLastMessageTextView.setText(groupChat.lastMessage);
 
-        // parse millisec time into string
-        Date date = new Date(Long.parseLong(groupChat.timestamp));
-        DateFormat formatter = new SimpleDateFormat("HH:mm");
-        String dateFormatted = formatter.format(date);
+        SimpleDateFormat formatParse = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatPresent = new SimpleDateFormat("HH:mm");
 
-        holder.mGroupLastTimestampTextView.setText(dateFormatted);
-
-        // set image from group chat if there is an img
-        if (groupChat.img != null) {
-            byte[] bytes = Base64.decode(groupChat.img, Base64.DEFAULT);
-            holder.mGroupCircleImageView.setImageBitmap(
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-
+        try {
+            long date = formatParse.parse(groupChat.timestamp).getTime();
+            holder.mGroupLastTimestampTextView.setText(formatPresent.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void setGroupChats(ArrayList<FirebaseGroupChat> chats) {
+        mGroupChats = chats;
+        notifyDataSetChanged();
+    }
+
+    public void addGroupChat(FirebaseGroupChat chat) {
+
+        if (!mGroupChats.contains(chat)) {
+            mGroupChats.add(chat);
+        }
+        notifyDataSetChanged();
     }
 
     @Override
