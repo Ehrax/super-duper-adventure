@@ -50,7 +50,6 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 (getContext()));
         mRecyclerView.setLayoutManager(linearLayoutManager);
-
         mRecyclerView.setAdapter(mAdapter);
 
         onFragmentBecomesVisible();
@@ -78,8 +77,7 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
     @Override
     public void onFragmentBecomesVisible() {
 
-        mPresenter.start();
+        mPresenter.start(); // TODO remove this after just for test purpose
         mPresenter.loadEvents();
-        // TODO remove this after just for test purpose
     }
 }

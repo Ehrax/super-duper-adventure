@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import android.Manifest; import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,11 @@ import android.util.Log;
 
 import com.android.volley.Response;
 
+import de.in.uulm.map.tinder.chat.ChatActivity;
+import de.in.uulm.map.tinder.chat.ChatFragment;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
+import de.in.uulm.map.tinder.main.MainActivity;
 import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.EventRequest;
 import de.in.uulm.map.tinder.network.Network;
@@ -41,31 +45,21 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
         mActivity = activity;
         mView = view;
-
-        // TODO is this really a bad idea :D?
-
     }
 
     @Override
     public void start() {
 
-        FirebaseHelper helper = new FirebaseHelper();
-
-        FirebaseGroupChat chat = new FirebaseGroupChat();
-        chat.eventId = "1071";
-        chat.chatName = "Making some cool stuff here";
-        chat.lastMessage = "Hello World!";
-        chat.timestamp = "2017-078T21:00:00";
-
-        FirebaseGroupChat chat2 = new FirebaseGroupChat();
-        chat2.eventId = "1072";
-        chat2.chatName = "My Second Test Event";
-        chat2.lastMessage = "Roman are you stupid?";
-        chat2.timestamp = "2017-07-08T23:00:00";
-
-        helper.createGroup(chat);
-        helper.createGroup(chat2);
-
+//        TODO remove this if our server can create firebaseGroupChats
+//        FirebaseHelper helper = new FirebaseHelper();
+//
+//        FirebaseGroupChat chat = new FirebaseGroupChat();
+//        chat.eventId = "1073";
+//        chat.chatName = "Making some cool stuff here";
+//        chat.lastMessage = "Hello World!";
+//        chat.timestamp = "2017-07-08T21:00:00";
+//
+//        helper.createGroup(chat);
     }
 
     @Override
@@ -74,18 +68,16 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
         final FirebaseDatabase db = FirebaseDatabase.getInstance();
         final DatabaseReference root = db.getReference().getRoot();
 
-        final ArrayList<FirebaseGroupChat> chats = new ArrayList<>();
-
         for (Event e : events) {
             root.child(e.id).addListenerForSingleValueEvent(new ValueEventListener() {
-
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     FirebaseGroupChat chat = dataSnapshot.getValue
                             (FirebaseGroupChat.class);
 
-                    addGroupChatToAdapter(chat);
-
+                    if (chat != null) {
+                        addGroupChatToAdapter(chat);
+                    }
                 }
 
                 @Override
@@ -130,5 +122,14 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
         Network.getInstance(mActivity.getApplicationContext())
                 .getRequestQueue().add(reqJoined);
+    }
+
+    @Override
+    public void openMessageActivity(String eventId, String eventName) {
+
+        Intent intent = new Intent(mActivity, ChatActivity.class);
+        intent.putExtra(ChatFragment.EVENT_ID, eventId);
+        intent.putExtra(ChatFragment.EVENT_NAME, eventName);
+        mActivity.startActivity(intent);
     }
 }

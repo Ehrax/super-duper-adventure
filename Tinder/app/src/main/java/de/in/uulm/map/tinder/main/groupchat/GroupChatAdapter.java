@@ -1,41 +1,24 @@
 package de.in.uulm.map.tinder.main.groupchat;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
-
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
-import de.in.uulm.map.tinder.util.FirebaseHelper;
+import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
-import java.text.DateFormat;
+import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
-import static android.content.ContentValues.TAG;
+
 
 /**
  * Created by alexanderrasputin on 11.05.17.
@@ -83,6 +66,25 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        if (groupChat.img != null) {
+            String uri = mContext.getString(R.string.API_base);
+            uri += mContext.getString(R.string.API_event_image);
+            new AsyncImageLoader(uri,
+                    new WeakReference<ImageView>(holder
+                            .mGroupCircleImageView), mContext).execute();
+        } else {
+            holder.mGroupCircleImageView.setImageResource(R.drawable.image_placeholder);
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                mPresenter.openMessageActivity(groupChat.eventId, groupChat.chatName);
+            }
+        });
     }
 
     public void setGroupChats(ArrayList<FirebaseGroupChat> chats) {

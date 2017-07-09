@@ -19,8 +19,6 @@ import de.in.uulm.map.tinder.main.groupchat.GroupChatFragment;
 import de.in.uulm.map.tinder.main.groupchat.GroupChatPresenter;
 import de.in.uulm.map.tinder.util.ActivityUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jona on 21.05.2017.

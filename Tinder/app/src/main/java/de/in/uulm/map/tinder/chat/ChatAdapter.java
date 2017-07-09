@@ -12,6 +12,7 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.entities.Message;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,17 +24,13 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
-    private final List<Message> mMessages;
+    private List<Message> mMessages;
 
     private final ChatContract.Presenter mPresenter;
 
-    public ChatAdapter(Event event, ChatContract.Presenter presenter) {
+    public ChatAdapter(ChatContract.Presenter presenter) {
 
         mMessages = new ArrayList<>();
-
-        // TODO: make sorting work again
-        // mMessages.sort("timestamp");
-
         mPresenter = presenter;
     }
 
@@ -51,11 +48,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
 
         Message message = mMessages.get(position);
 
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm");
-        holder.mUserName.setText(message.mUserName);
-
         holder.mText.setText(message.mText);
-        holder.mTime.setText(format.format(new Date(message.mTimestamp)));
+
+        holder.mUserName.setText(message.mUserName);
+        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatPresent = new SimpleDateFormat("HH:mm");
+
+        try {
+            long date = formatParse.parse(message.mTimestamp).getTime();
+            holder.mTime.setText(formatPresent.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 holder.mLayout.getLayoutParams();
@@ -95,5 +99,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
             mText = (TextView) view.findViewById(R.id.chat_message_text);
             mTime = (TextView) view.findViewById(R.id.chat_message_timestamp);
         }
+    }
+
+    public void addMessage(Message message) {
+        mMessages.add(message);
+        notifyDataSetChanged();
+    }
+
+    // TODO dont know if i will use this anyway
+    public void setMessages(ArrayList<Message> messages) {
+
+        mMessages = messages;
+        notifyDataSetChanged();
     }
 }

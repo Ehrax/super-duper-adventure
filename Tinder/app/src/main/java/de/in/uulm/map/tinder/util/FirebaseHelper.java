@@ -18,7 +18,6 @@ public class FirebaseHelper {
 
     private DatabaseReference mDatabase;
     public static final String CHILD_GROUP_MESSAGES = "messages";
-    public static final String GROUP_CHATS = "group-chats";
 
     public FirebaseHelper() {
 
@@ -34,15 +33,7 @@ public class FirebaseHelper {
     public void createGroup(FirebaseGroupChat groupChat) {
 
         DatabaseReference root = mDatabase.getRoot();
-
-        HashMap<String, Object> chat = new HashMap<>();
-        chat.put("eventId", groupChat.eventId);
-        chat.put("chatName", groupChat.chatName);
-        chat.put("timestamp", groupChat.timestamp);
-        chat.put("img", groupChat.img);
-        chat.put("lastMessage", groupChat.lastMessage);
-
-        root.child(groupChat.eventId).setValue(chat);
+        root.child(groupChat.eventId).setValue(groupChat);
     }
 
     public void updateGroup(String chatId, HashMap<String, Object> updates) {
@@ -60,17 +51,10 @@ public class FirebaseHelper {
     public void writeMessageToGroup(String eventId, Message message) {
 
         DatabaseReference chatRef = mDatabase.getRoot().child(eventId);
-        DatabaseReference messagesRef = chatRef.child("messages");
+        DatabaseReference messagesRef = chatRef.child(CHILD_GROUP_MESSAGES);
 
         String key = messagesRef.push().getKey();
-
-        HashMap<String, Object> sendingMessage = new HashMap<>();
-        sendingMessage.put("userName", message.mUserName);
-        sendingMessage.put("userId", message.mUid);
-        sendingMessage.put("userImage", message.mUserImg);
-        sendingMessage.put("timestamp", message.mTimestamp);
-        sendingMessage.put("text", message.mText);
-
-        messagesRef.child(key).setValue(sendingMessage);
+        messagesRef.child(key).setValue(message);
     }
+
 }

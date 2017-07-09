@@ -52,9 +52,6 @@
         <activity android:name=".chat.ChatActivity"
                 android:screenOrientation="portrait"/>
 
-        <activity android:name=".groupchat.GroupChatActivity"
-                android:screenOrientation="portrait"/>
-
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyB3hMGqs4X_pQg7DrTA8xDS6whsGlu0TV0" />
