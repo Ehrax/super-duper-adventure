@@ -35,7 +35,7 @@ public class ChatActivity extends AppCompatActivity {
         ChatPresenter presenter = new ChatPresenter(fragment, this);
         fragment.setPresenter(presenter);
 
-        ChatAdapter adapter = new ChatAdapter(presenter);
+        ChatAdapter adapter = new ChatAdapter(presenter, this);
         fragment.setAdapter(adapter);
     }
 }

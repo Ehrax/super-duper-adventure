@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
-
 /**
  * Created by alexanderrasputin on 11.05.17.
  */
@@ -44,10 +43,11 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         ViewGroup view = (ViewGroup) LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.fragment_group_chat_item, parent, false);
 
-        return  new ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         holder.mGroupNameTextView.setText(groupChat.chatName);
         holder.mGroupLastMessageTextView.setText(groupChat.lastMessage);
 
-        SimpleDateFormat formatParse = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         SimpleDateFormat formatPresent = new SimpleDateFormat("HH:mm");
 
         try {
@@ -88,6 +88,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
     }
 
     public void setGroupChats(ArrayList<FirebaseGroupChat> chats) {
+
         mGroupChats = chats;
         notifyDataSetChanged();
     }
@@ -97,6 +98,17 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
         if (!mGroupChats.contains(chat)) {
             mGroupChats.add(chat);
         }
+        notifyDataSetChanged();
+    }
+
+    public void updateChat(FirebaseGroupChat groupChat) {
+
+        for (int i = 0; i < mGroupChats.size(); i++) {
+            if (mGroupChats.get(i).eventId == groupChat.eventId) {
+                mGroupChats.set(i, groupChat);
+            }
+        }
+
         notifyDataSetChanged();
     }
 

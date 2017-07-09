@@ -54,7 +54,13 @@ public class FirebaseHelper {
         DatabaseReference messagesRef = chatRef.child(CHILD_GROUP_MESSAGES);
 
         String key = messagesRef.push().getKey();
-        messagesRef.child(key).setValue(message);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("lastMessage", message.mText);
+        map.put("timestamp", message.mTimestamp);
+        map.put("messages/" + key, message);
+
+        chatRef.updateChildren(map);
     }
 
 }

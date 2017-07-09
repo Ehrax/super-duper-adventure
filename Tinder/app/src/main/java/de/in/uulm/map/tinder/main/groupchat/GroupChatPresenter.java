@@ -1,11 +1,14 @@
 package de.in.uulm.map.tinder.main.groupchat;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import android.Manifest; import android.app.Activity;
+
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -72,11 +75,12 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
             root.child(e.id).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+
                     FirebaseGroupChat chat = dataSnapshot.getValue
                             (FirebaseGroupChat.class);
 
                     if (chat != null) {
-                        addGroupChatToAdapter(chat);
+                        mView.getAdapter().addGroupChat(chat);
                     }
                 }
 
@@ -88,12 +92,38 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
                 }
             });
         }
-    }
 
-    private void addGroupChatToAdapter(FirebaseGroupChat chat) {
-        mView.getAdapter().addGroupChat(chat);
-    }
+        root.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                FirebaseGroupChat chat = dataSnapshot.getValue
+                        (FirebaseGroupChat.class);
+
+                mView.getAdapter().updateChat(chat);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public void loadEvents() {
@@ -102,7 +132,7 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
 
-            ActivityCompat.requestPermissions((Activity) mActivity,
+            ActivityCompat.requestPermissions(mActivity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             return;
         }
@@ -114,7 +144,7 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
                     @Override
                     public void onResponse(List<Event> response) {
 
-                        loadGroupChats((ArrayList<Event>) response) ;
+                        loadGroupChats((ArrayList<Event>) response);
                     }
                 },
                 new DefaultErrorListener(mActivity));

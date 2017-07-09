@@ -69,6 +69,8 @@ public class ChatPresenter implements ChatContract.Presenter {
         msg.mText = inputText;
         msg.mUserName = sharedPrefs.getString(
                 mActivity.getString(R.string.store_username), "No Name");
+        msg.mUid = sharedPrefs.getString(mActivity.getString(R.string
+                .store_token), "");
         msg.mTimestamp = currTime;
         // TODO where do i get those user images? im not sure :D
         // msg.mUserImg = "";

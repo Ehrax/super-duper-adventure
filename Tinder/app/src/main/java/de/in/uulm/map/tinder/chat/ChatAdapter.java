@@ -1,5 +1,7 @@
 package de.in.uulm.map.tinder.chat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +24,19 @@ import java.util.List;
  * Created by Jona on 08.05.17.
  */
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     private List<Message> mMessages;
 
     private final ChatContract.Presenter mPresenter;
 
-    public ChatAdapter(ChatContract.Presenter presenter) {
+    private Context mContext;
+
+    public ChatAdapter(ChatContract.Presenter presenter, Context context) {
 
         mMessages = new ArrayList<>();
         mPresenter = presenter;
+        mContext = context;
     }
 
     @Override
@@ -64,9 +69,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 holder.mLayout.getLayoutParams();
 
-        // TODO: compare creator id to current locally stored id
+        SharedPreferences sharedPrefs = mContext.getSharedPreferences
+                (mContext.getString(R.string.store_account), Context.MODE_PRIVATE);
 
-        if(message.mUid == "") {
+        String creatorId =  sharedPrefs.getString(mContext.getString(R.string
+                .store_token), "");
+
+        if (message.mUid == creatorId) {
             params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
             holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_own);
         } else {
@@ -102,6 +111,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     }
 
     public void addMessage(Message message) {
+
         mMessages.add(message);
         notifyDataSetChanged();
     }
