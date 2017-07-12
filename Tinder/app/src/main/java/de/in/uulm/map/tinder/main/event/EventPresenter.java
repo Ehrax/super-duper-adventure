@@ -3,11 +3,13 @@ package de.in.uulm.map.tinder.main.event;
 import com.google.android.gms.location.places.Place;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,15 +17,20 @@ import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
 import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
 import de.in.uulm.map.tinder.util.AsyncImageEncoder;
+import de.in.uulm.map.tinder.util.FirebaseHelper;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Jona on 21.05.2017.
@@ -201,6 +208,20 @@ public class EventPresenter implements EventContract.Presenter {
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
+                        String stringResponse = "";
+
+                        try {
+                            stringResponse = new String(response,"UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+
+                        JsonObject json = new JsonParser().parse
+                                    (stringResponse).getAsJsonObject();
+
+                        FirebaseHelper helper = new FirebaseHelper();
+                        FirebaseGroupChat chat = new FirebaseGroupChat();
+
 
                         mBackend.setResult(Activity.RESULT_OK, new Intent());
                         mBackend.finish();

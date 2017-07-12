@@ -6,11 +6,7 @@
             android:icon="@drawable/account"
             android:title="@string/profile"
             app:showAsAction="never" />
-    <item
-            android:id="@+id/top_nav_settings"
-            android:icon="@drawable/settings"
-            android:title="@string/settings"
-            app:showAsAction="never" />
+    
     <item
         android:id="@+id/top_nav_sign_out"
         android:icon="@drawable/logout"

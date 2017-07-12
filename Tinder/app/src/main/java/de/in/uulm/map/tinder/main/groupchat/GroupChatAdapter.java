@@ -55,16 +55,20 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
 
         final FirebaseGroupChat groupChat = mGroupChats.get(position);
         holder.mGroupNameTextView.setText(groupChat.chatName);
-        holder.mGroupLastMessageTextView.setText(groupChat.lastMessage);
 
-        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        SimpleDateFormat formatPresent = new SimpleDateFormat("HH:mm");
+        if (groupChat.lastMessage != null || groupChat.timestamp != null) {
 
-        try {
-            long date = formatParse.parse(groupChat.timestamp).getTime();
-            holder.mGroupLastTimestampTextView.setText(formatPresent.format(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
+            holder.mGroupLastMessageTextView.setText(groupChat.lastMessage);
+
+            SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+            SimpleDateFormat formatPresent = new SimpleDateFormat("HH:mm");
+
+            try {
+                long date = formatParse.parse(groupChat.timestamp).getTime();
+                holder.mGroupLastTimestampTextView.setText(formatPresent.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if (groupChat.img != null) {

@@ -43,36 +43,37 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
     private GroupChatContract.View mView;
 
+    private final FirebaseDatabase db;
+
+    private final DatabaseReference root;
+
     public GroupChatPresenter(AppCompatActivity activity, GroupChatContract
             .View view) {
 
         mActivity = activity;
         mView = view;
+        db = FirebaseDatabase.getInstance();
+        root = db.getReference().getRoot();
     }
 
     @Override
     public void start() {
+        FirebaseHelper helper = new FirebaseHelper();
 
-//        TODO remove this if our server can create firebaseGroupChats
-//        FirebaseHelper helper = new FirebaseHelper();
-//
-//        FirebaseGroupChat chat = new FirebaseGroupChat();
-//        chat.eventId = "1073";
-//        chat.chatName = "Making some cool stuff here";
-//        chat.lastMessage = "Hello World!";
-//        chat.timestamp = "2017-07-08T21:00:00";
-//
-//        helper.createGroup(chat);
+        FirebaseGroupChat chat = new FirebaseGroupChat();
+        chat.eventId = "1077";
+        chat.chatName = "Making some cool stuff here";
+        chat.lastMessage = "Hello World!";
+        chat.timestamp = "2017-07-08T21:00:00";
+
+        helper.createGroup(chat);
     }
 
     @Override
-    public void loadGroupChats(ArrayList<Event> events) {
-
-        final FirebaseDatabase db = FirebaseDatabase.getInstance();
-        final DatabaseReference root = db.getReference().getRoot();
+    public void loadGroupChats(final ArrayList<Event> events) {
 
         for (Event e : events) {
-            root.child(e.id).addListenerForSingleValueEvent(new ValueEventListener() {
+            root.child(e.id).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -80,7 +81,9 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
                             (FirebaseGroupChat.class);
 
                     if (chat != null) {
-                        mView.getAdapter().addGroupChat(chat);
+                       mView.getAdapter().addGroupChat(chat);
+                    } else {
+                        mView.getAdapter().setGroupChats(new ArrayList<FirebaseGroupChat>());
                     }
                 }
 
@@ -110,6 +113,9 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                FirebaseGroupChat chat = dataSnapshot.getValue
+                        (FirebaseGroupChat.class);
 
             }
 

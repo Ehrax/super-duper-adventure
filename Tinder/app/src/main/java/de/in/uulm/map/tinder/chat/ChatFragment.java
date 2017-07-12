@@ -3,6 +3,7 @@ package de.in.uulm.map.tinder.chat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,10 +51,16 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         toolbar.setTitle(eventName);
         activity.setSupportActionBar(toolbar);
 
+        setHasOptionsMenu(true);
+
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         Button sendButton = (Button) view.findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 mPresenter.onSendButton(editText.getText().toString(), eventId);
             }
         });
@@ -92,5 +99,10 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         return mAdapter;
     }
 
-    // TODO handling inflating menu bar
+    // TODO handle menu items click
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.top_nav_bar_main, menu);
+    }
 }
