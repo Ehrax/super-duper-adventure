@@ -2,10 +2,10 @@ package de.in.uulm.map.tinder.main.eventlist;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -27,32 +27,19 @@ import java.util.List;
 
 public class EventListPresenter implements EventListContract.EventListPresenter {
 
-    private final Context mContext;
+    private final AppCompatActivity mActivity;
 
-    private EventListContract.EventListView mNearbyView;
+    private ArrayList<EventListContract.EventListView> mViews;
 
-    private EventListContract.EventListView mJoinedView;
+    public EventListPresenter(AppCompatActivity context) {
 
-    private EventListContract.EventListView mCreatedView;
-
-    public EventListPresenter(Context context) {
-
-        mContext = context;
+        mActivity = context;
+        mViews = new ArrayList<>();
     }
 
-    public void setNearbyView(EventListContract.EventListView view) {
+    public void addEventView(EventListContract.EventListView view) {
 
-        mNearbyView = view;
-    }
-
-    public void setJoinedView(EventListContract.EventListView view) {
-
-        mJoinedView = view;
-    }
-
-    public void setCreatedView(EventListContract.EventListView view) {
-
-        mCreatedView = view;
+        mViews.add(view);
     }
 
     @Override
@@ -65,27 +52,18 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
 
         // TODO: asking for permissions this way sucks!
 
-        if (ActivityCompat.checkSelfPermission(mContext,
+        if (ActivityCompat.checkSelfPermission(mActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
 
-            ActivityCompat.requestPermissions((Activity) mContext,
+            ActivityCompat.requestPermissions((Activity) mActivity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             return;
         }
 
-        String groupUri;
-        if(view == mCreatedView) {
-            groupUri = "Created";
-        } else if (view == mJoinedView) {
-            groupUri = "Joined";
-        } else {
-            groupUri = "";
-        }
-
         EventRequest req = EventRequest.newInstance(
-                groupUri,
-                mContext,
+                view.getGroupUri(),
+                mActivity,
                 new Response.Listener<List<Event>>() {
                     @Override
                     public void onResponse(List<Event> response) {
@@ -93,87 +71,92 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                         view.getAdapter().setEvents((ArrayList<Event>)response);
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
     public void onDeleteClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id;
 
         ServerRequest req = new ServerRequest(
                 Request.Method.DELETE,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
-
-                        mCreatedView.getAdapter().removeEvent(e);
+                        for(EventListContract.EventListView v : mViews) {
+                            v.getAdapter().removeEvent(e);
+                        }
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
-    public void onJoinClicked(Event e) {
+    public void onJoinClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id + "/join";
 
         ServerRequest req = new ServerRequest(
                 Request.Method.PUT,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        // TODO: drink some tea
+                        for(EventListContract.EventListView v : mViews) {
+                            loadEvents(v);
+                        }
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     @Override
-    public void onLeaveClicked(Event e) {
+    public void onLeaveClicked(final Event e) {
 
-        String url = mContext.getString(R.string.API_base);
-        url += mContext.getString(R.string.API_event);
+        String url = mActivity.getString(R.string.API_base);
+        url += mActivity.getString(R.string.API_event);
         url += "/" + e.id + "/leave";
 
         ServerRequest req = new ServerRequest(
                 Request.Method.PUT,
                 url,
                 null,
-                mContext,
+                mActivity,
                 new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
 
-                        // TODO: drink some coffee
+                        for(EventListContract.EventListView v : mViews) {
+                            loadEvents(v);
+                        }
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new DefaultErrorListener(mActivity));
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+        Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
     }
 
     public void onEditClicked(Event e) {
 
-        Intent intent = new Intent(mContext, EventActivity.class);
+        Intent intent = new Intent(mActivity, EventActivity.class);
         intent.putExtra(EventActivity.EVENT_EXTRA, e);
-        mContext.startActivity(intent);
+        mActivity.startActivityForResult(intent, 0);
     }
 }

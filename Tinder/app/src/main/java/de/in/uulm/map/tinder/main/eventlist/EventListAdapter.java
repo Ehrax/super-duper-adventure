@@ -19,7 +19,6 @@ import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
@@ -41,8 +40,9 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
 
     public void removeEvent(Event event) {
 
+        int i = mEvents.indexOf(event);
         mEvents.remove(event);
-        notifyDataSetChanged();
+        notifyItemRemoved(i);
     }
 
     public void setEvents(ArrayList<Event> events) {
@@ -91,7 +91,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         final Event e = mEvents.get(position);
         holder.mTitle.setText(e.title);
@@ -115,6 +115,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         long minutes = (left % 3600000) / 60000;
 
         holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
+
 
         SharedPreferences accountPrefs = mContext.getSharedPreferences(
                 mContext.getString(R.string.store_account),
@@ -147,6 +148,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             @Override
             public void onClick(View v) {
 
+                holder.mDeleteButton.setEnabled(false);
                 mPresenter.onDeleteClicked(e);
             }
         });

@@ -4,13 +4,19 @@ import com.google.android.gms.location.places.Place;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import android.app.Activity;
 import android.content.Context;
+
 import android.location.Address;
 import android.location.Geocoder;
+
+import android.content.Intent;
+
 import android.net.Uri;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
@@ -170,6 +176,8 @@ public class EventPresenter implements EventContract.Presenter {
     @Override
     public void onSubmitClicked() {
 
+        mView.setProgressBarVisible(true);
+
         final JsonObject obj = (JsonObject) new Gson().toJsonTree(mEvent);
 
         List<String> categories = Arrays.asList(
@@ -211,13 +219,25 @@ public class EventPresenter implements EventContract.Presenter {
                     @Override
                     public void onResponse(byte[] response) {
 
+                        mBackend.setResult(Activity.RESULT_OK, new Intent());
                         mBackend.finish();
                     }
                 },
-                new DefaultErrorListener(mContext));
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
 
-        Network.getInstance(mContext.getApplicationContext()).getRequestQueue().add(req);
+                        mView.setProgressBarVisible(false);
+                        new DefaultErrorListener(mContext).onErrorResponse(error);
+                    }
+                });
 
-        // TODO: display a spinner here and block gui
+        Network network = Network.getInstance(mContext.getApplicationContext());
+        network.getRequestQueue().add(req);
+
+        // Quite hardcore, my dear!
+        if (!mCreateMode) {
+            network.getBitmapCache().evictAll();
+        }
     }
 }

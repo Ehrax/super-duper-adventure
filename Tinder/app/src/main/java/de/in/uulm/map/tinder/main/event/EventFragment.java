@@ -19,11 +19,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -66,6 +67,10 @@ public class EventFragment extends Fragment implements EventContract.View {
 
     private static final int LOCATION_REQ_CODE = 2;
 
+    private static final int IMAGE_PERMISSON_REQ = 1;
+
+    private static final int LOCATION_PERMISSON_REQ = 2;
+
     private EventContract.Presenter mPresenter;
 
     private ImageView mImage;
@@ -85,6 +90,8 @@ public class EventFragment extends Fragment implements EventContract.View {
     private MenuItem mSubmit;
 
     private String mLastImagePath;
+
+    private ContentLoadingProgressBar mProgressBar;
 
     public static EventFragment newInstance() {
 
@@ -106,7 +113,7 @@ public class EventFragment extends Fragment implements EventContract.View {
             @Override
             public void onClick(View v) {
 
-                selectImage();
+                trySelectImage(true);
             }
         });
 
@@ -168,7 +175,7 @@ public class EventFragment extends Fragment implements EventContract.View {
             public void onClick(View v) {
 
                 mLocation.setEnabled(false);
-                selectLocation();
+                trySelectLocation(true);
             }
         });
 
@@ -191,6 +198,11 @@ public class EventFragment extends Fragment implements EventContract.View {
                 selectCategory();
             }
         });
+
+        mProgressBar = (ContentLoadingProgressBar)
+                view.findViewById(R.id.event_progress_bar);
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.hide();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.event_activity_toolbar);
@@ -216,7 +228,8 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == R.id.top_nav_submit) {
+        if (item.getItemId() == R.id.top_nav_submit) {
+            item.setEnabled(false);
             mPresenter.onSubmitClicked();
             return true;
         }
@@ -263,14 +276,24 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public void setEnableSubmitButton(boolean enabled) {
 
-        mSubmit.getIcon().setAlpha(enabled ? 255 : 50);
+        mSubmit.getIcon().setAlpha(enabled ? 255 : 110);
         mSubmit.setEnabled(enabled);
+    }
+
+    @Override
+    public void setProgressBarVisible(boolean visible) {
+
+        if(visible) {
+            mProgressBar.show();
+        } else {
+            mProgressBar.hide();
+        }
     }
 
     @Override
     public void showEvent(Event event) {
 
-        if(event.has_image) {
+        if (event.has_image) {
             String uri = getString(R.string.API_base);
             uri += getString(R.string.API_event_image);
             uri += "/" + event.id;
@@ -343,23 +366,45 @@ public class EventFragment extends Fragment implements EventContract.View {
         snackbar.show();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if(requestCode == IMAGE_PERMISSON_REQ) {
+            trySelectImage(false);
+        } else if (requestCode == LOCATION_PERMISSON_REQ) {
+            trySelectLocation(false);
+        }
+    }
+
+    public void trySelectImage(boolean askForPermissions) {
+
+        boolean hasPermissions = ContextCompat.checkSelfPermission(
+                getContext(),
+                Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+
+        hasPermissions &= ContextCompat.checkSelfPermission(
+                getContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+
+        if(hasPermissions) {
+            selectImage();
+            return;
+        }
+
+        if (askForPermissions){
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    IMAGE_PERMISSON_REQ);
+        }
+    }
+
     public void selectImage() {
-
-        // TODO: request permissions in a better way; this kinda sucks!
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA}, 0);
-            return;
-        }
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            return;
-        }
 
         ArrayList<Intent> possible_intents = new ArrayList<>();
 
@@ -382,13 +427,13 @@ public class EventFragment extends Fragment implements EventContract.View {
         String file_name = "JPEG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").
                 format(new Date()) + ".jpg";
         File directory = Environment.getExternalStoragePublicDirectory(
-               Environment.DIRECTORY_PICTURES);
+                Environment.DIRECTORY_PICTURES);
         File img = new File(directory, file_name);
 
         mLastImagePath = img.getAbsolutePath();
         capture_intent.putExtra(MediaStore.EXTRA_OUTPUT, mLastImagePath);
 
-        Intent chooser_intent = Intent.createChooser(capture_intent, "Bild auswählen");
+        Intent chooser_intent = Intent.createChooser(capture_intent, "Choose image");
         chooser_intent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
                 possible_intents.toArray(new Parcelable[possible_intents.size()]));
 
@@ -427,22 +472,35 @@ public class EventFragment extends Fragment implements EventContract.View {
         dialog.show();
     }
 
-    public void selectLocation() {
+    public void trySelectLocation(boolean askForPermission) {
 
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        boolean hasPermission = ContextCompat.checkSelfPermission(
+                getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-            mLocation.setEnabled(true);
+                == PackageManager.PERMISSION_GRANTED;
+
+        if (hasPermission) {
+            selectLocation();
             return;
         }
 
+        if(askForPermission) {
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSON_REQ);
+        } else {
+            mLocation.setEnabled(true);
+        }
+    }
+
+    public void selectLocation() {
+
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
         try {
             Intent intent = builder.build(getActivity());
             startActivityForResult(intent, LOCATION_REQ_CODE);
-
         } catch (GooglePlayServicesRepairableException e) {
             GooglePlayServicesUtil
                     .getErrorDialog(e.getConnectionStatusCode(), getActivity(), 0);
@@ -456,7 +514,7 @@ public class EventFragment extends Fragment implements EventContract.View {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        builder.setTitle("Set Max Participants");
+        builder.setTitle("Participants");
 
         final NumberPicker picker = new NumberPicker(getContext());
         picker.setMinValue(2);
@@ -489,6 +547,7 @@ public class EventFragment extends Fragment implements EventContract.View {
     public void selectCategory() {
 
         PickerFactory.categoryPicker(getContext(),
+                false,
                 new PickerFactory.OnConfirmListener<String>() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, String value) {

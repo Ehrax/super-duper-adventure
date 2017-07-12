@@ -37,7 +37,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Let's go Hiking"
-                        android:textColor="#212121"
+                        android:textColor="@color/text_color"
                         android:textSize="24sp" />
 
                 <TextView
@@ -46,11 +46,13 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:textColor="@color/text_color_light"
                         android:text="5/7" />
 
                 <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:paddingRight="3dp"
                         android:layout_alignBottom="@id/event_card_user_count"
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@id/event_card_user_count"
@@ -65,7 +67,8 @@
                     android:layout_below="@+id/event_card_title_line"
                     android:paddingLeft="16dp"
                     android:paddingTop="3dp"
-                    android:text="2:00 left" />
+                    android:textColor="@color/text_color_light"
+                    android:text="01.01.2017 2:00" />
 
             <TextView
                     android:id="@+id/event_card_description"
@@ -77,8 +80,7 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="16dp"
                     android:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat"
-                    android:textColor="#212121" />
-
+                    android:textColor="@color/text_color_light" />
 
             <Button
                     android:id="@+id/event_card_join"

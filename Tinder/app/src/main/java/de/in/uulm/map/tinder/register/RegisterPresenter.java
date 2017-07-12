@@ -99,8 +99,6 @@ public class RegisterPresenter implements RegisterContract.Presenter {
                     e.printStackTrace();
                     System.out.print(e.getMessage());
                 }
-
-
             }
         }) {
             //Override the parsing of the response because standard

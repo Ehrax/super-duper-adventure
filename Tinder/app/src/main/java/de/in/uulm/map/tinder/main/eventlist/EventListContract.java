@@ -1,5 +1,7 @@
 package de.in.uulm.map.tinder.main.eventlist;
 
+import android.content.Intent;
+
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.main.MainContract;
 import de.in.uulm.map.tinder.util.BasePresenter;
@@ -12,7 +14,9 @@ public interface EventListContract {
 
     interface EventListView extends MainContract.MainView<EventListPresenter> {
 
+        void startActivityForResult(Intent intent, int requestCode);
         EventListAdapter getAdapter();
+        String getGroupUri();
     }
 
     interface EventListPresenter extends BasePresenter {

@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main.eventlist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 /**
  * Created by Jona on 05.05.17.
@@ -20,13 +20,13 @@ import de.in.uulm.map.tinder.main.MainPageAdapter;
 
 public class EventListFragment extends Fragment implements EventListContract.EventListView {
 
-    public static final String TAB_NEARBY = "Nearby";
-    public static final String TAB_JOINED = "Joined";
-    public static final String TAB_MY_EVENTS = "My Events";
+    private String mGroupUri;
 
     private EventListContract.EventListPresenter mPresenter;
 
     private EventListAdapter mAdapter;
+
+    private RecyclerView mRecyclerView;
 
     @Override
     public void onResume() {
@@ -35,20 +35,14 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
         mPresenter.loadEvents(this);
     }
 
-    public static EventListFragment newInstance(String title) {
-
-        Bundle args = new Bundle();
-        args.putString(MainPageAdapter.TAB_TITLE, title);
+    public static EventListFragment newInstance(EventListPresenter presenter, String groupUri) {
 
         EventListFragment fragment = new EventListFragment();
-        fragment.setArguments(args);
+        fragment.mPresenter = presenter;
+        fragment.mGroupUri = groupUri;
+        fragment.setHasOptionsMenu(true);
 
         return fragment;
-    }
-
-    public EventListFragment() {
-
-        setHasOptionsMenu(true);
     }
 
     public void setAdapter(EventListAdapter adapter) {
@@ -69,12 +63,12 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.event_list, container, false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.event_list);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.event_list);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         onFragmentBecomesVisible();
 
@@ -83,7 +77,16 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
 
     @Override
     public void onFragmentBecomesVisible() {
+        mPresenter.loadEvents(this);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mAdapter = new EventListAdapter(getContext(), mPresenter);
+        mRecyclerView.setAdapter(mAdapter);
         mPresenter.loadEvents(this);
     }
 
@@ -97,5 +100,11 @@ public class EventListFragment extends Fragment implements EventListContract.Eve
     public EventListAdapter getAdapter() {
 
         return mAdapter;
+    }
+
+    @Override
+    public String getGroupUri() {
+
+        return mGroupUri;
     }
 }
