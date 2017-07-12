@@ -9,4 +9,6 @@
     <dimen name="form_vertical_margin_small">12dp</dimen>
     <dimen name="form_vertical_margin_large">20dp</dimen>
 
+    <dimen name="tinder_card_width">350dp</dimen>
+    <dimen name="tinder_card_height">425dp</dimen>
 </resources>

@@ -6,6 +6,11 @@
             android:icon="@drawable/magnify"
             android:title="@string/filter"
             app:showAsAction="always" />
+
+    <item android:id="@+id/top_nav_flip_view"
+        android:icon ="@drawable/flip_view"
+        android:title="@string/flip_view"
+        app:showAsAction="always"/>
     <item
             android:id="@+id/top_nav_add"
             android:icon="@drawable/plus"

@@ -52,7 +52,7 @@ namespace TinderServer2.Models
         public double Longitude { get; set; }
         public string Location { get; set; }
         public Categories.Category Category { get; set; }
-        public string EventImageBase64 { get; set; }
+        public string ImageBase64 { get; set; }
     }
 
     public class ReturnEventBindingModel
@@ -69,7 +69,7 @@ namespace TinderServer2.Models
         public Categories.Category Category { get; set; }
         public ReturnApplicationUser Creator { get; set; }
         public List<ReturnApplicationUser> Members { get; set; }
-        public string EventImageBase64 { get; set; }
+        public bool HasImage { get; set; }
 
         public ReturnEventBindingModel(EventModel eventModel)
         {
@@ -83,9 +83,9 @@ namespace TinderServer2.Models
             Longitude = eventModel.Longitude;
             Location = eventModel.Location;
             Category = eventModel.Category;
+            HasImage = !String.IsNullOrEmpty(eventModel.ImagePath);
             Creator = new ReturnApplicationUser(eventModel.Creator);
-            EventImageBase64 = ImageHelper.LoadImageToBase64(eventModel.ImagePath);
-
+            
             Members = new List<ReturnApplicationUser>();
 
             foreach (var member in eventModel.Members)

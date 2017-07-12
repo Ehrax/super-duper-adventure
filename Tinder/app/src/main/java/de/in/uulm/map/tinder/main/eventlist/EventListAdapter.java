@@ -18,8 +18,6 @@ import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -112,14 +110,12 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             holder.mImage.setImageResource(R.drawable.image_placeholder);
         }
 
-        SimpleDateFormat formatParse = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        SimpleDateFormat formatPresent = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        try {
-            long start_date = formatParse.parse(e.start_date).getTime();
-            holder.mTime.setText(formatPresent.format(start_date));
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
+        long left = e.getStartDate().getTime() - new Date().getTime();
+        long hours = left / 3600000;
+        long minutes = (left % 3600000) / 60000;
+
+        holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
+
 
         SharedPreferences accountPrefs = mContext.getSharedPreferences(
                 mContext.getString(R.string.store_account),

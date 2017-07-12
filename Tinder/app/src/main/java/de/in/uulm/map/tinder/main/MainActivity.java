@@ -1,5 +1,6 @@
 package de.in.uulm.map.tinder.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +21,7 @@ import de.in.uulm.map.tinder.util.ActivityUtils;
  * Created by Jona on 21.05.2017.
  */
 
-public class MainActivity extends AppCompatActivity implements MainContract.Backend{
+public class MainActivity extends AppCompatActivity implements MainContract.Backend {
 
     private MainPresenter mPresenter;
 
@@ -100,5 +101,19 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
     public boolean onOptionsItemSelected(MenuItem item) {
 
         return mPresenter.topNavOnOptionSelected(item);
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+
+        super.startActivity(intent);
+    }
+
+    @Override
+    public void startActivityFlip(Intent intent) {
+
+        startActivity(intent);
+        overridePendingTransition(R.transition.grow_from_middle, R
+                .transition.shrink_to_middle);
     }
 }

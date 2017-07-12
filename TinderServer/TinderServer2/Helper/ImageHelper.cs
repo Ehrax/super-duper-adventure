@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web;
 
 namespace TinderServer2.Helper
@@ -12,9 +14,9 @@ namespace TinderServer2.Helper
     {
         public enum ImageType { EVENTIMAGE, PROFILEIMAGE };
 
-        public static string LoadImageToBase64(string imagePath)
+        public static HttpResponseMessage LoadImage(string imagePath)
         {
-            string base64String = null;
+            HttpResponseMessage response;
             if (!String.IsNullOrEmpty(imagePath))
             {
 
@@ -24,21 +26,25 @@ namespace TinderServer2.Helper
                     {
                         using (MemoryStream ms = new MemoryStream())
                         {
+                          
                             eventImage.Save(ms, eventImage.RawFormat);
-                            byte[] imageBytes = ms.ToArray();
-                            base64String = Convert.ToBase64String(imageBytes);
-
+                            response = new HttpResponseMessage(HttpStatusCode.OK);
+                            response.Content = new ByteArrayContent(ms.ToArray());
+                            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/" + (eventImage.RawFormat == ImageFormat.Jpeg ? "jpeg" : "png"));
+                            return response;
                         }
                     }
 
                 }
                 catch (Exception e) when (e is OutOfMemoryException || e is FileNotFoundException || e is ArgumentException)
                 {
-                    base64String = null;
+                    response = new HttpResponseMessage(HttpStatusCode.NotFound);
+                    return response;
                 }
             }
 
-            return base64String;
+            response = new HttpResponseMessage(HttpStatusCode.NotFound);
+            return response;
         }
 
         public static string SaveBase64ImageToFileSystem(string base64Image, ImageType imageType, string imageTitle)

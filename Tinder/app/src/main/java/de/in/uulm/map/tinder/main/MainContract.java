@@ -29,7 +29,10 @@ public interface MainContract {
         void onPageSelected();
     }
 
-    interface Backend{
+    interface Backend {
+
         void startActivity(Intent intent);
+
+        void startActivityFlip(Intent intent);
     }
 }
