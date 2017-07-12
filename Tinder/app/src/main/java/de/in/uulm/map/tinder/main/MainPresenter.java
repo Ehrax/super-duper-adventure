@@ -68,6 +68,7 @@ public class MainPresenter implements MainContract.MainPresenter {
             Intent intent = new Intent(mContext, TinderViewActivity.class);
             mBackend.startActivityFlip(intent);
             return true;
+        }
 
         if(item.getItemId() == R.id.top_nav_account) {
             User user = new User();

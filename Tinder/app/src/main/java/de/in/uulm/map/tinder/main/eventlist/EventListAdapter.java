@@ -19,6 +19,7 @@ import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
