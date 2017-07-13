@@ -9,6 +9,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -330,10 +332,10 @@ public class EventFragment extends Fragment implements EventContract.View {
     }
 
     @Override
-    public void showStartDate(long duration) {
+    public void showStartDate(Date date) {
 
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        mStartDate.setText(format.format(new Date(duration)));
+        mStartDate.setText(format.format(date));
     }
 
     @Override
@@ -442,33 +444,50 @@ public class EventFragment extends Fragment implements EventContract.View {
     public void selectDuration() {
 
         final Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
+        final int hour = c.get(Calendar.HOUR_OF_DAY);
+        final int minute = c.get(Calendar.MINUTE);
+        final int year = c.get(Calendar.YEAR);
+        final int month = c.get(Calendar.MONTH);
+        final int day = c.get(Calendar.DAY_OF_MONTH);
 
-        TimePickerDialog dialog = new TimePickerDialog(
-                getActivity(),
-                new TimePickerDialog.OnTimeSetListener() {
+        DatePickerDialog dateDialog = new DatePickerDialog(getActivity(), new
+                DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        final int finalYear = year;
+                        final int finalMonth = month;
+                        final int finalDay = dayOfMonth;
+                        TimePickerDialog dialog = new TimePickerDialog(
+                                getActivity(),
+                                new TimePickerDialog.OnTimeSetListener() {
+                                    @Override
+                                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                        c.set(Calendar.YEAR,finalYear);
+                                        c.set(Calendar.MONTH,finalMonth);
+                                        c.set(Calendar.DAY_OF_MONTH,finalDay);
+                                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                        c.set(Calendar.MINUTE, minute);
+                                        mPresenter.onDurationSelected(c);
+                                    }
+                                },
+                                hour,
+                                minute,
+                                DateFormat.is24HourFormat(getActivity()));
 
-                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        c.set(Calendar.MINUTE, minute);
-                        mPresenter.onDurationSelected(c.getTime().getTime());
+                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+
+                                mStartDate.setEnabled(true);
+                            }
+                        });
+
+                        dialog.show();
                     }
-                },
-                hour,
-                minute,
-                DateFormat.is24HourFormat(getActivity()));
+                },year,month,day);
 
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
+        dateDialog.show();
 
-                mStartDate.setEnabled(true);
-            }
-        });
-
-        dialog.show();
     }
 
     public void trySelectLocation(boolean askForPermission) {

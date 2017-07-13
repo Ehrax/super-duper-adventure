@@ -111,11 +111,10 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             holder.mImage.setImageResource(R.drawable.image_placeholder);
         }
 
-        long left = e.getStartDate().getTime() - new Date().getTime();
-        long hours = left / 3600000;
-        long minutes = (left % 3600000) / 60000;
 
-        holder.mTime.setText(String.format("%02d:%02d left", hours, minutes));
+        holder.mTime.setText(e.getFormattedStartDate()+" "+mContext.getString
+                (R.string.at_time)+" "+e
+                .getFormattedStartTime());
 
 
         SharedPreferences accountPrefs = mContext.getSharedPreferences(

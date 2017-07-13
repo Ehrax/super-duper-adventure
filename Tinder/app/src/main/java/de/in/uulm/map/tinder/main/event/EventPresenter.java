@@ -39,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -130,10 +131,10 @@ public class EventPresenter implements EventContract.Presenter {
     }
 
     @Override
-    public void onDurationSelected(long time) {
+    public void onDurationSelected(Calendar calendar) {
 
-        mEvent.setStartDate(new Date(time));
-        mView.showStartDate(time);
+        mEvent.setStartDate(calendar.getTime());
+        mView.showStartDate(calendar.getTime());
         checkEnableSubmitButton();
     }
 
