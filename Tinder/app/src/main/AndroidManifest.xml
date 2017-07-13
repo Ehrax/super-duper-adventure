@@ -50,10 +50,8 @@
                 android:screenOrientation="portrait" />
 
         <activity android:name=".chat.ChatActivity"
-                android:screenOrientation="portrait"/>
-
-        <activity android:name=".groupchat.GroupChatActivity"
-                android:screenOrientation="portrait"/>
+                android:screenOrientation="portrait"
+                android:parentActivityName=".main.MainActivity"/>
 
         <activity android:name=".tinderview.TinderViewActivity"/>
 

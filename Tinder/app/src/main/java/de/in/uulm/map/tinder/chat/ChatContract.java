@@ -11,10 +11,12 @@ public interface ChatContract {
 
     interface Presenter extends BasePresenter{
 
-        void onSendButton(String inputText);
+        void onSendButton(String inputText, String eventId);
+        void loadMessages(String eventId);
     }
 
     interface View extends BaseView<Presenter> {
-
+        ChatAdapter getAdapter();
+        void scrollToBottom(int lastPos);
     }
 }

@@ -2,12 +2,17 @@
 <resources>
     <color name="color_primary">#F5F5F5</color>
     <color name="color_primary_dark">#bdbdbd</color>
+
     <color name="color_accent">#03a9f4</color>
     <color name="color_accent_dark">#01579B</color>
+
+    <color name="color_secnond_accent">#08d3dd</color>
+    <color name="color_third_accent">#09fac2</color>
+
     <color name="text_color">#212121</color>
     <color name="text_color_light">#616161</color>
     <color name="bottom_nav_text_color">#757575</color>
-    <color name="color_chat_bubble_other">#dedede</color>
+    <color name="color_chat_bubble_other">#e6e6e6</color>
     <color name="color_chat_bubble_own">#b3e5fc</color>
     <color name="login_text_color">#ffffff</color>
     <color name="color_warnings">#D32F2F</color>

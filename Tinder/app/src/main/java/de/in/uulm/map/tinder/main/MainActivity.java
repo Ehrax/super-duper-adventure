@@ -15,7 +15,11 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.main.eventlist.EventListAdapter;
 import de.in.uulm.map.tinder.main.eventlist.EventListFragment;
 import de.in.uulm.map.tinder.main.eventlist.EventListPresenter;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatAdapter;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatFragment;
+import de.in.uulm.map.tinder.main.groupchat.GroupChatPresenter;
 import de.in.uulm.map.tinder.util.ActivityUtils;
+
 
 /**
  * Created by Jona on 21.05.2017.
@@ -53,6 +57,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
                 EventListFragment.newInstance(eventListPresenter, "Created");
         createdFragment.setAdapter(new EventListAdapter(this, eventListPresenter));
 
+
+        final GroupChatFragment groupChatFragment =
+                GroupChatFragment.newInstance();
+        GroupChatPresenter groupChatPresenter = new GroupChatPresenter(this,
+                groupChatFragment);
+
+        groupChatFragment.setPresenter(groupChatPresenter);
+        groupChatFragment.setAdapter(new GroupChatAdapter(groupChatPresenter, this));
+
         eventListPresenter.addEventView(nearbyFragment);
         eventListPresenter.addEventView(joinedFragment);
         eventListPresenter.addEventView(createdFragment);
@@ -75,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.Back
                                 break;
                             case R.id.bottom_nav_my_events:
                                 fragment = joinedFragment;
+                                break;
+                            case R.id.bottom_nav_chat:
+                                fragment = groupChatFragment;
                                 break;
                             default:
                                 return false;

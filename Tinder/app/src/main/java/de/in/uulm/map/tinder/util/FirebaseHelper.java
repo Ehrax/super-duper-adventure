@@ -3,11 +3,12 @@ package de.in.uulm.map.tinder.util;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
+import de.in.uulm.map.tinder.entities.Message;
 import de.in.uulm.map.tinder.entities.User;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by alexanderrasputin on 11.05.17.
@@ -16,6 +17,7 @@ import java.util.Map;
 public class FirebaseHelper {
 
     private DatabaseReference mDatabase;
+    public static final String CHILD_GROUP_MESSAGES = "messages";
 
     public FirebaseHelper() {
 
@@ -26,31 +28,46 @@ public class FirebaseHelper {
      * use this method if a user has created a group to create a new
      * groupchat in firebase, the user is automatically joining the chat
      *
-     * @param event see @Event.class
+     * @param groupChat see @FirebaseGroupChat.class
      */
-    private void createGroup(Event event) {
+    public void createGroup(FirebaseGroupChat groupChat) {
 
         DatabaseReference root = mDatabase.getRoot();
+        root.child(groupChat.eventId).setValue(groupChat);
+    }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("room-id-" + event.id, "");
-        root.updateChildren(map);
+    public void updateGroup(String chatId, HashMap<String, Object> updates) {
+
+        DatabaseReference chatRef = mDatabase.getRoot().child(chatId);
+        chatRef.updateChildren(updates);
+    }
+
+    public void removeGroupChat(String chatId) {
+
+        DatabaseReference chatRef = mDatabase.getRoot().child(chatId);
+        chatRef.removeValue();
     }
 
     /**
      * use this method to write messages into a group
      *
-     * @param user    see @User.class
-     * @param message the message the user wants to send
-     * @param eventId the event id the user is writing to
+     * @param eventId the group event id
+     * @param message See @Message.class
      */
-    private void writeMessageToGroup(User user, String message, long eventId) {
+    public void writeMessageToGroup(String eventId, Message message) {
 
-        DatabaseReference chat = mDatabase.child("room-id-" + eventId);
+        DatabaseReference chatRef = mDatabase.getRoot().child(eventId);
+        DatabaseReference messagesRef = chatRef.child(CHILD_GROUP_MESSAGES);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", user.name);
-        map.put("message", message);
-        chat.updateChildren(map);
+        String key = messagesRef.push().getKey();
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("lastMessage", message.mText);
+        map.put("timestamp", message.mTimestamp);
+        map.put("messages/" + key, message);
+
+        chatRef.updateChildren(map);
     }
+
+
 }

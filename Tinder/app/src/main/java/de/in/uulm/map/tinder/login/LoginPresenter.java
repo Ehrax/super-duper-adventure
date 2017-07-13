@@ -84,6 +84,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                     String accessToken = jsonResponse.get("access_token").getAsString();
                     String tokenExpireDate = jsonResponse.get(".expires").getAsString();
 
+                    System.out.println(accessToken);
+
                     mSharedEditor.putString(mContext.getString(R.string
                             .store_token), accessToken).commit();
                     mSharedEditor.putString(mContext.getString(R.string

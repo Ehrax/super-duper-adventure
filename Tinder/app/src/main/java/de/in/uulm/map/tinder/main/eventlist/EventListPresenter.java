@@ -17,6 +17,7 @@ import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.EventRequest;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
+import de.in.uulm.map.tinder.util.FirebaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,9 @@ public class EventListPresenter implements EventListContract.EventListPresenter 
                 new DefaultErrorListener(mActivity));
 
         Network.getInstance(mActivity.getApplicationContext()).getRequestQueue().add(req);
+
+        FirebaseHelper helper = new FirebaseHelper();
+        helper.removeGroupChat(e.id);
     }
 
     @Override
