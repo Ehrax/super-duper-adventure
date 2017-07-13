@@ -4,6 +4,7 @@ import com.google.android.gms.location.places.Place;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.util.BasePresenter;
@@ -42,6 +43,7 @@ public interface EventContract {
         void onSubmitClicked();
         void onTitleChanged(String s);
         void onDescriptionChanged(String s);
+        void setImage(String category, ImageView view);
     }
 
     interface Backend {

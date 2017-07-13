@@ -61,7 +61,32 @@ public class TinderCard {
                     new WeakReference<>(mImgEvent), mContext).execute();
         } else {
             //TODO: load default category images here
-            mImgEvent.setImageResource(R.drawable.image_placeholder);
+            switch (mEvent.category) {
+                case "0": {
+                    mImgEvent.setImageResource(R.drawable.sport_category);
+                    break;
+                }
+
+                case "1": {
+                    mImgEvent.setImageResource(R.drawable.party_category);
+                    break;
+                }
+
+                case "2": {
+                    mImgEvent.setImageResource(R.drawable.rest_category);
+                    break;
+                }
+
+                case "3": {
+                    mImgEvent.setImageResource(R.drawable.culture_category);
+                    break;
+                }
+
+                case "4": {
+                    mImgEvent.setImageResource(R.drawable.other_category);
+                    break;
+                }
+            }
         }
 
         mTxtEventName.setText(mEvent.title + ", " + mEvent
