@@ -51,7 +51,6 @@ import static android.content.ContentValues.TAG;
 
 public class EventPresenter implements EventContract.Presenter {
 
-
     private final EventContract.View mView;
 
     private final EventContract.Backend mBackend;
