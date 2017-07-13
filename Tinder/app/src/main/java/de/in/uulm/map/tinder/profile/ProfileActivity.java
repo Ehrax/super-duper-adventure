@@ -1,11 +1,14 @@
 package de.in.uulm.map.tinder.profile;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.User;
@@ -30,11 +33,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         User user = (User) getIntent().getSerializableExtra(EXTRA_USER);
 
-        if(user != null) {
-            CollapsingToolbarLayout collapsingToolbarLayout =
-                    (CollapsingToolbarLayout) findViewById(R.id.main_bar_collapsing);
-            collapsingToolbarLayout.setTitle(user.name);
-        }
+        SharedPreferences sharedPrefs = getSharedPreferences
+                (getString(R.string.store_account), Context.MODE_PRIVATE);
+
+        String userName = sharedPrefs.getString(getString(R.string.store_username), "No Name");
+        TextView profileText = (TextView) findViewById(R.id.profile_name);
+        profileText.setText(userName);
 
         EventListPresenter presenter = new EventListPresenter(this);
 
