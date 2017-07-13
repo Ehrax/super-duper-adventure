@@ -11,14 +11,15 @@ public class FirebaseGroupChat {
     public String eventId;
     public String chatName;
     public String timestamp;
-    public String img;
+    public boolean img;
     public String lastMessage;
 
     public FirebaseGroupChat() {
         // default constructor required for calls to DataSnapshot.getValue
     }
 
-    public FirebaseGroupChat(String eventId, String chatName, String timestamp, String img, String lastMessage) {
+    public FirebaseGroupChat(String eventId, String chatName, String
+            timestamp, boolean img, String lastMessage) {
 
         this.eventId = eventId;
         this.chatName = chatName;

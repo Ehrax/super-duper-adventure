@@ -78,7 +78,6 @@
 
     <FrameLayout
             android:id="@+id/content_frame"
-            android:layout_above="@+id/bottom_navigation_menu"
             android:layout_below="@+id/main_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

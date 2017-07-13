@@ -17,5 +17,6 @@ public interface ChatContract {
 
     interface View extends BaseView<Presenter> {
         ChatAdapter getAdapter();
+        void scrollToBottom(int lastPos);
     }
 }

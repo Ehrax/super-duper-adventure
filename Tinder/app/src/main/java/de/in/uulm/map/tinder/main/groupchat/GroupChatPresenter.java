@@ -58,15 +58,7 @@ public class GroupChatPresenter implements GroupChatContract.Presenter {
 
     @Override
     public void start() {
-        FirebaseHelper helper = new FirebaseHelper();
 
-        FirebaseGroupChat chat = new FirebaseGroupChat();
-        chat.eventId = "1077";
-        chat.chatName = "Making some cool stuff here";
-        chat.lastMessage = "Hello World!";
-        chat.timestamp = "2017-07-08T21:00:00";
-
-        helper.createGroup(chat);
     }
 
     @Override

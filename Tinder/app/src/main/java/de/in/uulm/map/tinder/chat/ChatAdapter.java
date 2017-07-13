@@ -115,11 +115,4 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         mMessages.add(message);
         notifyDataSetChanged();
     }
-
-    // TODO dont know if i will use this anyway
-    public void setMessages(ArrayList<Message> messages) {
-
-        mMessages = messages;
-        notifyDataSetChanged();
-    }
 }

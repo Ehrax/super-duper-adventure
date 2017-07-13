@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
+import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
+
+import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
@@ -76,8 +79,7 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
 
     @Override
     public void onFragmentBecomesVisible() {
-
-        mPresenter.start(); // TODO remove this after just for test purpose
+        mAdapter.setGroupChats(new ArrayList<FirebaseGroupChat>());
         mPresenter.loadEvents();
     }
 }

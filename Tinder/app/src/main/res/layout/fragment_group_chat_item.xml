@@ -6,7 +6,7 @@
         android:orientation="vertical"
         android:background="?attr/selectableItemBackground" >
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
@@ -34,7 +34,6 @@
                     android:layout_marginStart="10dp">
 
                 <TextView
-                        android:text="Chat Name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/group_chat_name"
@@ -42,7 +41,6 @@
                         android:textSize="18sp" />
 
                 <TextView
-                        android:text="Alex: wrote some shit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/group_chat_last_message"
@@ -52,7 +50,6 @@
             </LinearLayout>
 
             <TextView
-                    android:text="7:02"
                     android:id="@+id/group_chat_last_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

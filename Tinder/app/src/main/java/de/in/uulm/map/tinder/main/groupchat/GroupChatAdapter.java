@@ -71,9 +71,10 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter
             }
         }
 
-        if (groupChat.img != null) {
+        if (groupChat.img) {
             String uri = mContext.getString(R.string.API_base);
             uri += mContext.getString(R.string.API_event_image);
+            uri += "/" + groupChat.eventId;
             new AsyncImageLoader(uri,
                     new WeakReference<ImageView>(holder
                             .mGroupCircleImageView), mContext).execute();

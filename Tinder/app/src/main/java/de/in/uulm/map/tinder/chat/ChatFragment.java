@@ -29,6 +29,8 @@ public class ChatFragment extends Fragment implements ChatContract.View {
 
     private ChatContract.Presenter mPresenter;
 
+    private LinearLayoutManager manager;
+
     public final static String EVENT_ID = "event_id";
     public final static String EVENT_NAME = "event_name";
 
@@ -56,26 +58,27 @@ public class ChatFragment extends Fragment implements ChatContract.View {
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Button sendButton = (Button) view.findViewById(R.id.chat_send_button);
+        final Button sendButton = (Button) view.findViewById(R.id.chat_send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 mPresenter.onSendButton(editText.getText().toString(), eventId);
+                editText.setText("");
             }
         });
 
         RecyclerView recycler_view =
                 (RecyclerView) view.findViewById(R.id.chat_message_list);
 
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+         manager = new LinearLayoutManager(getActivity());
+
         manager.setStackFromEnd(true);
 
         recycler_view.setAdapter(mAdapter);
         recycler_view.setLayoutManager(manager);
 
 
-        mPresenter.start(); // TODO remove this after things got wired up
         mPresenter.loadMessages(eventId);
 
         return view;
@@ -97,6 +100,11 @@ public class ChatFragment extends Fragment implements ChatContract.View {
     public ChatAdapter getAdapter() {
 
         return mAdapter;
+    }
+
+    @Override
+    public void scrollToBottom(int lastPos) {
+        manager.scrollToPosition(lastPos);
     }
 
     // TODO handle menu items click

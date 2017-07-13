@@ -12,7 +12,7 @@
     <color name="text_color">#212121</color>
     <color name="text_color_light">#616161</color>
     <color name="bottom_nav_text_color">#757575</color>
-    <color name="color_chat_bubble_other">#dedede</color>
+    <color name="color_chat_bubble_other">#e6e6e6</color>
     <color name="color_chat_bubble_own">#b3e5fc</color>
     <color name="login_text_color">#ffffff</color>
     <color name="color_warnings">#D32F2F</color>

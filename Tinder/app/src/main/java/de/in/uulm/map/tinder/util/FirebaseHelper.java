@@ -42,6 +42,12 @@ public class FirebaseHelper {
         chatRef.updateChildren(updates);
     }
 
+    public void removeGroupChat(String chatId) {
+
+        DatabaseReference chatRef = mDatabase.getRoot().child(chatId);
+        chatRef.removeValue();
+    }
+
     /**
      * use this method to write messages into a group
      *
@@ -62,5 +68,6 @@ public class FirebaseHelper {
 
         chatRef.updateChildren(map);
     }
+
 
 }
