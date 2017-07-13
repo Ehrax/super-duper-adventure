@@ -2,6 +2,7 @@ package de.in.uulm.map.tinder.chat;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,10 +78,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
         if (message.mUid == creatorId) {
             params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
-            holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_own);
+            holder.mLayout.setBackgroundResource(R.drawable.chat_own);
         } else {
             params.removeRule(RelativeLayout.ALIGN_PARENT_END);
-            holder.mLayout.setBackgroundResource(R.color.color_chat_bubble_other);
+            holder.mLayout.setBackgroundResource(R.drawable.chat_other);
         }
 
         holder.mLayout.setLayoutParams(params);
@@ -97,13 +98,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         TextView mUserName;
         TextView mText;
         TextView mTime;
-        LinearLayout mLayout;
+        ConstraintLayout mLayout;
 
         ViewHolder(View view) {
 
             super(view);
 
-            mLayout = (LinearLayout) view.findViewById(R.id.chat_message_layout);
+            mLayout = (ConstraintLayout) view.findViewById(R.id.chat_message_layout);
             mUserName = (TextView) view.findViewById(R.id.chat_message_user);
             mText = (TextView) view.findViewById(R.id.chat_message_text);
             mTime = (TextView) view.findViewById(R.id.chat_message_timestamp);
