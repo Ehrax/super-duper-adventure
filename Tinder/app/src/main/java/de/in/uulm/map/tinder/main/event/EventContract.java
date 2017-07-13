@@ -10,6 +10,9 @@ import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.util.BasePresenter;
 import de.in.uulm.map.tinder.util.BaseView;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by Jona on 21.05.2017.
  */
@@ -20,7 +23,7 @@ public interface EventContract {
 
         void showEvent(Event event);
         void showImage(String uri);
-        void showStartDate(long time);
+        void showStartDate(Date date);
         void showCategory(String category);
         void showLocation(String locationName);
         void showMaxUser(int maxUser);
@@ -36,7 +39,7 @@ public interface EventContract {
 
         void checkEnableSubmitButton();
         void onImageSelected(Uri fileUri);
-        void onDurationSelected(long time);
+        void onDurationSelected(Calendar calendar);
         void onLocationSelected(Place location);
         void onMaxUserSelected(int maxUser);
         void onCategorySelected(String category);

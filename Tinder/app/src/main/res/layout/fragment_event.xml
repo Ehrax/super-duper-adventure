@@ -9,6 +9,7 @@
             android:id="@+id/main_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="250dp"
+            android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:elevation="0dp">
 
@@ -16,11 +17,10 @@
                 android:id="@+id/main_bar_collapsing"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:scrimVisibleHeightTrigger="1dp"
-                app:scrimAnimationDuration="0"
+                android:fitsSystemWindows="true"
                 app:titleEnabled="false"
                 app:contentScrim="@color/color_primary"
-                app:layout_scrollFlags="scroll">
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
 
             <!-- not sure if sport is always default-->
