@@ -107,8 +107,33 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             new AsyncImageLoader(uri,
                     new WeakReference<>(holder.mImage), mContext).execute();
         } else {
-            //TODO: load default category images here
-            holder.mImage.setImageResource(R.drawable.image_placeholder);
+            // TODO move this or make a diffrent switch case just hacking today
+            switch (e.category) {
+                case "0": {
+                    holder.mImage.setImageResource(R.drawable.sport_category);
+                    break;
+                }
+
+                case "1": {
+                    holder.mImage.setImageResource(R.drawable.party_category);
+                    break;
+                }
+
+                case "2": {
+                    holder.mImage.setImageResource(R.drawable.rest_category);
+                    break;
+                }
+
+                case "3": {
+                    holder.mImage.setImageResource(R.drawable.culture_category);
+                    break;
+                }
+
+                case "4": {
+                    holder.mImage.setImageResource(R.drawable.other_category);
+                    break;
+                }
+            }
         }
 
 

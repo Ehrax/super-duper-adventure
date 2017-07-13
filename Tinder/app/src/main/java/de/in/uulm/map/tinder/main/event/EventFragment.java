@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,6 +59,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Jona on 21.05.2017. */
@@ -571,6 +574,7 @@ public class EventFragment extends Fragment implements EventContract.View {
                     public void onClick(DialogInterface dialog, int which, String value) {
 
                         mCategory.setEnabled(true);
+                        mPresenter.setImage(value, mImage);
                         mPresenter.onCategorySelected(value);
                     }
                 },

@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -130,8 +131,38 @@ public class EventPresenter implements EventContract.Presenter {
     }
 
     @Override
-    public void onDurationSelected(Calendar calendar) {
+    public void setImage(String category, ImageView view) {
 
+        switch (category) {
+            case "Sport": {
+                view.setImageResource(R.drawable.sport_category);
+                break;
+            }
+
+            case "Ausgehen": {
+                view.setImageResource(R.drawable.party_category);
+                break;
+            }
+
+            case "Erholung": {
+                view.setImageResource(R.drawable.rest_category);
+                break;
+            }
+
+            case "Kultur": {
+                view.setImageResource(R.drawable.culture_category);
+                break;
+            }
+
+            case "Sonstiges": {
+                view.setImageResource(R.drawable.other_category);
+                break;
+            }
+        }
+    }
+
+    public void onDurationSelected(Calendar calendar) {
+      
         mEvent.setStartDate(calendar.getTime());
         mView.showStartDate(calendar.getTime());
         checkEnableSubmitButton();
@@ -277,6 +308,7 @@ public class EventPresenter implements EventContract.Presenter {
                 new Response.Listener<List<Event>>() {
                     @Override
                     public void onResponse(List<Event> response) {
+
                         for (Event e : response) {
                             if (e.category.equals(createdEvent.category) && e
                                     .getStartDate().equals(createdEvent
