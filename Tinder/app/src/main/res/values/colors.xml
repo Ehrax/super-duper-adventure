@@ -6,8 +6,8 @@
     <color name="color_accent">#03a9f4</color>
     <color name="color_accent_dark">#01579B</color>
 
-    <color name="color_secnond_accent">#08D3DD</color>
-    <color name="color_third_accent">#09FAC2</color>
+    <color name="color_secnond_accent">#08d3dd</color>
+    <color name="color_third_accent">#09fac2</color>
 
     <color name="text_color">#212121</color>
     <color name="text_color_light">#616161</color>

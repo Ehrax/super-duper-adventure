@@ -8,7 +8,7 @@
             android:id="@+id/chat_message_layout"
             android:layout_margin="5dp"
             android:orientation="vertical"
-            android:background="@color/color_chat_bubble_own"
+            android:background="@color/color_secnond_accent"
             android:layout_width="275dp"
             android:layout_height="wrap_content"
             android:padding="10dp">
