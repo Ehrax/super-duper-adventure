@@ -7,7 +7,12 @@ import com.google.gson.JsonParser;
 
 import android.app.Activity;
 import android.content.Context;
+
+import android.location.Address;
+import android.location.Geocoder;
+
 import android.content.Intent;
+
 import android.net.Uri;
 import android.util.Log;
 
@@ -26,9 +31,11 @@ import de.in.uulm.map.tinder.util.FirebaseHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
 
@@ -69,7 +76,7 @@ public class EventPresenter implements EventContract.Presenter {
             mEvent.has_image = false;
             mEvent.title = "";
             mEvent.description = "";
-            mEvent.start_date = "";
+            mEvent.setStartDate(new Date());
             mEvent.longitude = -181;
             mEvent.latitude = -90;
             mEvent.location = "";
@@ -85,11 +92,11 @@ public class EventPresenter implements EventContract.Presenter {
         boolean enabled = true;
         enabled &= mEvent.title != null && !mEvent.title.isEmpty();
         enabled &= mEvent.title != null && !mEvent.title.isEmpty();
-        enabled &= mEvent.category != null && !mEvent.start_date.isEmpty();
-        enabled &= mEvent.start_date != null && !mEvent.start_date.isEmpty();
+        enabled &= mEvent.category != null && !mEvent.category.isEmpty();
+        enabled &= mEvent.getStartDate() != null;
         enabled &= Math.abs(mEvent.latitude) < 181;
         enabled &= Math.abs(mEvent.longitude) < 91;
-        enabled &= mEvent.location != null && !mEvent.start_date.isEmpty();
+        enabled &= mEvent.location != null && !mEvent.location.isEmpty();
         enabled &= mEvent.max_user_count != -1;
         mView.setEnableSubmitButton(enabled);
     }
@@ -119,8 +126,7 @@ public class EventPresenter implements EventContract.Presenter {
     @Override
     public void onDurationSelected(long time) {
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        mEvent.start_date = format.format(new Date(time));
+        mEvent.setStartDate(new Date(time));
         mView.showStartDate(time);
         checkEnableSubmitButton();
     }
@@ -131,12 +137,24 @@ public class EventPresenter implements EventContract.Presenter {
         mEvent.latitude = location.getLatLng().latitude;
         mEvent.longitude = location.getLatLng().longitude;
 
-        String name = location.getName() == null ? "" :
-                location.getName().toString();
-        String address = location.getAddress() == null ? "" :
-                ", " + location.getAddress().toString();
 
-        mEvent.location = name + address;
+        Geocoder gcd = new Geocoder(mContext, Locale.getDefault());
+
+        try {
+            List<Address> addresses = gcd.getFromLocation(mEvent.latitude, mEvent
+                    .longitude, 1);
+            if(addresses.size()>0) {
+                mEvent.location = addresses.get(0).getLocality();
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            String name = location.getName() == null ? "" :
+                    location.getName().toString();
+            String address = location.getAddress() == null ? "" :
+                    ", " + location.getAddress().toString();
+            mEvent.location = name + address;
+        }
+
 
         if (mEvent.location.isEmpty()) {
             mEvent.location = "" + mEvent.latitude + ", " + mEvent.longitude;

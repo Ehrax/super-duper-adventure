@@ -19,8 +19,6 @@ import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -115,15 +113,8 @@ public class EventRequest extends AuthRequest<List<Event>> {
         List<Event> filteredEvents = new ArrayList<>();
 
         for (Event e : events) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-            try {
-                long start_date = format.parse(e.start_date).getTime();
-
-                if (start_date - new Date().getTime() >= 0) {
-                    filteredEvents.add(e);
-                }
-            } catch (ParseException ex) {
-                ex.printStackTrace();
+            if (e.getStartDate().getTime() - new Date().getTime() >= 0) {
+                filteredEvents.add(e);
             }
         }
 

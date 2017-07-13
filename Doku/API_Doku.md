@@ -82,7 +82,7 @@ Response:
     "Creator":{
       ...
     },
-    "EventImage":null // Base64 Codiertes Image
+    "HasImage":True
     }
   ]
 
@@ -92,6 +92,18 @@ HTTP-Verb: GET
 
 Beschreibung:
   Diese Methode liefert ein Einzelnes Event anhand seiner EventModelID.
+
+Response:
+ Analog zu oben aber eben nur ein Element.
+
+### Bilder für die Events laden
+URL: https://urban-action.max-karthan.de/TinderAPI/api/Event/Image/{id}
+HTTP-Verb: GET  
+
+Beschreibung:
+  Diese Methode liefert ein Bild zu einem einzelnen Event anhand seiner EventModelID.
+  Zuerst werden mit obigen Requests die Events geholt und anschließen können die Bilder geladen werden wenn im vorherigen Response das Feld HasImage = True war.
+  Wird versucht ein Bild zu laden wenn keines vorhanden ist liefert der Server ein 404 Not Found.
 
 Response:
  Analog zu oben aber eben nur ein Element.
