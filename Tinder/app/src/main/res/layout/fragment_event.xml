@@ -26,7 +26,6 @@
             <!-- not sure if sport is always default-->
             <ImageView
                     android:id="@+id/add_image"
-                    android:src="@drawable/sport_category"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"

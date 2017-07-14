@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,8 +58,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by Jona on 21.05.2017. */
@@ -297,15 +294,6 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public void showEvent(Event event) {
 
-        if (event.has_image) {
-            String uri = getString(R.string.API_base);
-            uri += getString(R.string.API_event_image);
-            uri += "/" + event.id;
-            showImage(uri);
-        } else {
-            //TODO: load category image here
-        }
-
         mTitle.setText(event.title);
         mDescription.setText(event.description);
         mLocation.setText(event.location);
@@ -318,6 +306,31 @@ public class EventFragment extends Fragment implements EventContract.View {
         String category = categories[index];
         mCategory.setText(category);
         mPresenter.onCategorySelected(category);
+
+        if (event.has_image) {
+            String uri = getString(R.string.API_base);
+            uri += getString(R.string.API_event_image);
+            uri += "/" + event.id;
+            showImage(uri);
+        } else {
+            switch (event.category) {
+                case "Sport":
+                    mImage.setImageResource(R.drawable.sport_category);
+                    break;
+                case "Kultur":
+                    mImage.setImageResource(R.drawable.culture_category);
+                    break;
+                case "Ausgehen":
+                    mImage.setImageResource(R.drawable.party_category);
+                    break;
+                case "Erholung":
+                    mImage.setImageResource(R.drawable.rest_category);
+                    break;
+                default:
+                    mImage.setImageResource(R.drawable.other_category);
+                    break;
+            }
+        }
     }
 
     @Override
