@@ -1,0 +1,29 @@
+\select@language {ngerman}
+\contentsline {section}{\numberline {1}Einleitung}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}Motivation}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Ziel}{3}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Aufbau}{4}{subsection.1.3}
+\contentsline {section}{\numberline {2}Grundlagen}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Quartettspiel}{4}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Quartettkarte}{4}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Spielverlauf}{4}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Spielmodi}{6}{subsubsection.2.1.3}
+\contentsline {subsection}{\numberline {2.2}Mobile Plattform}{6}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Libraries und Frameworks}{8}{subsection.2.3}
+\contentsline {section}{\numberline {3}Anforderungsanalyse}{9}{section.3}
+\contentsline {subsection}{\numberline {3.1}Funktionale Anforderungen}{9}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Nicht Funktionale Anforderungen}{11}{subsection.3.2}
+\contentsline {section}{\numberline {4}Konzept und Entwurf}{12}{section.4}
+\contentsline {subsection}{\numberline {4.1}Mockups}{12}{subsection.4.1}
+\contentsline {section}{\numberline {5}Implementierung}{16}{section.5}
+\contentsline {subsection}{\numberline {5.1}Ausgew\IeC {\"a}hlte Implementierungsdetails}{16}{subsection.5.1}
+\contentsline {subsubsection}{\numberline {5.1.1}Galerie}{16}{subsubsection.5.1.1}
+\contentsline {subsubsection}{\numberline {5.1.2}Einzelspieler}{18}{subsubsection.5.1.2}
+\contentsline {subsubsection}{\numberline {5.1.3}Multiplayer}{20}{subsubsection.5.1.3}
+\contentsline {subsection}{\numberline {5.2}Architektur}{20}{subsection.5.2}
+\contentsline {subsubsection}{\numberline {5.2.1}Datenmodell}{20}{subsubsection.5.2.1}
+\contentsline {subsubsection}{\numberline {5.2.2}Klassenstruktur}{21}{subsubsection.5.2.2}
+\contentsline {section}{\numberline {6}Anforderungsabgleich}{23}{section.6}
+\contentsline {subsection}{\numberline {6.1}Funktionale Anforderungen}{23}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Nicht Funktionale Anforderungen}{24}{subsection.6.2}
+\contentsline {section}{\numberline {7}Zusammenfassung und Ausblick}{25}{section.7}

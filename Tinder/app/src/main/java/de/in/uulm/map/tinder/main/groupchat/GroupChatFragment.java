@@ -5,17 +5,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import de.in.uulm.map.tinder.R;
-import de.in.uulm.map.tinder.entities.FirebaseGroupChat;
-
-import java.util.ArrayList;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by alexanderrasputin on 11.05.17.
@@ -79,7 +73,7 @@ public class GroupChatFragment extends Fragment implements GroupChatContract.Vie
 
     @Override
     public void onFragmentBecomesVisible() {
-        mAdapter.setGroupChats(new ArrayList<FirebaseGroupChat>());
+        //mAdapter.setGroupChats(new ArrayList<FirebaseGroupChat>());
         mPresenter.loadEvents();
     }
 }
