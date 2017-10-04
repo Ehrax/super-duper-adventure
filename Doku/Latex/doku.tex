@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref,xcolor,microtype,ifthen}
 \usepackage{csquotes}
+\usepackage{parskip}
 
 \usepackage{graphicx}
 \usepackage{svg}
@@ -15,9 +16,9 @@
 
 \linespread{1.25}
 
-\title{Mobile Application Lab}
-\subtitle{Dokumentation der Quartett App}
-\date{19.04.2017}
+\title{Mobile Application Development}
+\subtitle{Eventure Dokumentation}
+\date{\today}
 \author{Alexander Rasputin, Maximilian Karthan, Jona Ruof}
 
 \begin{document}
@@ -86,13 +87,6 @@ Spielverlauf eines Quartettspiels erklärt.
 
 \subsubsection{Quartettkarte}
 
-\begin{figure}[!ht]
-\begin{center}
-    \includegraphics[scale=0.6]{img/quartett_card.jpg}
-    \caption{Golf GTI Quartettkarte aus einem Autoquartett}
-\end{center}
-\end{figure}
-
 In der oberen Abbildung wird eine Quartettkarte dargestellt. Deren Bild zeigt
 einen Gegenstand, das zum Gengere des Quartettdecks passt, in unserem Fall ein
 Auto, das zu einem Autoquartett gehört. In der Mitte befindet sich der Name des
@@ -111,13 +105,6 @@ Person vergleichen möchte. Nun werden die Werte der beiden Attribute verglichen
 Gewinner der Runde ist die Person, die den besseren Attributswert hat. Dieser
 gewinnt die Karte. Klassisch wird gespielt bis einer der beiden Personen keine
 Karten mehr hat.
-
-\begin{figure}[!ht]
-\begin{center}
-    \includegraphics[scale=0.6]{img/map_quartett.png}
-    \caption{Darstellung eines Quartettspielverlaufes}
-\end{center}
-\end{figure}
 
 In unserem Fall haben wir uns gegen den klassischen Spielmodus entschieden, da
 dieser im Kontext einer Mobilen Anwendung ungeeignet ist. Gründe dafür sind,
@@ -341,7 +328,6 @@ soll eine Langzeitmotivation erreicht werden.
 \textbf{FA13 Multiplayer} \newline
 Es ist über ein Netzwerk möglich gegen andere Benutzer der App anzutreten.
 
-
 \subsection{Nicht Funktionale Anforderungen}
 
 \textbf{NFA1 Robustheit} \newline
@@ -374,71 +360,25 @@ Vor dem eigentlichen Implementieren der App wurden Mockups erstellt. Diese
 sollten einen ersten Eindruck vom User Interface geben und dienten als
 Orientierung während der eigentlichen Implementierung.
 
-\begin{figure}[!ht]
-\begin{center}
-	\includegraphics[scale=0.67]{img/mockup_drawer.png}
-	\caption{Navigation Drawer}
-	\label{drawer}
-\end{center}
 An jeder beliebigen Stelle der App hat man Zugriff auf den Navigation Drawer.
 Dieser ist ein Menü, welches sich von der linken Seite durch eine Wischgeste
 herausziehen lässt. Abbildung ~\ref{drawer} zeigt das Konzept dieses Menüs.
-\end{figure}
 
-\begin{figure}[!ht]
-\begin{center}
-	\includegraphics[scale=0.7]{img/mockup_game_process_1.png}
-	\caption{Singleplayer Einstellungen}
-	\label{singleplayer1}
-\end{center}
 Abbildung ~\ref{singleplayer1} skizziert den Prozess, welchen der Benutzer
 vollführen muss, um vom Hauptmenü zum Einzelspieler Modus zu gelangen.
-\end{figure}
 
-\vspace{1cm}
-
-\begin{figure}[!ht]
-\begin{center}
-	\includegraphics[scale=0.55]{img/mockup_game_process_2.png}
-	\caption{Singleplayer}
-	\label{singleplayer2}
-\end{center}
 Nach dem das Deck ausgewählt wurde befindet sich der Spieler im eigentlichen
 Einzelspieler Modus. Abbildung ~\ref{singleplayer2} skizziert das
 Spielgeschehen.
-\end{figure}
 
-\begin{figure}[!ht]
-\begin{center}
-	\centering
-	\includegraphics[scale=0.4]{img/mockup_settings.png}
-	\caption{Settings Activity}
-	\label{settings}
-\end{center}
 Einstellungen kann der Benutzer in der Settings Activity vornehmen. Allerdings
 sind die Möglichkeiten in unserer App sehr beschränkt wie Abbildung
 ~\ref{settings} zeigt.
-\end{figure}
 
-\begin{figure}[!ht]
-\begin{center}
-	\includegraphics[scale=0.58]{img/mockup_stats_1.png}
-	\caption{Statistics Activity}
-	\label{stats1}
-\end{center}
 Außerdem haben wir Mockups zu den Statistiken erstellt. Hier kann der Benutzer
 seine bisherigen Erfolge einsehen. Diese Activity ist auf den Abbildungen
 ~\ref{stats1} und ~\ref{stats2} zu sehen
-\end{figure}
 
-\begin{figure}[!ht]
-\begin{center}
-\centering
-	\includegraphics[scale=0.75]{img/mockup_stats_2.png}
-	\caption{Statistics Activity}
-	\label{stats2}
-\end{center}
-\end{figure}
 
 \clearpage
 
@@ -446,22 +386,6 @@ seine bisherigen Erfolge einsehen. Diese Activity ist auf den Abbildungen
 \subsection{Ausgewählte Implementierungsdetails}
 \subsubsection{Galerie}
 
-\begin{figure}[!ht]
-  \centering
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/gallery_decks.png}
-    \caption{Deckansicht}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/gallery_cards.png}
-    \caption{Kartenansicht}
-  \end{minipage}
-\end{figure}
-
-\noindent
 In der Galerie werden alle Kartendecks aufgelistet, die auf dem Smartphone
 vorhanden sind oder vom Server heruntergeladen werden können. Heruntergeladenen
 Decks könne durch Antippen geöffnet werden. In der geöffneten Ansicht kann der
@@ -481,21 +405,6 @@ dann persistent auf dem Gerät gespeichert und kann nun auch ohne
 Internetverbinung angezeigt werden. Zudem können nun auch die Karten des Decks,
 wie oben beschreiben angezeigt werden. Auch kann das Deck nun im Einzelspieler
 Modus verwendet werden.
-
-\begin{figure}[!ht]
-  \centering
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/gallery_dialog.png}
-    \caption{Download-Dialog}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/gallery_download.png}
-    \caption{Download-Fortschritt}
-  \end{minipage}
-\end{figure}
 
 \ \newline
 Um die Galerie mit diesen beschriebenen Funktionen zu realisieren, waren einige
@@ -523,21 +432,6 @@ abgefangen werden.
 
 \subsubsection{Einzelspieler}
 
-\begin{figure}[!ht]
-  \centering
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/game_settings.png}
-    \caption{Spieleinstellungen}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/game_attributes.png}
-    \caption{Attributauswahl}
-  \end{minipage}
-\end{figure}
-
 \noindent
 Im Einzelspielermodus der Quartett App werden vor jedem Spiel zunächst einige
 Spieleinstellungen abgefragt. Der Name des Spielers wird für den Eintrag in die
@@ -562,20 +456,6 @@ außerdem automatisch ein Eintrag in der Rangliste vorgenommen. Danach besteht
 die Möglichkeit das Spiel mit den selben Einstellungen erneut zu starten, die
 Einstellungen zu ändern, oder in das Hauptmenü zurückzukehren.
 
-\begin{figure}[!ht]
-  \centering
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/game_compare.png}
-    \caption{Vergleichsansicht}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.45\textwidth}
-    \centering
-    \includegraphics[width=4cm]{img/game_end.png}
-    \caption{Spielende}
-  \end{minipage}
-\end{figure}
 
 \noindent
 Bei der Implementierung des Einzelspielers war besonders die KI eine
@@ -623,12 +503,6 @@ Quartett ein rundenbasiertes Spiel ist war die Synchronisation eher trivial.
 \subsection{Architektur}
 \subsubsection{Datenmodell}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\textwidth]{img/map_er.png}
-  \caption{ER Diagramm des Datenmodells}
-\end{figure}
-
 \noindent
 Im obigen ER Diagramm ist die Struktur unseres Datenmodells dargestellt. Zur
 Realisierung wurde die in Android integrierte SQL Datenbank SQLite in
@@ -644,12 +518,6 @@ SharedPreferences ist eine einfach Key-Value Datenbank die sich kleine
 Datenmengen eignet.
 
 \subsubsection{Klassenstruktur}
-
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=\textwidth]{img/class_structure.png}
-  \caption{Schematische Klassenstrukur der App mit MVP-Pattern}
-\end{figure}
 
 \noindent
 Um die Applikation zu strukturieren wurde hier das Model-View-Presenter Pattern
