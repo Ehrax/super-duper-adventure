@@ -1,6 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1507127056 "doku.tex" "doku.pdf" "doku" 1507127057
-  "./doku.out" 1507127057 1486 9a9c8dfeb51f231ec33dc56e58103ccf ""
+["pdflatex"] 1507733352 "doku.tex" "doku.pdf" "doku" 1507733354
+  "./doku.out" 1507733353 1292 c15fae4249736b1147a8fc6d3513385d ""
+  "./img/architecture.png" 1507711776 15914 f974e4fca90e6deb2d9f79328f2c7f33 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/tfm/adobe/helvetic/phvb7t.tfm" 1136768653 2240 eb56c13537f4d8a0bd3fafc25572b1bd ""
@@ -92,13 +93,14 @@
   "/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1432479641 1764542 91654ba72bdb667e84ea24f076ae16d8 ""
   "/usr/local/texlive/2015/texmf-var/web2c/pdftex/pdflatex.fmt" 1434987579 3849859 fb8665c18d890dd9576b37c7b5e3012f ""
   "/usr/local/texlive/2015/texmf.cnf" 1432479636 577 0d611272082f3cdb8e80e09a3c69cf07 ""
-  "doku.aux" 1507127057 3179 0a1999f4782ae4add340c8ee56edf18c ""
-  "doku.out" 1507127057 1486 9a9c8dfeb51f231ec33dc56e58103ccf ""
-  "doku.tex" 1507127011 26745 3f556a42cce8ced88d3d64807aabf274 ""
-  "doku.toc" 1507127057 1913 7a5ba3e314a4f225f3ac9d0e334adebc ""
+  "doku.aux" 1507733353 2918 b71bb2d239ca8d406945e147acbbdd0a ""
+  "doku.out" 1507733353 1292 c15fae4249736b1147a8fc6d3513385d ""
+  "doku.tex" 1507733348 26740 3f92af1d7f2e60ac2fea7095a17091f9 ""
+  "doku.toc" 1507733353 1688 5f4236896030b8a5d377cfcfa99f55ec ""
+  "img/architecture.png" 1507711776 15914 f974e4fca90e6deb2d9f79328f2c7f33 ""
   (generated)
   "doku.pdf"
   "doku.aux"
-  "doku.out"
   "doku.toc"
+  "doku.out"
   "doku.log"

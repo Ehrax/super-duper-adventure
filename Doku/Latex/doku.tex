@@ -44,12 +44,12 @@ Als Event wird hier jede Art des lokalen, zeitlich begrenzten, sozialen
 Ereignisses verstanden. So werden z.B. eine Theatervorstellung, ein
 Volleyballspiel im Park oder eine Geburtstagsfeier als Events bezeichnet. Events
 bieten Möglichkeiten zur sozialen Interaktion mit Freunden und Fremden und sind
-damit relevant für das Leben der aller Menschen. Gerade für ortsfremde
-Personen ist es oftmal kompliziert an die relevanten Eckdaten (Zeit, Ort, etc.
- ...) eines Events zu kommen. Da keine zentralisierte Sammelstelle für solche
-Information existiert, sind diese meist in verschiedensten Medien zu finden oder
-werden nur von Person zu Person weitergegeben. Daher scheint die Notwendigkeit
-einer Applikation für das Entdecken von Events gegeben.
+damit relevant für das Leben aller Menschen. Gerade für ortsfremde Personen ist
+es oftmal kompliziert an die relevanten Eckdaten (Zeit, Ort, etc. ...) eines
+Events zu kommen. Da keine zentralisierte Sammelstelle für solche Information
+existiert, sind diese meist in verschiedensten Medien zu finden oder werden nur
+von Person zu Person weitergegeben. Daher scheint die Notwendigkeit einer
+Applikation für das Entdecken von Events gegeben.
 
 Es existieren bereits einige solcher Apps, welche allerdings (subjektiv
 betrachtet) nicht einfach und intuitiv genug bedient werden können. So sind
@@ -216,14 +216,51 @@ einfache Queries manipuliert werden und Clients können sich über Änderungen i
 der Datenbank in Echtzeit informieren lassen. Firebase wurde verwendet um
 den Gruppenchat der einzelnen Events zu realisieren.
 
+\subsection{Klassenstruktur}
 
+\begin{figure}[h!tbp]
+  \includegraphics[width=\textwidth]{img/architecture}
+\end{figure}
 
+Um die Applikation zu strukturieren wurde hier das Model-View-Presenter Pattern
+angewendet. Mit diesem Pattern wird jede Activity in Model-, View- und
+Presenter- Komponenten zerlegt. Die Model Komponenten beinhalten die
+Zugriffsschicht auf den Event Server mit allen zugehörigen Klassen. In der hier
+vorgestellten App wird das Model durch eine \enquote{Network} Singleton Klasse,
+welche mit Volley realisiert wurde, und durch entsprechende Entitätsklassen
+dargestellt. Ebenfalls werden alle Firebase-Komponenten, die für die
+Realisierung des Chat zuständig sind, zum Model gezählt. Man beachte, dass hier
+keine klassische Datenbank als Model verwendet wurde. Stattdessen sind alle
+Ressourcen nur online zugänglich. Da die hier benötigten Daten design-bedingt
+sehr kurzlebig sind, hätte eine lokale Datenbank auf dem Gerät die App
+lediglich verkompliziert. Somit stellen der Event- und Firebase-Server das
+eigentliche Model dar.
 
+Auf das Model kann nur vom Presenter aus zugegriffen werden. Dieser verwaltet
+die eigentlich Logik einer Activity. Dabei ist der Presenter selbst eine
+einfache Java Klasse ohne direktes Wissen über das Android System oder die
+Datenbank. Events der View werden an den Presenter weitergeleitet und dort
+bearbeitet. Der Presenter kann zur Bearbeitung von Events sowohl auf das Model
+als auch auf die View Komponenten zugreifen. Diese Komponenten beinhaltet die
+Anzeigeschicht und verwaltet die einzelnen GUI-Elemente. In unserer App wird die
+View von einer Fragment Klasse implementiert. Direkt kommuniziert die View nur
+mit dem Presenter und greift nicht auf das Model zu. In der Praxis gibt es dabei
+allerdings einige Ausnahmen.
 
-%% Ab hier alte Doku
+Um z.B. das Anzeigen von Listen in Android effizient zu realisieren werden
+sogenannte Adapter verwendet. Diese greifen meist direkt auf die Datenbank zu
+und stellen die erhaltenen Daten direkt in einer ListView da. Damit können diese
+Klassen nicht eindeutig den Model oder View Komponenten zugeordnet werden. Daher
+implementieren diese meist sowohl die Eigenschaften des Models als auch der
+View.
 
+Durch die klare und immer gleichförmige Strukturierung in Model, View und
+Presenter, wird das Erstellen von neuen Activities vereinfacht, da somit ein
+klarer Arbeitsablauf gegeben ist. Auch das lesen und editieren von fremden Code
+wird erleichtert, da von vornherein anhand der Benennung der einzelnen Klassen
+klar ist welche Aufgaben diese Komponenten übernehmen.
 
-
+\newpage
 
 \section{Konzept und Entwurf}
 \subsection{Mockups}
@@ -254,176 +291,138 @@ seine bisherigen Erfolge einsehen. Diese Activity ist auf den Abbildungen
 \clearpage
 
 \section{Implementierung}
-\subsection{Ausgewählte Implementierungsdetails}
-\subsubsection{Galerie}
+\subsection{Übersicht}
 
-In der Galerie werden alle Kartendecks aufgelistet, die auf dem Smartphone
-vorhanden sind oder vom Server heruntergeladen werden können. Heruntergeladenen
-Decks könne durch Antippen geöffnet werden. In der geöffneten Ansicht kann der
-Benutzer durch vertikale Wischgesten durch die einzelnen Karten des virtuellen
-Kartenstapels blättern. Tippt der Benutzer ein Deck an, welches nicht
-heruntergeladen ist, wird ein Dialog geöffnet in welchem das Herunterladen des
-Decks bestätigt oder abgelehnt werden kann. Das Deck wird nicht direkt geladen,
-da sich der Benutzer eventuell in einer Netzwerkumgebung befindet, in welcher
-durch Downloads Kosten entstehen können. Durch den Bestätigungsdialog wird dem
-Benutzer somit eine Möglichkeit gegeben den Download zu einem späteren Zeitpunkt
-mit günstigeren Netzwerkbedingungen zu starten. Wird der Dialog bestätigt startet
-der Download des Decks. Im Listenelement des Decks wird ein Ladebalken angezeigt
-und im Notification Drawer wird eine Notification erstellt die ebenfalls den
-Fortschritt des Downloads anzeigt. Nach erfolgreichem Download wird die
-Notification geschlossen und der Ladebalken verschwindet wieder. Das Deck ist
-dann persistent auf dem Gerät gespeichert und kann nun auch ohne
-Internetverbinung angezeigt werden. Zudem können nun auch die Karten des Decks,
-wie oben beschreiben angezeigt werden. Auch kann das Deck nun im Einzelspieler
-Modus verwendet werden.
+\begin{figure}[h!tbp]
+  \includegraphics[width=\textwidth]{img/architecture}
+\end{figure}
 
-\ \newline
-Um die Galerie mit diesen beschriebenen Funktionen zu realisieren, waren einige
-besondere Implementierungsmethoden notwendig. Da den meisten Decks und Karten
-relativ hochauflösende Bilder zugeordnet sind, entstehen beim Anzeigen der Decks
-bzw. Karten Verzögerungen, da große Datenmengen geladen werden müssen. Dabei ist
-außerdem zu erwähnen, dass das Laden der Bilder der Decks, die nicht auf dem
-Gerät gespeichert sind, über das Netzwerk erfolgt und somit zusätzliche
-Verzögerungen entstehen. All diese Verzögerungen sind als starke Ruckler
-bemerkbar und beinträchtigen das Nutzererlebnis erheblich. Das Laden der Bilder
-wurde daher auf einen zweiten Thread ausgelagert. Somit kann der Benutzer
-weitere Interaktion vornehmen während im Hintergrund die Bilder nachgeladen
-werden. Auch der Download eines Decks verwendet einen eigenen Thread, um
-Verzögerungen im Haupt-Thread der Applikation zu vermeiden. Zusätzlich wurde
-hier auch das Service Modell der Android Platform verwendet. So kann garantiert
-werden, dass der Download abgeschlossen wird, auch wenn die Galerie verlassen
-oder die App während des Downloads geschlossen wird. Um die heruntergeladenen
-Daten in der Datenbank zu speichern war ebenfalls eine besonderer Strategie
-nötig. Die Daten können nicht sofort gespeichert werden, da sonst bei Fehlern
-inkonsistente Zustände in der Datenbank auftreten. Daher werden geladene Daten
-zunächst im RAM gehalten bis der Download vollständig abgeschlossen ist und dann
-in einer einzigen Transaktion in die Datenbank geschrieben. Somit wird immer ein
-konsistenter Zustand der Datenbank erreicht und Fehler können einfacher
-abgefangen werden.
+Im Startbildschirm erhält der Benutzer eine Übersicht über alle momentan
+verfügbaren Events und Chats. In der ActionBar dieser Activity erhält der
+Benutzer die möglichkeit die Sucheinstellungen für Events anzupassen neue Events
+hinzuzufügen, sein Profil aufzurufen. Durch eine Leiste am unteren
+Bildschirmrand kann zwischen in der Nähe befindlichen (\enquote{Nearby}) und
+beigetretenen Events (\enquote{My Events}) und den zugehörigen Chats
+(\enquote{Chat}) ausgewählt werden. Dabei werden die Events als eine Liste aus
+Karten dargestellt die der Benutzer per Wischgeste durchsuchen kann. Eine Karte
+zeigt dabei jeweils das Bild des Events, den Titel, die Beschreibung, den
+Startzeitpunkt und die Anzahl der noch freien Plätze. Außerdem werden im unteren
+Teil der Karte verschiedene Aktionen als Buttons angegzeigt.
 
-\subsubsection{Einzelspieler}
+So kann der Benutzer in der \enquote{Nearby} Liste lediglich Events beitreten.
+Wird einem Event beigetreten wird eine entsprechende Anfrage an den Event-Server
+gesendet. Meldet der Server einen erfolgreichen Beitritt wird daraufhin die
+\enquote{Nearby}-Liste aktualisiert, das Event von der Nearby List entfernt und
+stattdessen in die \enquote{My Events} Liste eingefügt. Events in dieser Liste
+stellen dem Benutzer die Aktionen \enquote{Chat} und \enquote{Delete}
+\emph{oder} \enquote{Leave} bereit. Dabei wird \enquote{Delete} nur für
+diejenigen Events angezeigt, welche der Benutzer selbst erstellt hat. Ist der
+Benutzer einem Event begetreten, hat dieses aber nicht selbst erstellt so wird
+statt \enquote{Delete} der Button \enquote{Leave} angegzeigt. Tippt der Benutzer
+auf den \enquote{Delete} Button wir eine Anfrage an den Event-Server und an die
+Firebase-Datenbank gesendet, die auf dem Event-Server das Event und in Firebase
+den zugehörigen Chat aus der Datenbank löscht. Wird der \enquote{Leave} Button
+betätigt wird nur der Benutzer aus dem Event entfernt. Das Event selbst bleibt
+aber bestehen und ist foran wieder in der \enquote{Nearby}-List auffindbar. Ein
+Event hat somit immer mindestens den erstellenden Benutzer als Teilnehmer.
+Dieser kann das Event nur über die \enquote{Delete} Aktion verlassen.
 
-\noindent
-Im Einzelspielermodus der Quartett App werden vor jedem Spiel zunächst einige
-Spieleinstellungen abgefragt. Der Name des Spielers wird für den Eintrag in die
-lokale Rangliste verwendet. Außerdem kann der Schwierigkeitsgrad, also die
-Stärke der KI, und der Spielmodus eingestellt werden. Um die Einstellungen nicht
-bei jedem Spielstart erneut setzen zu müssen können Standardwerte für jeden
-Parameter in den allgemeinen Spieleinstellungen hinterlegt werden. Nachdem alle
-Einstellungen getroffen wurden wird der Spieler aufgefordert ein Deck
-auszuwählen, mit welchem das Spiel gestartet werden soll. Dabei stehen nur Decks
-zur Auswahl die bereits heruntergeladen worden sind. Nach der Auswahl eines
-Decks startet das eigentliche Spiel. Dem Spieler wird eine Karte angezeigt, von
-welcher ein Attribut ausgewählt werden kann. Dieses Attribut wird mit dem
-Attribut verglichen, das die KI ausgewählt hat. Je nach Wert und Art des
-Attributs gewinnt oder verliert der Spieler die Karte. Das Ergebnis des
-Vergleichs wird in einer eigenen Ansicht präsentiert. Dort werden die beiden
-Karten gegenüber gestellt und Gewinner (grün) und Verlierer (rot) entsprechend
-eingefärbt. Hat der Spieler gewonnen so darf er erneut das Attribut bestimmen,
-sonst wird der nächste Zug durch die KI ausgeführt. Ist schließlich die
-Abbruchbedingung des Spiels erreicht (Zeit, Punkte, Runden) wird das Spiel
-beendet und eine Punktezahl berechnet. War der Spieler besonders gut wird
-außerdem automatisch ein Eintrag in der Rangliste vorgenommen. Danach besteht
-die Möglichkeit das Spiel mit den selben Einstellungen erneut zu starten, die
-Einstellungen zu ändern, oder in das Hauptmenü zurückzukehren.
+Alle diese Events werden asynchron direkt vom Event-Server geladen und nicht
+zwischengespeichert. Somit wird garantiert, dass immer nur aktuelle Events
+angezeigt werden. Als Übertragungsformat wird hier JSON verwendet. Ein
+JSON-Objekt repräsentiert dabei ein komplettes Event, wobei auch das zugehörige
+Bild als base64 codierter String im Objekt enthalten ist. Nach dem Empfangen des
+Events wird dieser String aus dem JSON-Objekt ausgelesen und in einem eigenen
+Thread asynchron zu einem Bitmap Objekt decodiert.
 
+Auch die Liste an verfügbaren Chats wird asynchron geladen und nicht
+zwischengespeichert. Die Daten werden dabei allerdings von Firebase geladen,
+wobei das bereitgestellte Firebase-API verwendet wurde. Dieses liefert die
+angefragten Objekte als \emph{DataSnapshot} Instanzen zurück, die mittels
+Reflection in Objekte einer Java Klasse umgewandelt werden können. Außerdem wird
+die App über die Firebase-API über Änderungen an der Chats List benachrichtigt.
+Anhand dieser Änderungen wird dann auch die dargestellte Chat Liste
+aktualisiert. Somit wird die Chat Liste in Echtzeit immer aktuell gehalten.
 
-\noindent
-Bei der Implementierung des Einzelspielers war besonders die KI eine
-Herausforderung. Diese musste sich möglichst wie ein Spieler verhalten und kein
-unfaires Spielerlebnis bieten, also nicht zu viel Wissen über den Spielstatus
-erhalten. Die hier verwendete Implementierung erzeugt zunächst für jedes
-Attribut eine nach eben diesem Attribut sortierte Liste der Karten. Danach wird
-die Position der Karte in jeder dieser Listen ermittelt und dem jeweiligen
-Attribut zugeordnet. Damit weiß die KI nun welches der Attribute das
-\enquote{beste}, also das mit den höchsten Gewinnchancen ist. Je nach
-eingestelltem Schwierigkeitsgrad wird die KI dann eher bessere oder eher
-schlechtere Attribute auswählen. So wird ein Spieler simuliert, der das
-Kartendeck, je nach Schwierigkeitsgrad, mehr oder weniger gut kennt, somit
-abschätzen kann wie \enquote{gut} ein Attribut ist und auf Basis dieser
-Schätzung seine Entscheidungen trifft. Außerdem erhält die KI mit dieser
-Implementierung auch nicht mehr Informationen als ein menschlicher Spieler.
-Unfaires Verhalten wird somit verhindert.
+Die verschiedenen Listen des Startbildschirms werden über drei verschiedene
+Fragments realisiert. Dabei werden alle drei Fragments beim Erstellen der
+zughörigen Activity instanziiert und während des Bestehens der Activity
+permanent im Speicher gehalten. Die Activity selbst beinhaltet neben der unteren
+Navigationsleiste lediglich ein Frame Layout in das Fragments platzierte werden
+können. Wird eine Liste ausgewählt wird das zughörige Fragment in das Frame
+Layout geladen und das vorher vorhanden Fragment entfernt.
 
-\subsubsection{Multiplayer}
-Der Multiplayer bietet den Spielern die Möglichkeit über eine Internetverbindung
-gegeneinander zu spielen. Entscheidet sich der Nutzer zu einem Multiplayer Spiel
-gelangt dieser zu erst auf eine Activity die ihm eine Liste aller Spiele anzeigt
-die er gerade spielt und auch die Möglichkeit gibt ein neues Spiel zu starten.
-Wählt der Nutzer ein neues Spiel kann er sich entscheiden ob er automatisch
-einem anderen Spieler zugeteilt werden möchte oder gezielt mit einer bestimmten
-Person spielen möchte.
+\subsection{Kartenansicht}
 
-\ \newline
-Im Mulitplayer-Modus wird im Gegensatz zum herkömmlichen Quartett immer
-abwechselnd gespielt egal wer die vorherige Runde gewonnen hat. Dies ist eine
-Designentscheidung die aus Usability Gründen getroffen wurde. Andernfalls könnte
-es vorkommen ein Spieler macht einen Zug, schließt die App um später weiter zu
-spielen aber in der Zwischenzeit gewinnt sein Gegner alle folgenden runden und
-beendet das Spiel ohne, dass der erste Spieler etwas mitbekommt.
+\begin{figure}[h!tbp]
+  \includegraphics[width=\textwidth]{img/architecture}
+\end{figure}
 
-\ \newline
-Die technische Umsetzung wurde durch die bereits im Kapitel Libaries und
-Frameworks erwähnten Google Play Services extrem erleichtert. Durch die
-Verwendung dieser Services mussten wir uns nur noch um den client-seitigen Teil
-der Anwendung kümmern. Hier war der anspruchsvollste Teil jedes mögliche
-Szenario abzudecken. Also entsprechend zu reagieren wenn einer der Spieler einen
-Zug gemacht hat und der andere zum Beispiel gerade noch das Ergebnis des
-vorherigen Zuges angeschaut hat oder gar nicht mehr innerhalb der App war. Da
-Quartett ein rundenbasiertes Spiel ist war die Synchronisation eher trivial.
-\subsection{Architektur}
-\subsubsection{Datenmodell}
+In dieser Ansicht werden alle Events angezeigt die auch in der \enquote{Nearby}
+Liste in der Übersicht angezeigt werden. Dabei werden die Events hier allerdings
+nicht als eine kontinuierliche Liste präsentiert sondern als ein simulierter
+Kartenstapel. Jede Karte beinhaltet nur minimale Information und bietet
+hauptsächlich Platz für das Bild des Events. So soll eine spontane Entscheidung
+über das Gefallen oder Nicht-Gefallen des Events unterstützt werden. Wird die
+Karten nach rechts geschoben tritt der Benutzer dem Event bei. Wird die Karte
+dagegen nach links geschoben tritt der Benutzer dem Event nicht bei und die
+Karte wird wieder unten in den virtuellen Kartenstapel eingordnet. Der virtuelle
+Kartenstapel wird hier durch die \emph{PlaceHolderView} realisiert. Die
+anzuzeigenden Events werden dabei ebenfalls direkt vom Event-Server und nicht
+aus einer Datenbank geladen.
 
-\noindent
-Im obigen ER Diagramm ist die Struktur unseres Datenmodells dargestellt. Zur
-Realisierung wurde die in Android integrierte SQL Datenbank SQLite in
-Kombination mit Sugar ORM verwendet. So konnten die einzelnen Entitäten direkt
-über Klassen angesprochen werden und es mussten keine SQL Statements verwendet
-werden. Allerdings beherrscht Sugar ORM in der verwendeten Version keine Listen
-und Beziehungen zwischen den einzelnen Entitäten können mit Sugar ORM ebenfalls
-nur schwierig oder gar nicht dargestellt werden. Die Daten der gespeicherten
-Bilder wurden nicht in die SQL Datenbank geladen sondern direkt im internen
-Speicher des Geräts abgelegt. Auch die \enquote{Preferences} werden nicht mit
-SQL gespeichert sondern in den SharedPreferences des Android Systems abgelegt.
-SharedPreferences ist eine einfach Key-Value Datenbank die sich kleine
-Datenmengen eignet.
+\subsection{Event Erstellung}
 
-\subsubsection{Klassenstruktur}
+\begin{figure}[h!tbp]
+  \includegraphics[width=\textwidth]{img/architecture}
+\end{figure}
 
-\noindent
-Um die Applikation zu strukturieren wurde hier das Model-View-Presenter Pattern
-angewendet. Mit diesem Pattern wird jede Activity in Model-, View- und
-Presenter- Komponenten zerlegt. Die Model Komponenten beinhalten die
-Zugriffsschicht auf die Datenbank mit allen zugehörigen Klassen. In der hier
-vorgestellten App wird das Model durch Sugar ORM bzw. durch dessen
-Entitätsklassen dargestellt. Außerdem wird die Serveranbindung, welche durch das
-Volley Framework realisiert wird, ebenfalls zum Model gezählt. Es existiert
-nur ein gemeinsames Model für alle Activities. Auf das Model kann nur vom
-Presenter aus zugegriffen werden. Dieser verwaltet die
-eigentlich Logik einer Activity. Dabei ist der Presenter selbst eine einfache
-Java Klasse ohne direktes Wissen über das Android System oder die Datenbank.
-Events der View werden an den Presenter weitergeleitet und dort bearbeitet. Der
-Presenter kann zur Bearbeitung von Events sowohl auf das Model als auch auf die
-View Komponenten zugreifen. Diese Komponenten beinhaltet die Anzeigeschicht und
-verwaltet die einzelnen GUI-Elemente. In unserer App wird die View von einer
-Fragment Klasse implementiert. Direkt kommuniziert die View nur mit dem
-Presenter und greift nicht auf das Model zu. In der Praxis gibt es dabei
-allerdings einige Ausnahmen.
+In dieser Activity kann ein Benutzer ein Event anlegen oder ein bereits
+bestehendes Event bearbeiten. Die dafür nötige Eingabemaske wurde dabei so
+einfach und klar wie möglich strukturiert. Den Großteil der vorhandenen Fläche
+nimmt eine ImageView ein, in welcher das zugehörige Bild des Events angezeigt
+wird. Um die Fläche für dieses Bild zusätzlich zu maximieren wurde hier die
+ActionBar der Activity transparent dargestellt. Damit der weiße
+\enquote{Zurück}-Button der Activity immer noch sichtbar bleibt wird die
+ActionBar aber nicht komplett transparent sondern mit einem leichten Farbverlauf
+gezeichnet. Dieser Farbverlauf ist über dem Bild der ImageView nahezu nicht
+sichtbar, aber erhöht dennoch merklich die Sichtbarkeit des
+\enquote{Zurück}-Buttons. Klick der Benutzer auf das Bild kann er ein beliebiges
+auf dem Gerät vorhandenes Bild auswählen, das dann in der ImageView angezeigt
+wird. Dabei wird das Bild asynchron im Hintergrund, dass heißt abseits des
+Haupt-Threads geladen.
 
-\ \newline
-Um z.B. das Anzeigen von Listen in Android effizient zu realisieren werden
-sogenannte Adapter verwendet. Diese greifen meist direkt auf die Datenbank zu
-und stellen die erhaltenen Daten direkt in einer ListView da. Damit können diese
-Klassen nicht eindeutig den Model oder View Komponenten zugeordnet werden. Daher
-implementieren diese meist sowohl die Eigenschaften des Models als auch der
-View.
+In den dann folgenden Textfeldern können die weiteren Parameter des Events
+konfiguriert werden. Dabei wurde das Design der Textfelder so angepasst, dass
+diese die gesamte Bildschrimbreite verwendet. Damit wurde auch auch die
+klickbare Fläche der Textfelds vergrößert, sodass das Auswählen eines einzelnen
+Textfelds einfacher möglich ist. Obwohl als Anzeige Textfelder verwendet werden
+sind diese nur bedingt für die Auswahl einiger Informationen geeigent. Klickt
+der Benutzer z.B. auf das \enquote{Location} Textfeld wird über das Google
+Places API eine Place Picker Activity gestartet die eine benutzerfreundliche
+Auswahl eines Ortes ermöglicht. Der ausgewählte Ort wird intern gespeichert und
+eine textuelle Repräsentation des Ortes im zugehörigen Textfeld angezeigt. Um
+die Startzeit auszuwählen wurde ein Time Picker Dialog erstellt, der geöffnet
+wird, wenn der Benutzer auf das \enquote{Start} Textfeld tippt. So kann eine
+Startzeit benutzerfreundlich eingegeben werden. Auch werden so
+Formatierungsfehler vermieden, die bei der Eingabe von Daten in ein Textfeld
+auftreten können. Ebenfalls wurden Picker-Dialoge für die Felder
+\enquote{Max participants} und \enquote{Category} erstellt.
 
-\ \newline
-Durch die klare und immer gleichförmige Strukturierung in Model, View und
-Presenter, wird das Erstellen von neuen Activities vereinfacht, da somit ein
-klarer Arbeitsablauf gegeben ist. Auch das lesen und editieren von fremden Code
-wird erleichtert, da von vornherein anhand der Benennung der einzelnen Klassen
-klar ist welche Aufgaben diese Komponenten übernehmen.
+Aufgrund der relative großen Darstellung des Bilds können nicht alle benötigten
+Felder auf einer Bildschirmlänge dargestellt werden. Daher musste die Parameter
+Liste scrollbar implementiert werden. Um von jeder Scroll-Position die Activity
+wieder verlassen zu können muss der \enquote{Zurück}-Button, dass heißt die
+Action Bar der Activity, immer zugänglich bleiben. Allerdings wurde diese
+transparent gezeichnet und ist somit auf den Textfeldern schlecht lesbar. Daher
+wurde hier eine \emph{NestedScollView} in Kombination mit einem
+\emph{AppBarLayout} verwendet. Wird auf der Parameter Liste gescrollt schiebt
+sich diese über das Bild des Events und der Hintergrund der AppBar wird so
+transformiert, dass dieser nun nicht mehr transparent ist, also eine normale
+ActionBar zeigt. Somit kann nun der \enquote{Zurück}-Button immer angezeigt und
+die Parameter Liste gescollt werden.
+
+\subsection{Server}
 
 \section{Anforderungsabgleich}
 
