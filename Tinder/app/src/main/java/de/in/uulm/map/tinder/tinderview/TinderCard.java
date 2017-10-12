@@ -1,7 +1,6 @@
 package de.in.uulm.map.tinder.tinderview;
 
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,15 +8,20 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
-import com.mindorks.placeholderview.annotations.*;
-import com.mindorks.placeholderview.annotations.swipe.*;
+import com.mindorks.placeholderview.annotations.Layout;
+import com.mindorks.placeholderview.annotations.Resolve;
+import com.mindorks.placeholderview.annotations.View;
+import com.mindorks.placeholderview.annotations.swipe.SwipeCancelState;
+import com.mindorks.placeholderview.annotations.swipe.SwipeIn;
+import com.mindorks.placeholderview.annotations.swipe.SwipeInState;
+import com.mindorks.placeholderview.annotations.swipe.SwipeOut;
+import com.mindorks.placeholderview.annotations.swipe.SwipeOutState;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
 import de.in.uulm.map.tinder.network.DefaultErrorListener;
 import de.in.uulm.map.tinder.network.Network;
 import de.in.uulm.map.tinder.network.ServerRequest;
-import de.in.uulm.map.tinder.util.AsyncImageDecoder;
 import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
@@ -54,9 +58,12 @@ public class TinderCard {
     private void onResolved() {
 
         if(mEvent.has_image) {
-            String uri = mContext.getString(R.string.API_base);
+
+            String uri = "file:///android_asset/" + mEvent.title + ".jpeg";
+
+            /*String uri = mContext.getString(R.string.API_base);
             uri += mContext.getString(R.string.API_event_image);
-            uri += "/" + mEvent.id;
+            uri += "/" + mEvent.id;*/
             new AsyncImageLoader(uri,
                     new WeakReference<>(mImgEvent), mContext).execute();
         } else {

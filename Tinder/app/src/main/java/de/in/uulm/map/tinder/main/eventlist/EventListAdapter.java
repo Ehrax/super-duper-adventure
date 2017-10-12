@@ -19,7 +19,6 @@ import de.in.uulm.map.tinder.util.AsyncImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Jona on 04.05.17.
@@ -101,9 +100,14 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                 e.participants.size() + "/" + e.max_user_count);
 
         if(e.has_image) {
+            /*
             String uri = mContext.getString(R.string.API_base);
             uri += mContext.getString(R.string.API_event_image);
             uri += "/" + e.id;
+            */
+
+            String uri = "file:///android_asset/" + e.title + ".jpeg";
+
             new AsyncImageLoader(uri,
                     new WeakReference<>(holder.mImage), mContext).execute();
         } else {
@@ -146,8 +150,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                 mContext.getString(R.string.store_account),
                 Context.MODE_PRIVATE);
 
-        final String userName = accountPrefs.getString(
-                mContext.getString(R.string.store_username), "");
+        final String userName = "Jona"; //accountPrefs.getString(
+                //mContext.getString(R.string.store_username), "");
 
         boolean currentUserParticipates = false;
         for(User u : e.participants) {

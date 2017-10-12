@@ -288,74 +288,88 @@ seine bisherigen Erfolge einsehen. Diese Activity ist auf den Abbildungen
 ~\ref{stats1} und ~\ref{stats2} zu sehen
 
 
-\clearpage
+\newpage
 
 \section{Implementierung}
 \subsection{Übersicht}
 
 \begin{figure}[h!tbp]
-  \includegraphics[width=\textwidth]{img/architecture}
+  \centering
+  \includegraphics[width=5cm]{img/overview_nearby_1}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/overview_nearby_2}
+  \caption{\enquote{Nearby} Tab der Übersicht}
 \end{figure}
 
 Im Startbildschirm erhält der Benutzer eine Übersicht über alle momentan
-verfügbaren Events und Chats. In der ActionBar dieser Activity erhält der
-Benutzer die möglichkeit die Sucheinstellungen für Events anzupassen neue Events
-hinzuzufügen, sein Profil aufzurufen. Durch eine Leiste am unteren
-Bildschirmrand kann zwischen in der Nähe befindlichen (\enquote{Nearby}) und
-beigetretenen Events (\enquote{My Events}) und den zugehörigen Chats
-(\enquote{Chat}) ausgewählt werden. Dabei werden die Events als eine Liste aus
-Karten dargestellt die der Benutzer per Wischgeste durchsuchen kann. Eine Karte
-zeigt dabei jeweils das Bild des Events, den Titel, die Beschreibung, den
-Startzeitpunkt und die Anzahl der noch freien Plätze. Außerdem werden im unteren
-Teil der Karte verschiedene Aktionen als Buttons angegzeigt.
+verfügbaren Events und Chats. In der ActionBar dieser Activity können die
+Sucheinstellungen für Events angepasst, neue Events hinzugefügt, und das
+Benutzerprofil aufgerufen werden. Durch eine Leiste am unteren Bildschirmrand
+kann zwischen in der Nähe befindlichen (\enquote{Nearby}), beigetretenen
+Events (\enquote{My Events}) und den zugehörigen Chats (\enquote{Chat})
+ausgewählt werden. Dabei werden die Events als eine Liste aus Karten dargestellt
+die der Benutzer per Wischgeste durchsuchen kann. Eine Karte zeigt dabei jeweils
+das Bild des Events, den Titel, die Beschreibung, den Startzeitpunkt und die
+Anzahl der noch freien Plätze. Außerdem werden im unteren Teil der Karte
+verschiedene Aktionen als Buttons angezeigt.
 
-So kann der Benutzer in der \enquote{Nearby} Liste lediglich Events beitreten.
-Wird einem Event beigetreten wird eine entsprechende Anfrage an den Event-Server
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/overview_myevents_1}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/overview_myevents_2}
+  \caption{\enquote{My Events} Tab der Übersicht}
+\end{figure}
+
+In der \enquote{Nearby} Liste kann der Benutzer lediglich Events beitreten. Wird
+einem Event beigetreten wird eine entsprechende Anfrage an den Event-Server
 gesendet. Meldet der Server einen erfolgreichen Beitritt wird daraufhin die
-\enquote{Nearby}-Liste aktualisiert, das Event von der Nearby List entfernt und
-stattdessen in die \enquote{My Events} Liste eingefügt. Events in dieser Liste
-stellen dem Benutzer die Aktionen \enquote{Chat} und \enquote{Delete}
-\emph{oder} \enquote{Leave} bereit. Dabei wird \enquote{Delete} nur für
+\enquote{Nearby}-Liste aktualisiert, und das Event in die \enquote{My Events}
+Liste eingefügt. Events in dieser Liste stellen dem Benutzer entweder die
+Aktionen \enquote{Map} und \enquote{Leave} \emph{oder} \enquote{Delete},
+\enquote{Map} und \enquote{Edit} bereit. Dabei werden Letztere nur für
 diejenigen Events angezeigt, welche der Benutzer selbst erstellt hat. Ist der
 Benutzer einem Event begetreten, hat dieses aber nicht selbst erstellt so wird
-statt \enquote{Delete} der Button \enquote{Leave} angegzeigt. Tippt der Benutzer
-auf den \enquote{Delete} Button wir eine Anfrage an den Event-Server und an die
+statt \enquote{Delete} der Button \enquote{Leave} angezeigt. Tippt der Benutzer
+auf den \enquote{Delete} Button wird eine Anfrage an den Event-Server und an die
 Firebase-Datenbank gesendet, die auf dem Event-Server das Event und in Firebase
 den zugehörigen Chat aus der Datenbank löscht. Wird der \enquote{Leave} Button
 betätigt wird nur der Benutzer aus dem Event entfernt. Das Event selbst bleibt
-aber bestehen und ist foran wieder in der \enquote{Nearby}-List auffindbar. Ein
-Event hat somit immer mindestens den erstellenden Benutzer als Teilnehmer.
-Dieser kann das Event nur über die \enquote{Delete} Aktion verlassen.
+aber bestehen und ist wieder in der \enquote{Nearby}-Liste auffindbar. Ein Event
+hat somit immer mindestens den erstellenden Benutzer als Teilnehmer. Der
+außerdem verfügbare \enquote{Map} Button öffnet über einen speziell formatierten
+\emph{Intent} die Google Maps App und zeigt den Ort des Events an. So können
+Benutzer schnell zum Ort des Events navigieren. Über den \enquote{Edit} Button
+kann der erstellende Benutzer nachträglich die Details eines Events bearbeiten.
 
 Alle diese Events werden asynchron direkt vom Event-Server geladen und nicht
 zwischengespeichert. Somit wird garantiert, dass immer nur aktuelle Events
 angezeigt werden. Als Übertragungsformat wird hier JSON verwendet. Ein
-JSON-Objekt repräsentiert dabei ein komplettes Event, wobei auch das zugehörige
-Bild als base64 codierter String im Objekt enthalten ist. Nach dem Empfangen des
-Events wird dieser String aus dem JSON-Objekt ausgelesen und in einem eigenen
-Thread asynchron zu einem Bitmap Objekt decodiert.
-
-Auch die Liste an verfügbaren Chats wird asynchron geladen und nicht
-zwischengespeichert. Die Daten werden dabei allerdings von Firebase geladen,
-wobei das bereitgestellte Firebase-API verwendet wurde. Dieses liefert die
-angefragten Objekte als \emph{DataSnapshot} Instanzen zurück, die mittels
-Reflection in Objekte einer Java Klasse umgewandelt werden können. Außerdem wird
-die App über die Firebase-API über Änderungen an der Chats List benachrichtigt.
-Anhand dieser Änderungen wird dann auch die dargestellte Chat Liste
-aktualisiert. Somit wird die Chat Liste in Echtzeit immer aktuell gehalten.
+JSON-Objekt repräsentiert dabei ein komplettes Event, wobei das zugehörige Bild
+über eine separate URL vom Server geladen wird. Auch die Liste an verfügbaren
+Chats wird asynchron geladen und nicht zwischengespeichert. Die Daten werden
+dabei allerdings von Firebase geladen, wobei das bereitgestellte Firebase-API
+verwendet wurde. Dieses liefert die angeforderten Objekte als
+\emph{DataSnapshot} Instanzen zurück, die mittels Reflection in Objekte einer
+passenden Java Klasse umgewandelt werden können. Außerdem wird die App über die
+Firebase-API über Änderungen an der Chat Liste benachrichtigt. Anhand dieser
+Änderungen wird die dargestellte Liste aktualisiert, womit diese immer aktuell
+gehalten wird.
 
 Die verschiedenen Listen des Startbildschirms werden über drei verschiedene
 Fragments realisiert. Dabei werden alle drei Fragments beim Erstellen der
 zughörigen Activity instanziiert und während des Bestehens der Activity
 permanent im Speicher gehalten. Die Activity selbst beinhaltet neben der unteren
-Navigationsleiste lediglich ein Frame Layout in das Fragments platzierte werden
-können. Wird eine Liste ausgewählt wird das zughörige Fragment in das Frame
-Layout geladen und das vorher vorhanden Fragment entfernt.
+Navigationsleiste lediglich ein Frame Layout, in welches die Fragments
+platzierte werden können. Wird eine Liste ausgewählt wird einfach das zughörige
+Fragment in das Frame Layout geladen.
 
 \subsection{Kartenansicht}
 
 \begin{figure}[h!tbp]
-  \includegraphics[width=\textwidth]{img/architecture}
+  \centering
+  \includegraphics[width=5cm]{img/cardview}
+  \caption{Kartenansicht der verfügbaren Events}
 \end{figure}
 
 In dieser Ansicht werden alle Events angezeigt die auch in der \enquote{Nearby}
@@ -363,18 +377,29 @@ Liste in der Übersicht angezeigt werden. Dabei werden die Events hier allerding
 nicht als eine kontinuierliche Liste präsentiert sondern als ein simulierter
 Kartenstapel. Jede Karte beinhaltet nur minimale Information und bietet
 hauptsächlich Platz für das Bild des Events. So soll eine spontane Entscheidung
-über das Gefallen oder Nicht-Gefallen des Events unterstützt werden. Wird die
-Karten nach rechts geschoben tritt der Benutzer dem Event bei. Wird die Karte
-dagegen nach links geschoben tritt der Benutzer dem Event nicht bei und die
-Karte wird wieder unten in den virtuellen Kartenstapel eingordnet. Der virtuelle
-Kartenstapel wird hier durch die \emph{PlaceHolderView} realisiert. Die
-anzuzeigenden Events werden dabei ebenfalls direkt vom Event-Server und nicht
-aus einer Datenbank geladen.
+über das Gefallen oder Nicht-Gefallen des Events unterstützt werden.
+
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/cardview_lame}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/cardview_rocknroll}
+  \caption{Event wird abgelehnt oder dem Event wird beigetreten}
+\end{figure}
+
+Wird die Karten nach rechts geschoben tritt der Benutzer dem Event bei. Wird die
+Karte dagegen nach links geschoben tritt der Benutzer dem Event nicht bei und
+die Karte wird wieder in den virtuellen Kartenstapel eingeordnet. Dieser Stapel
+wird hier durch die \emph{PlaceHolderView} realisiert. Die anzuzeigenden Events
+werden dabei ebenfalls direkt vom Event-Server und nicht aus einer lokalen
+Datenbank geladen.
 
 \subsection{Event Erstellung}
 
 \begin{figure}[h!tbp]
-  \includegraphics[width=\textwidth]{img/architecture}
+  \centering
+  \includegraphics[width=5cm]{img/addevent_1}
+  \caption{View zur Event Erstellung}
 \end{figure}
 
 In dieser Activity kann ein Benutzer ein Event anlegen oder ein bereits
@@ -385,42 +410,56 @@ wird. Um die Fläche für dieses Bild zusätzlich zu maximieren wurde hier die
 ActionBar der Activity transparent dargestellt. Damit der weiße
 \enquote{Zurück}-Button der Activity immer noch sichtbar bleibt wird die
 ActionBar aber nicht komplett transparent sondern mit einem leichten Farbverlauf
-gezeichnet. Dieser Farbverlauf ist über dem Bild der ImageView nahezu nicht
-sichtbar, aber erhöht dennoch merklich die Sichtbarkeit des
-\enquote{Zurück}-Buttons. Klick der Benutzer auf das Bild kann er ein beliebiges
-auf dem Gerät vorhandenes Bild auswählen, das dann in der ImageView angezeigt
-wird. Dabei wird das Bild asynchron im Hintergrund, dass heißt abseits des
-Haupt-Threads geladen.
+gezeichnet. Dieser Farbverlauf ist über dem Bild der ImageView kaum sichtbar,
+aber erhöht dennoch merklich die Sichtbarkeit des \enquote{Zurück}-Buttons.
+Klick der Benutzer auf das Bild kann er ein beliebiges auf dem Gerät vorhandenes
+Bild auswählen, das dann in der ImageView angezeigt wird. Dabei wird das Bild
+asynchron im Hintergrund, dass heißt abseits des Haupt-Threads geladen.
+
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/addevent_places}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/addevent_category}
+  \caption{Picker zur Orts- und Kategorieauswahl}
+\end{figure}
 
 In den dann folgenden Textfeldern können die weiteren Parameter des Events
 konfiguriert werden. Dabei wurde das Design der Textfelder so angepasst, dass
-diese die gesamte Bildschrimbreite verwendet. Damit wurde auch auch die
-klickbare Fläche der Textfelds vergrößert, sodass das Auswählen eines einzelnen
+diese die gesamte Bildschirmbreite verwendet. Damit wurde auch auch die
+klickbare Fläche der Textfelder vergrößert, sodass das Auswählen eines einzelnen
 Textfelds einfacher möglich ist. Obwohl als Anzeige Textfelder verwendet werden
 sind diese nur bedingt für die Auswahl einiger Informationen geeigent. Klickt
 der Benutzer z.B. auf das \enquote{Location} Textfeld wird über das Google
 Places API eine Place Picker Activity gestartet die eine benutzerfreundliche
 Auswahl eines Ortes ermöglicht. Der ausgewählte Ort wird intern gespeichert und
 eine textuelle Repräsentation des Ortes im zugehörigen Textfeld angezeigt. Um
-die Startzeit auszuwählen wurde ein Time Picker Dialog erstellt, der geöffnet
+die Startzeit auszuwählen wurde ein Time-Picker-Dialog erstellt, der geöffnet
 wird, wenn der Benutzer auf das \enquote{Start} Textfeld tippt. So kann eine
 Startzeit benutzerfreundlich eingegeben werden. Auch werden so
 Formatierungsfehler vermieden, die bei der Eingabe von Daten in ein Textfeld
 auftreten können. Ebenfalls wurden Picker-Dialoge für die Felder
 \enquote{Max participants} und \enquote{Category} erstellt.
 
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/addevent_2}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/addevent_3}
+  \caption{Scroll-Verhalten mit \emph{NestedScrollView} und \emph{AppBarLayout}}
+\end{figure}
+
 Aufgrund der relative großen Darstellung des Bilds können nicht alle benötigten
-Felder auf einer Bildschirmlänge dargestellt werden. Daher musste die Parameter
-Liste scrollbar implementiert werden. Um von jeder Scroll-Position die Activity
-wieder verlassen zu können muss der \enquote{Zurück}-Button, dass heißt die
-Action Bar der Activity, immer zugänglich bleiben. Allerdings wurde diese
+Felder auf einer Bildschirmlänge dargestellt werden. Daher musste die
+Parameterliste scrollbar implementiert werden. Um von jeder Scroll-Position die
+Activity wieder verlassen zu können muss der \enquote{Zurück}-Button, dass heißt
+die ActionBar der Activity, immer zugänglich bleiben. Allerdings wurde diese
 transparent gezeichnet und ist somit auf den Textfeldern schlecht lesbar. Daher
-wurde hier eine \emph{NestedScollView} in Kombination mit einem
-\emph{AppBarLayout} verwendet. Wird auf der Parameter Liste gescrollt schiebt
+wurde hier eine \emph{NestedScrollView} in Kombination mit einem
+\emph{AppBarLayout} verwendet. Wird auf der Parameterliste gescrollt schiebt
 sich diese über das Bild des Events und der Hintergrund der AppBar wird so
-transformiert, dass dieser nun nicht mehr transparent ist, also eine normale
-ActionBar zeigt. Somit kann nun der \enquote{Zurück}-Button immer angezeigt und
-die Parameter Liste gescollt werden.
+transformiert, dass dieser nun nicht mehr transparent ist. Somit kann nun der
+\enquote{Zurück}-Button immer angezeigt und die Parameterliste gescrollt werden.
 
 \subsection{Server}
 

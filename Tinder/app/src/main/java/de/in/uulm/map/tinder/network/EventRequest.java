@@ -17,6 +17,7 @@ import com.android.volley.Response;
 
 import de.in.uulm.map.tinder.R;
 import de.in.uulm.map.tinder.entities.Event;
+import de.in.uulm.map.tinder.entities.User;
 import de.in.uulm.map.tinder.filter.FilterPresenter;
 
 import java.util.ArrayList;
@@ -100,6 +101,84 @@ public class EventRequest extends AuthRequest<List<Event>> {
         super(method, url, context, errorListener);
 
         mListener = listener;
+
+        ArrayList<Event> events = new ArrayList<>();
+
+        User userA = new User();
+        userA.name = "Max";
+        userA.id = "1";
+        userA.email = "max@max.com";
+
+        User userB = new User();
+        userB.name = "Jona";
+        userB.id = "2";
+        userB.email = "jona@jona.com";
+
+        User userC = new User();
+        userC.name = "Alex";
+        userC.id = "3";
+        userC.email = "alex@alex.com";
+
+        Event e = new Event();
+        e.category = "4";
+        e.location = "Uni";
+        e.title = "Party";
+        e.description = "Let's get rekt, m8ts!";
+        e.creator = userA;
+        e.has_image = true;
+        e.id = "2";
+        e.latitude = 0;
+        e.longitude = 0;
+        e.max_user_count = 20;
+        e.setStartDate(new Date(2017, 10, 14, 20, 0));
+        events.add(e);
+
+        e = new Event();
+        e.category = "2";
+        e.location = "Uni";
+        e.title = "Theater";
+        e.description = "We are going to see some mediocre drama, fellows!";
+        e.creator = userA;
+        e.has_image = true;
+        e.id = "4";
+        e.latitude = 0;
+        e.longitude = 0;
+        e.max_user_count = 3;
+        e.setStartDate(new Date(2017, 10, 13, 6, 30));
+        e.participants.add(userB);
+        events.add(e);
+
+        e = new Event();
+        e.category = "4";
+        e.location = "Uni";
+        e.title = "Demo";
+        e.description = "Down with the sickness!";
+        e.creator = userB;
+        e.has_image = true;
+        e.id = "1";
+        e.latitude = 0;
+        e.longitude = 0;
+        e.max_user_count = 10;
+        e.participants.add(userB);
+        e.setStartDate(new Date(2017, 10, 13, 14, 0));
+        events.add(e);
+
+        e = new Event();
+        e.category = "2";
+        e.location = "Uni";
+        e.title = "Hiking";
+        e.description = "Let's go for a hike in the mountains!";
+        e.creator = userA;
+        e.has_image = true;
+        e.id = "3";
+        e.latitude = 0;
+        e.longitude = 0;
+        e.max_user_count = 5;
+        e.setStartDate(new Date(2017, 10, 13, 6, 30));
+        // e.participants.add(userB);
+        events.add(e);
+
+        listener.onResponse(events);
     }
 
     @Override
