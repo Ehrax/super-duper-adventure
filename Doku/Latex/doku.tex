@@ -148,7 +148,7 @@ Benutzer nacheinander durch die verfügbaren Events blättern.
 \subsection{Nicht Funktionale Andforderungen}
 
 \textbf{NFA1 Robustheit} \newline
-Das Spiel soll eine gewisse Robustheit aufweisen, also auf fehlerhafte Eingaben
+Die App soll eine gewisse Robustheit aufweisen, also auf fehlerhafte Eingaben
 oder unvorhergesehene Ereignisse angemessen reagieren. Im Falle eine Absturzes
 sollte die Applikation ohne Verlust des Spielfortschritts neu gestartet werden
 können.
@@ -266,27 +266,42 @@ klar ist welche Aufgaben diese Komponenten übernehmen.
 \subsection{Mockups}
 Vor dem eigentlichen Implementieren der App wurden Mockups erstellt. Diese
 sollten einen ersten Eindruck vom User Interface geben und dienten als
-Orientierung während der eigentlichen Implementierung.
+Orientierung während der eigentlichen Implementierung. Wobei sich nach einigen Versuchen manche Konzepte aus den Mockups als weniger geeignet herausstellten und entsprechend verändert wurden.
 
-An jeder beliebigen Stelle der App hat man Zugriff auf den Navigation Drawer.
-Dieser ist ein Menü, welches sich von der linken Seite durch eine Wischgeste
-herausziehen lässt. Abbildung ~\ref{drawer} zeigt das Konzept dieses Menüs.
+Als Einstiegspunkt in die App wollten wir eine TabView implementieren, die auf der ersten Seite die Events in der Nähe anzeigt. Abbildung ~\ref{fig:nearby_mockup} (links) zeigt das Konzept dieser View.
 
-Abbildung ~\ref{singleplayer1} skizziert den Prozess, welchen der Benutzer
-vollführen muss, um vom Hauptmenü zum Einzelspieler Modus zu gelangen.
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/nearby_mockup}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/myevents_mockup}
+  \caption{Konzept der Übersicht(links: Events in der Umgebung, rechts: selbst erstellte Events)}\label{fig:nearby_mockup}
+\end{figure}
 
-Nach dem das Deck ausgewählt wurde befindet sich der Spieler im eigentlichen
-Einzelspieler Modus. Abbildung ~\ref{singleplayer2} skizziert das
-Spielgeschehen.
+Abbildung ~\ref{fig:nearby_mockup} (rechts) skizziert die Übersichtsseite der vom Benutzer selbst erstellten Events. Sie sollte ähnlich aufgebaut sein, allerdings mit entsprechend anderen Funktionalitäten wie der Möglichkeit ein Event zu löschen.
 
-Einstellungen kann der Benutzer in der Settings Activity vornehmen. Allerdings
-sind die Möglichkeiten in unserer App sehr beschränkt wie Abbildung
-~\ref{settings} zeigt.
 
-Außerdem haben wir Mockups zu den Statistiken erstellt. Hier kann der Benutzer
-seine bisherigen Erfolge einsehen. Diese Activity ist auf den Abbildungen
-~\ref{stats1} und ~\ref{stats2} zu sehen
+Das Konzept der TabView wurde in der tatsächlichen Anwendung schließlich doch nicht mehr genutzt. Stattdessen kam die \enquote{Bottom navigation}, eine Komponente aus Googles Material Design Guidelines, zum Einsatz. Nach einigen Tests kamen wir zu dem Schluss, dass diese sich besser \enquote{anfühlt}. 
 
+Bei einem Klick auf ein eigenes Event oder einem, dem der Benutzer bereits beigetreten ist soll dieser zu einem Chat gelangen. Von dort aus ist auch eine Ansicht aller Teilnehmer des Events zugänglich diese beiden Views zeigt Abbildung ~\ref{fig:chat_mockup}.
+
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/chat_mockup}
+  \hspace{1cm}
+  \includegraphics[width=5cm]{img/groupview_mockup}
+  \caption{Konzept der Chatview und der Teilnehmerliste}\label{fig:chat_mockup}
+\end{figure}
+
+Außerdem haben wir Mockups erstellt die eine View zeigen um Events zu erstellen diese View zeigt Abbildung ~\ref{fig:createevent_mockup}
+
+\begin{figure}[h!tbp]
+  \centering
+  \includegraphics[width=5cm]{img/createevent_mockup}
+  \caption{Konzept der Eventerstellung}\label{fig:createevent_mockup}
+\end{figure}
+
+Wir haben darauf verzichtet Mockups für Activities zu machen die zum Beispiel eine Karte für die Navigation zeigen oder nur die Auswahl einer Kategorie und ein Suchfeld beinhalten. Im laufe der Entwicklung sind weitere Activities hinzugekommen. Zum Beispiel die "Tinder" Ansicht. Diese Views werden im nächsten Abschnitt behandelt.
 
 \newpage
 
@@ -462,6 +477,24 @@ transformiert, dass dieser nun nicht mehr transparent ist. Somit kann nun der
 \enquote{Zurück}-Button immer angezeigt und die Parameterliste gescrollt werden.
 
 \subsection{Server}
+\subsubsection{Verwendete Technologien}
+
+Als Server wurde ein Windows Server benutzt mit dem Aktuellen Windows Server 2016 und einem IIS 10.0 (Internet Information Services, Microsofts Web server für Windows Server). Programmiert wurde die Serverlogik in C\# mit ASP.NET Core. Als Datenbank kam SQL Server 2016, ebenfalls von Microsoft, zum Einsatz. Der Zugriff auf die Datenbank wurde mit Microsofts EntityFramework realisiert.
+
+Wir haben uns dazu entschieden auf eine \enquote{Thin Client} Lösung zusetzen. Die gesamte Datenverarbeitung findet folglich auf dem Server statt. Dies erschien uns als die Sinnvollere Möglichkeit da unsere Zielgeräte eben nur beschränkt Leistung zur Verfügung haben. 
+
+\subsubsection{Benutzerverwaltung}
+
+Zur Verifizierung der Benutzer kommen JWT (JSON Web Token) zum Einsatz. Da bei diesem Standard sowohl Passwort als auch Username der Benutzer im Klartext übertragen werden findet die komplette Kommunikation zwischen Client und Server natürlich ausschließlich per SSL statt. 
+
+\subsubsection{Events}
+
+Die REST-Schnittstelle bietet die Möglichkeit sich alle Events in einer Liste zu holen, dabei können diese nach Kategorie, Koordinaten, Umkreis, Start- und End-Datum gefiltert werden.
+Außerdem können die Bilder zu den Events einzeln geladen werden um \enquote{Lazy loading} zu unterstützen und eine bessere Parallelisierung beim Laden der Bilder zu ermöglichen.
+Genau so können natürlich auch einzelne Events, Events denen der Aktuelle Benutzer beigetreten ist und seine selbst erstellten Events separat angefragt werden. Kurz alle typischen CRUD - Operationen sind für die Events implementiert.
+
+Außerdem läuft auf dem Server ein Skript, dass Events automatisch entfernt sobald diese länger als 24 Stunden in der Vergangenheit liegen. Wobei Events in der \enquote{Nearby} Übersicht nicht mehr angezeigt werden wenn diese bereits beendet sind.
+
 
 \section{Anforderungsabgleich}
 
@@ -471,77 +504,36 @@ teilweise oder gar nicht erfüllt wurde.
 
 \subsection{Funktionale Anforderungen}
 
-\textbf{FA1 Hauptmenü - erfüllt} \newline
-Das Hauptmenü wurde wie in der Anforderung beschrieben implementiert.
+\textbf{FA1 Accountmanagement - teilweise erfüllt} \newline
+Die Möglichkeit sich mit Google und  Facebook anzumelden wurde Serverseitig vorbereitet jedoch fehlt noch die Implementierung im Client. Die restlichen Anforderungen an das Accountmanagement wurden erfüllt.
 
 \ \newline
-\textbf{FA2 Spielmodi - erfüllt} \newline
-Alle Spielmodi wurden wie gefordert implementiert und können vor jedem Spiel
-ausgewählt werden.
+\textbf{FA2 Eventmanagement - erfüllt} \newline
+Das Eventmanagement wurde wie in der Anforderungsanalyse definiert implementiert und erfüllt alle Bedingungen.
 
 \ \newline
-\textbf{FA3 Computergegner - erfüllt} \newline
-Für den Einzelspielermodus wurde ein Computergegner implementiert, der ein
-faires Spielerlebnis bietet. Diese \enquote{KI} kann je nach Schwierigkeitsgrad
-unterschiedlich gut abschätzen welches Attribut einer Karte die höchsten
-Gewinnchancen hat und imitiert so das Verhalten eines menschlichen Spielers.
+\textbf{FA3 Eventübersicht - erfüllt} \newline
+Auch diese wurde wie gefordert implementiert.
 
 \ \newline
-\textbf{FA4 Schwierigkeitsgrad - erfüllt} \newline
-Die geforderten Schwierigkeitsgrade wurden implementiert und können vor dem
-Beginn eines neuen Spiels ausgewählt werden. Die Wahl des Schwierigkeitsgrads
-beeinflusst das Verhalten der KI.
+\textbf{FA4 Filter- erfüllt} \newline
+In der Anforderungsanalyse werden zwei Filterkriterien beschrieben zum einen die Umkreissuche und zusätzlich ein Filtern nach Kategorien. Beides wurde implementiert und funktioniert wie gefordert.
 
 \ \newline
-\textbf{FA5 Spiel fortsetzen - erfüllt} \newline
-Nach jedem Spielzug wird der komplette Zustand des Spiels in die interne
-Datenbank geschrieben und damit persistent gespeichert.
+\textbf{FA5 Gruppenchat - erfüllt} \newline
+Der Gruppenchat ist wie gefordert implementiert und funktionsfähig.
 
 \ \newline
-\textbf{FA6 Galerie - erfüllt} \newline
-Die Galerie wurde wie in \enquote{Implementierungsdetails} beschreiben
-implementiert.
+\textbf{FA6 Chatübersicht - erfüllt} \newline
 
 \ \newline
-\textbf{FA7 Deck Download - erfüllt} \newline
-Der Deckdownload wurde wie in \enquote{Implementierungsdetails} beschreiben in
-die Galerie integriert.
-
-\ \newline
-\textbf{FA8 Statistiken - erfüllt} \newline
-Die Statistiken wurden implementiert und werden graphisch aufbereitet in einer
-speziellen Ansicht dargestellt.
-
-\ \newline
-\textbf{FA9 Rangliste - erfüllt} \newline
-Die beschriebene Rangliste wurde implementiert. Der Spieler wird mit dem Namen
-der zu Beginn eines Spiels eingegeben wurde, automatisch mit seiner erreichten
-Punktezahl in die Rangliste aufgenommen
-
-\ \newline
-\textbf{FA10 Achievements - teilweise erfüllt} \newline
-Es wurde eine Oberfläche zur Anzeige der Achievements implementiert. Ein
-fertiges Achievementsystem ist allerdings nicht in der App vorhanden.
-
-\ \newline
-\textbf{FA11 Quartetteditor - nicht erfüllt} \newline
-Der Quartetteditor wurde zugunsten des Multiplayers nicht realisiert.
-
-\ \newline
-\textbf{FA12 Levelsystem - nicht erfüllt} \newline
-Das Levelsystem wurde zugunsten des Multiplayers nicht realisiert
-
-\ \newline
-\textbf{FA13 Multiplayer - erfüllt} \newline
-Der Multiplayer wurde mit Hilfe der Google Play Services implementiert und
-erlaubt es zwei Benutzer der App über das Internet gegeneinander anzutreten.
+\textbf{FA7 Kartenansicht - erfüllt} \newline
+Die Kartenansicht wurde implementiert und den geforderten Wischgesten noch die Funktionen des Beitretens bzw. entfernen des Events vom Stapel zugeordnet.
 
 \subsection{Nicht Funktionale Anforderungen}
 
 \textbf{NFA1 Robustheit - teilweise} \newline
-Der Multiplayer weist aufgrund der Komplexität und fehlender Entwicklungszeit
-noch einige Stabilitätsprobleme auf. Ansonsten konnten während der Entwicklung
-keine Fehler festgestellt werden, welche die Robustheit der App beinträchtigen.
+Es wurde versucht Unvorhersehbare und Falsche Eingaben zu erkennen und entsprechend zu reagieren dies funktioniert zum Aktuellen Stand im weitesten ganz gut. Es ist dennoch vereinzelt unvorhersehbares Verhalten im Zusammenhang mit Benutzereingaben aufgetreten. Hier gilt es die entsprechenden Stellen noch auszumachen und zu beseitigen.
 
 \ \newline
 \textbf{NFA2 Erweiterbarkeit - erfüllt} \newline
@@ -560,19 +552,7 @@ als Referenz für die Gestaltung der Oberflächen verwendet.
 
 \section{Zusammenfassung und Ausblick}
 
-In dieser Dokumentation wurde die Planung der Entwicklung einer Android Quartett
-App und die tatsächlich Implementierung dieser vorgestellt. Da die allermeisten
-der funktionale und nicht funktionalen Anforderungen erfüllt wurden, kann das
-Projekt als erfolgreich bewertet werden. Darüberhinaus konnten wir zahlreiche
-Einblicke in die Entwicklung von Android Applikationen erhalten. Wir sind nun
-mit den wichtigsten Konzepten der Plattform vertraut, sodass die Entwicklung
-weiterer Apps deutlich einfacher zu bewerkstelligen sein wird. Außerdem konnten
-wir zusätzliche Erkenntnisse in der Verwendung von Design Patterns und des
-Versionskontrollsystems git sammeln.
-
-\ \newline
-Aufgrund der gewonnen Erkenntnisse und des allgemein guten Projektverlaufs werden
-wir auch weiter Apps mit Android und unter zu Hilfenahme der hier verwendeten
-Werkzeuge und Strategien entwickeln.
+In dieser Dokumentation wurde die Planung der Entwicklung einer Android App und die tatsächliche Implementierung dieser vorgestellt. Da die allermeisten der funktionale und nicht funktionalen Anforderungen erfüllt wurden, kann das Projekt als erfolgreich bewertet werden. Interessant wären nun einige Feldversuche mit der Benutzerschnittstelle um herauszufinden wie diese ankommt und ob die App tatsächlich so leicht zu benutzen ist wie wir uns das vorgestellt haben.
+Außerdem wären Stresstests hinsichtlich der Kommunikation zwischen Client und Server interessant. Ob die Implementierung auch skaliert wenn viele Benutzer gleichzeitig Daten schreiben und lesen.
 
 \end{document}
